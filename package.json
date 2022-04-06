@@ -1,0 +1,24 @@
+{
+  "name": "usbeaufort",
+  "version": "1.0.0",
+  "description": "Web App USBeaufort pour le tournoi de mai",
+  "main": "index.js",
+  "scripts": {
+    "front": "cd front  && live-server --port=8001  ",
+    "back" : "cd back/usbeaufort-api && symfony server:start -"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sylvainpellier/usbeaufort.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sylvainpellier/usbeaufort/issues"
+  },
+  "homepage": "https://github.com/sylvainpellier/usbeaufort#readme",
+  "dependencies": {
+    "live-server": "1.2.1",
+    "livereload": "0.9.3"
+  }
+}
