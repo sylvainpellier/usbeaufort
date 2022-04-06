@@ -1,52 +1,10 @@
-# Cache and logs (Symfony2)
-/back/usbeaufort-api/cache/*
-/back/usbeaufort-api/logs/*
-!app/cache/.gitkeep
-!app/logs/.gitkeep
-
-# Email spool folder
-/back/usbeaufort-api/spool/*
-
-# Cache, session files and logs (Symfony3)
-/back/usbeaufort-api/var/cache/*
-/back/usbeaufort-api/var/logs/*
-/back/usbeaufort-api/var/sessions/*
-!/back/usbeaufort-api/var/cache/.gitkeep
-!/back/usbeaufort-api/var/logs/.gitkeep
-!/back/usbeaufort-api/var/sessions/.gitkeep
-
-# Logs (Symfony4)
-/back/usbeaufort-api/var/log/*
-!/back/usbeaufort-api/var/log/.gitkeep
-
-# Parameters
-/back/usbeaufort-api/config/parameters.yml
-/back/usbeaufort-api/config/parameters.ini
-
-# Managed by Composer
-/back/usbeaufort-api/bootstrap.php.cache
-/back/usbeaufort-api/var/bootstrap.php.cache
-/back/usbeaufort-api/bin/*
-!/back/usbeaufort-api/bin/console
-!/back/usbeaufort-api/bin/symfony_requirements
-/back/usbeaufort-api/vendor/
-
-# Assets and user uploads
-/web/bundles/
-/web/uploads/
-
-# PHPUnit
-/back/usbeaufort-api/phpunit.xml
-/phpunit.xml
-
-# Build data
-/build/
-
-# Composer PHAR
-/composer.phar
-
-# Backup entities generated with doctrine:generate:entities command
-**/Entity/*~
-
-# Embedded web-server pid file
-/.web-server-pid
+ 
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###

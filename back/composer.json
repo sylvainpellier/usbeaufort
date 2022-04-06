@@ -1,8 +1,0 @@
-{
-    "require": {
-        "jms/serializer-bundle": "^4.0",
-        "friendsofsymfony/rest-bundle": "^3.3",
-        "symfony/maker-bundle": "^1.38",
-        "symfony/orm-pack": "^2.2"
-    }
-}
