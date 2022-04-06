@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "front": "cd front  && live-server --port=8001  ",
-    "back" : "cd back/usbeaufort-api && symfony server:start -"
+    "back" : "cd back/usbeaufort-api && symfony server:start "
   },
   "repository": {
     "type": "git",
