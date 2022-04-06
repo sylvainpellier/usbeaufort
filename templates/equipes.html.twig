@@ -1,0 +1,31 @@
+{% extends "base.html.twig" %}
+{% block body %}
+
+    <div class="col-12 text-center">
+        Liste des équipes
+
+        <table id="team"><tr><td>nom de l'équipe</td></tr></table>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+
+    fetch("https://localhost:8000/api/teams").then((data)=>{
+        console.log(data);
+       data.json().then((jsonData)=>{
+           console.log(jsonData);
+           jsonData.forEach((team)=>{
+               console.log(team);
+               let tr = document.createElement("tr");
+               let td = document.createElement("td");
+
+               td.innerText = team.Name;
+
+               tr.appendChild(td)
+               document.getElementById("team").appendChild(tr);
+           });
+       });
+    });
+
+{% endblock %}

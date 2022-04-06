@@ -13,14 +13,21 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Serializer;
 use function var_dump;
 
-/**
- * @Route("/api/teams", name="api_teams_")
- */
 
 class TeamController extends OverrideApiController
 {
+
     /**
-     * @Route("/", name="all")
+     * @Route("/teams", name="index_teams_")
+     */
+    public function public_index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
+    {
+        return $this->render("equipes.html.twig");
+
+    }
+
+    /**
+     * @Route("/api/teams", name="api_teams_")
      */
     public function index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
