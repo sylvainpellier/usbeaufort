@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "front": "cd front  && live-server --port=8001  ",
-    "back" : "cd back/usbeaufort-api && symfony server:start "
+    "back": "cd back/usbeaufort-api && symfony server:start "
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,8 @@
   "homepage": "https://github.com/sylvainpellier/usbeaufort#readme",
   "dependencies": {
     "live-server": "1.2.1",
-    "livereload": "0.9.3"
+    "livereload": "0.9.3",
+    "php-server": "1.0.0",
+    "phpcgijs": "1.0.0-beta7"
   }
 }
