@@ -19,6 +19,7 @@ use function var_dump;
 class CategoryController extends OverrideApiController
 {
 
+
     /**
      * @Route("/categorie/{id}/phase/{phase}", name="category_display_phase")
      */
@@ -32,7 +33,17 @@ class CategoryController extends OverrideApiController
      */
     public function display(string $id, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {
-        return $this->render("category.html.twig", ["category"=>$categoryRepository->find($id)]);
+        $categorie = $categoryRepository->find($id);
+        $phaseEnCours = $categorie->getPhaseEnCours();
+
+        if($phaseEnCours)
+        {
+            return $this->display_phase($id, $phaseEnCours->getId(), $categoryRepository, $serializer);
+        } else
+        {
+            return $this->render("category.html.twig", ["category"=>$categoryRepository->find($id)]);
+        }
+
     }
 
 

@@ -8,6 +8,7 @@ use App\Repository\MeetRepository;
 use App\Repository\TeamRepository;
 use function array_key_exists;
 use function array_push;
+use function array_splice;
 use function dump;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -131,7 +132,7 @@ class ApiController extends AbstractController
 
         $poules = [];
 
-        foreach ($teams as $team)
+        foreach ($teams as $key => $team)
         {
             if(isset($team["poule"]))
             {
@@ -140,9 +141,12 @@ class ApiController extends AbstractController
                     $poules[$poule] = [];
                 }
                 array_push($poules[$poule],$team);
+            } else{
+                array_splice($teams,$key);
             }
 
         }
+
 
         //CLASSEMENT FINAL
         foreach ($poules as $key => $poule)
@@ -157,17 +161,24 @@ class ApiController extends AbstractController
 
         }
 
+
         //CLASSEMENT FINAL
         foreach ($poules as $key => $poule)
         {
             $i = 0;
-            foreach($teams as $keyTeam => $team)
+
+            foreach($poule as $keyTeam => $team)
             {
-                $i++;
-                $poules[$key][$keyTeam]["rang"] = $i;
+                if($team["poule"] === $key)
+                {
+                    $i++;
+                    $poules[$key][$keyTeam]["rang"] = $i;
+                    $team["rang"] = $i;
+                }
             }
 
         }
+
 
         return $this->json(json_decode($serializer->serialize($poules, 'json', ['groups' => 'matchs'])));
 

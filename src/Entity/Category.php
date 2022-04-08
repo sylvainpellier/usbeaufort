@@ -18,6 +18,7 @@ class Category
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"team","matchs"})
      */
     private $id;
 
@@ -37,6 +38,11 @@ class Category
      * @ORM\ManyToMany(targetEntity=Phase::class)
      */
     private $Phases;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Phase::class)
+     */
+    private $PhaseEnCours;
 
     public function __construct()
     {
@@ -111,6 +117,18 @@ class Category
     public function removePhase(Phase $phase): self
     {
         $this->Phases->removeElement($phase);
+
+        return $this;
+    }
+
+    public function getPhaseEnCours(): ?Phase
+    {
+        return $this->PhaseEnCours;
+    }
+
+    public function setPhaseEnCours(?Phase $PhaseEnCours): self
+    {
+        $this->PhaseEnCours = $PhaseEnCours;
 
         return $this;
     }

@@ -22,7 +22,17 @@ class TeamController extends OverrideApiController
      */
     public function public_index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
-        return $this->render("equipes.html.twig");
+        return $this->render("equipes/index.html.twig");
+
+    }
+
+    /**
+     * @Route("/equipe/{id}", name="teams_show")
+     */
+    public function equipe_show(string $id, TeamRepository $teamRepository, SerializerInterface $serializer): Response
+    {
+
+        return $this->render("equipes/show.html.twig", ["equipe"=>$teamRepository->find($id)]);
 
     }
 
