@@ -23,7 +23,7 @@ class Category
 
     /**
      * @ORM\Column(type="string", length=10)
-     * @Groups({"category"})
+     * @Groups({"category","team"})
      */
     private $Name;
 
@@ -33,9 +33,15 @@ class Category
      */
     private $teams;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Phase::class)
+     */
+    private $Phases;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
+        $this->Phases = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -81,6 +87,30 @@ class Category
                 $team->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Phase>
+     */
+    public function getPhases(): Collection
+    {
+        return $this->Phases;
+    }
+
+    public function addPhase(Phase $phase): self
+    {
+        if (!$this->Phases->contains($phase)) {
+            $this->Phases[] = $phase;
+        }
+
+        return $this;
+    }
+
+    public function removePhase(Phase $phase): self
+    {
+        $this->Phases->removeElement($phase);
 
         return $this;
     }

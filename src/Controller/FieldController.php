@@ -13,14 +13,22 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Serializer;
 use function var_dump;
 
-/**
- * @Route("/api/fields", name="api_fields_")
- */
+
 
 class FieldController extends OverrideApiController
 {
+
     /**
-     * @Route("/", name="all")
+     * @Route("/fields", name="fields_index")
+     */
+    public function public_index(): Response
+    {
+        return $this->render("terrains.html.twig");
+
+    }
+
+    /**
+     * @Route("/api/fields", name="fields_api")
      */
     public function index(FieldRepository $fieldRepository, SerializerInterface $serializer): Response
     {

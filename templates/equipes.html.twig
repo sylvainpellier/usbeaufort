@@ -9,7 +9,7 @@
 
 {% block javascript %}
 
-    fetch("http://localhost:8000/api/teams").then((data)=>{
+    fetch("https://localhost:8000/api/teams").then((data)=>{
         console.log(data);
        data.json().then((jsonData)=>{
            console.log(jsonData);

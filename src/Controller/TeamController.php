@@ -18,7 +18,7 @@ class TeamController extends OverrideApiController
 {
 
     /**
-     * @Route("/teams", name="index_teams_")
+     * @Route("/teams", name="teams_index")
      */
     public function public_index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
@@ -27,10 +27,10 @@ class TeamController extends OverrideApiController
     }
 
     /**
-     * @Route("/api/teams", name="api_teams_")
+     * @Route("/api/teams", name="teams_api")
      */
     public function index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
-       return $this->send($teamRepository->findAll(),["team"],$serializer);
+       return $this->send($teamRepository->findAll(),["team","category"],$serializer);
     }
 }

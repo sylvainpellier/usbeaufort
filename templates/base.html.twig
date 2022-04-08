@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Tournoi USB Beaufort{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
@@ -37,8 +37,9 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto me-4 my-3 my-lg-0">
                     <li class="nav-item"><a class="nav-link me-lg-3" href="/">Tableau</a></li>
-                    <li class="nav-item"><a class="nav-link me-lg-3" href="teams">Par équipe</a></li>
-                    <li class="nav-item"><a class="nav-link me-lg-3" href="#download">Règlement</a></li>
+                    <li class="nav-item"><a class="nav-link me-lg-3" href="teams">Équipes</a></li>
+                    <li class="nav-item"><a class="nav-link me-lg-3" href="fields">Terrain</a></li>
+                    <li class="nav-item"><a class="nav-link me-lg-3" href="">Règlement</a></li>
                 </ul>
 
             </div>
@@ -60,7 +61,6 @@
     <!-- * *                               SB Forms JS                               * *-->
     <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
     <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-    <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
 
     <script>{% block javascript %}{% endblock %}</script>
 

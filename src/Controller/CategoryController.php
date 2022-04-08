@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Serializer;
 use function var_dump;
 
 /**
- * @Route("/api/groups", name="api_categories_")
+ * @Route("/api/categories", name="api_categories_")
  */
 
 class CategoryController extends OverrideApiController

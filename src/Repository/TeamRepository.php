@@ -73,4 +73,36 @@ class TeamRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findAllCriterias($category_id, $phase_id)
+    {
+        $query =  $this->createQueryBuilder('t')
+            ->join('t.Meets', 'team_a')
+            ->join('m.TeamB', 'team_b');
+
+        $parameters = [];
+        if($category_id)
+        {
+            $query->andWhere('team_a.Category = :group_id');
+            $query->andWhere('team_b.Category = :group_id');
+            $parameters["group_id"] = $category_id;
+        }
+
+        if($phase_id)
+        {
+            $query->andWhere('m.Phase = :phase_id');
+            $parameters["phase_id"] = $phase_id;
+        }
+
+        if($poule)
+        {
+            $query->andWhere('m.Poule = :poule');
+            $parameters["poule"] = $poule;
+        }
+
+        $query->setParameters($parameters);
+
+        return $query->getQuery()
+            ->getResult();
+    }
 }

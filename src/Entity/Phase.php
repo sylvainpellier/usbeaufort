@@ -2,19 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\TeamRepository;
+use App\Repository\PhaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-
 /**
- * @ORM\Entity(repositoryClass=TeamRepository::class)
- * @ORM\Table(name="usb_teams")
-
+ * @ORM\Entity(repositoryClass=PhaseRepository::class)
  */
-class Team
+class Phase
 {
     /**
      * @ORM\Id
@@ -24,25 +21,15 @@ class Team
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=100)
-     * @Groups({"team","matchs"})
+     * @ORM\Column(type="string", length=20)
+     * @Groups({"matchs"})
      */
     private $Name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="teams")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"team"})
-     */
-    private $Category;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamA")
-     * @Groups({"team"})
+     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="Phase")
      */
     private $meets;
-
-
 
     public function __construct()
     {
@@ -66,18 +53,6 @@ class Team
         return $this;
     }
 
-    public function getCategory(): ?Category
-    {
-        return $this->Category;
-    }
-
-    public function setCategory(?Category $Category): self
-    {
-        $this->Category = $Category;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Meet>
      */
@@ -90,7 +65,7 @@ class Team
     {
         if (!$this->meets->contains($meet)) {
             $this->meets[] = $meet;
-            $meet->setTeamA($this);
+            $meet->setPhase($this);
         }
 
         return $this;
@@ -100,13 +75,11 @@ class Team
     {
         if ($this->meets->removeElement($meet)) {
             // set the owning side to null (unless already changed)
-            if ($meet->getTeamA() === $this) {
-                $meet->setTeamA(null);
+            if ($meet->getPhase() === $this) {
+                $meet->setPhase(null);
             }
         }
 
         return $this;
     }
-
-
 }
