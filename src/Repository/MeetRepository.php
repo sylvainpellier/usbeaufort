@@ -70,7 +70,7 @@ class MeetRepository extends ServiceEntityRepository
             $query->andWhere('m.Poule = :poule');
             $parameters["poule"] = $poule;
         }
-
+        $query->orderBy("m.Tour","ASC");
         $query->setParameters($parameters);
 
         return $query->getQuery()
