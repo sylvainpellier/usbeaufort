@@ -13,14 +13,32 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Serializer;
 use function var_dump;
 
-/**
- * @Route("/api/categories", name="api_categories_")
- */
+
+
 
 class CategoryController extends OverrideApiController
 {
+
     /**
-     * @Route("/", name="all")
+     * @Route("/categorie/{id}/phase/{phase}", name="category_display_phase")
+     */
+    public function display_phase(string $id, string $phase, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    {
+        return $this->render("category_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase]);
+    }
+
+    /**
+     * @Route("/categorie/{id}", name="category_display")
+     */
+    public function display(string $id, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    {
+        return $this->render("category.html.twig", ["category"=>$categoryRepository->find($id)]);
+    }
+
+
+
+    /**
+     * @Route("/api/categories", name="api_categories_all")
      */
     public function index(CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {

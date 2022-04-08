@@ -6,6 +6,8 @@ use App\Entity\Meet;
 use App\Entity\Team;
 use App\Repository\MeetRepository;
 use App\Repository\TeamRepository;
+use function array_key_exists;
+use function array_push;
 use function dump;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -88,32 +90,81 @@ class ApiController extends AbstractController
             $resultSet = $stmt->executeQuery(['phase' => $phase, 'team_id' => $team["id"]]);
             $resultats = $resultSet->fetchAll();
 
-            foreach($resultats as $match)
-            {
-                if($team["id"] === $match["team_a_id"])
-                {
-                    $teams[$key]["but_pour"] += $match["score_a"];
-                    $teams[$key]["but_contre"] += $match["score_b"];
+            foreach($resultats as $match) {
+                $teams[$key]["poule"] = $match["poule"];
 
-                    if( ( $match["score_a"] > $match["score_b"] || ($match["score_a"] == $match["score_b"] && $match["penalty_a"] == $match["penalty_b"] ) ))
-                    {
-                        $teams[$key]["pts"] += 3;
-                        $teams[$key]["victoire"]++;
-                    } else if( $match["score_a"] === $match["score_b"])
-                    {
-                        $teams[$key]["pts"] += 1;
-                        $teams[$key]["nul"] ++;
-                    } else
-                    {
-                        $teams[$key]["defaite"]++;
-                    }
+                if ($team["id"] === $match["team_a_id"]) {
+                    $me = "score_a";
+                    $against = "score_b";
+                    $mePenalty = "penalty_a";
+                    $againstPenalty = "penalty_b";
+                } else if ($team["id"] === $match["team_b_id"]) {
+                    $me = "score_b";
+                    $against = "score_a";
+                    $mePenalty = "penalty_b";
+                    $againstPenalty = "penalty_a";
                 }
+
+                if ($me && $against)
+
+            {
+                $teams[$key]["but_pour"] += $match["score_a"];
+                $teams[$key]["but_contre"] += $match["score_b"];
+
+                if (
+                ($match[$me] > $match[$against] || ($match[$me] === $match[$against] && $match[$mePenalty] > $match[$againstPenalty]))) {
+                    $teams[$key]["pts"] += 3;
+                    $teams[$key]["victoire"]++;
+                } else if ($match[$me] === $match[$against]) {
+                    $teams[$key]["pts"] += 1;
+                    $teams[$key]["nul"]++;
+                } else {
+                    $teams[$key]["defaite"]++;
+                }
+            }
 
             }
 
         }
 
-        return $this->json(json_decode($serializer->serialize($teams, 'json', ['groups' => 'matchs'])));
+
+        $poules = [];
+
+        foreach ($teams as $team)
+        {
+            $poule = $team["poule"];
+            if(!array_key_exists($poule,$poules)) {
+                $poules[$poule] = [];
+            }
+            array_push($poules[$poule],$team);
+        }
+
+        //CLASSEMENT FINAL
+        foreach ($poules as $key => $poule)
+        {
+            usort($poules[$key], function ($a,$b) {
+
+                //PRENDRE EN COMPTE LES ÉGALITÉS
+                //DIVERSES VOIR LE RELGEMENT
+                //TODO : classement
+            return $a['pts']<$b['pts'];
+        });
+
+        }
+
+        //CLASSEMENT FINAL
+        foreach ($poules as $key => $poule)
+        {
+            $i = 0;
+            foreach($teams as $keyTeam => $team)
+            {
+                $i++;
+                $poules[$key][$keyTeam]["rang"] = $i;
+            }
+
+        }
+
+        return $this->json(json_decode($serializer->serialize($poules, 'json', ['groups' => 'matchs'])));
 
     }
 }

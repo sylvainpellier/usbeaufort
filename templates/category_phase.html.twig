@@ -1,0 +1,56 @@
+{% extends "base.html.twig" %}
+{% block body %}
+
+    <a href="https://localhost:8000/categorie/1/phase/1">Phase 1</a>
+    <a href="https://localhost:8000/categorie/1/phase/2">Phase 2</a>
+    <a href="https://localhost:8000/categorie/1/phase/3">Phase 3</a>
+
+    <h1>Catégorie {{ category.Name }} - Phase {{ phase }}</h1>
+
+
+    <div class="table table-bordered" id="data">
+
+    </div>
+
+
+{% endblock %}
+
+{% block javascript %}
+
+fetch("https://localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id }}").then((data)=>{
+    console.log(data);
+    data.json().then((jsonData)=>{
+        for(const namePoule in jsonData) {
+            let poule = jsonData[namePoule];
+
+                    let div = document.createElement("div");
+                    let h3 = document.createElement("h3");
+                    h3.innerHTML = "Poule " + namePoule;
+                    document.getElementById('data').appendChild(div);
+                    div.appendChild(h3);
+
+                    let btn = document.createElement("a");
+                    div.append(btn);
+                    btn.innerText = "voir tous les matchs";
+                    btn.setAttribute("href","https://localhost:8000/matchs/1/phase/{{ phase }}/groupe/"+namePoule);
+
+                    table = document.createElement("table");
+                    div.appendChild(table);
+
+                jsonData[namePoule].forEach((team)=>{
+                    console.log(team);
+                    tr = document.createElement("tr");
+                    table.appendChild(tr);
+                    td = document.createElement("td");
+                    td.innerHTML = team.Name;
+                    tr.appendChild(td);
+
+                    td = document.createElement("td");
+                    td.innerHTML = team.pts + "pts";
+                    tr.appendChild(td);
+                });
+        };
+    });
+});
+
+{% endblock %}

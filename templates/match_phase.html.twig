@@ -1,0 +1,46 @@
+{% extends "base.html.twig" %}
+{% block body %}
+
+    <h1>Matchs de la catégorie {{ category.Name }} - Phase {{ phase }} - Groupe {{ groupe }}</h1>
+
+    <div class="table table-bordered" id="data">
+
+    </div>
+
+
+{% endblock %}
+
+{% block javascript %}
+
+fetch("https://localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
+  console.log(data);
+       data.json().then((jsonData)=>{
+           console.log(jsonData);
+           jsonData.forEach((match)=>{
+               console.log(match);
+               let tr = document.createElement("tr");
+               document.getElementById("data").appendChild(tr);
+                td = document.createElement("td");
+               td.innerText = match.TeamA.Name;
+               tr.appendChild(td)
+
+                td = document.createElement("td");
+               td.innerText = "-";
+               tr.appendChild(td)
+
+                td = document.createElement("td");
+               td.innerText = match.TeamB.Name;
+               tr.appendChild(td)
+
+                td = document.createElement("td");
+               td.innerText = match.ScoreA;
+               tr.appendChild(td)
+
+                td = document.createElement("td");
+               td.innerText = match.ScoreB;
+               tr.appendChild(td)
+
+           });
+       });
+    });
+{% endblock %}
