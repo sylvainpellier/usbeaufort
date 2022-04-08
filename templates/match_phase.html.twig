@@ -12,7 +12,7 @@
 
 {% block javascript %}
 
-fetch("https://localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
+fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
   console.log(data);
        data.json().then((jsonData)=>{
            console.log(jsonData);
