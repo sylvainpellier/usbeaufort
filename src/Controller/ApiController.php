@@ -36,9 +36,10 @@ class ApiController extends AbstractController
         $phase = $request->get("phase");
         $poule = $request->get("poule");
 
-       $data = $meetRepository->findAllCriterias($category, $phase, $poule);
+       $matchs = $meetRepository->findAllCriterias($category, $phase, $poule);
 
-        return $this->json(json_decode($serializer->serialize($data, 'json', ['groups' => 'matchs'])));
+
+        return $this->json(json_decode($serializer->serialize($matchs, 'json', ['groups' => 'matchs'])));
 
     }
 
@@ -132,11 +133,15 @@ class ApiController extends AbstractController
 
         foreach ($teams as $team)
         {
-            $poule = $team["poule"];
-            if(!array_key_exists($poule,$poules)) {
-                $poules[$poule] = [];
+            if(isset($team["poule"]))
+            {
+                $poule = $team["poule"];
+                if(!array_key_exists($poule,$poules)) {
+                    $poules[$poule] = [];
+                }
+                array_push($poules[$poule],$team);
             }
-            array_push($poules[$poule],$team);
+
         }
 
         //CLASSEMENT FINAL

@@ -79,6 +79,12 @@ class Meet
      */
     private $Poule;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"matchs"})
+     */
+    private $Tour;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -200,6 +206,18 @@ class Meet
     public function setPoule(?string $Poule): self
     {
         $this->Poule = $Poule;
+
+        return $this;
+    }
+
+    public function getTour(): ?int
+    {
+        return $this->Tour;
+    }
+
+    public function setTour(?int $Tour): self
+    {
+        $this->Tour = $Tour;
 
         return $this;
     }
