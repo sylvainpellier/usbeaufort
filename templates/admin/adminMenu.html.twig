@@ -1,0 +1,15 @@
+ <div class="container-fluid bg-dark pb-2 text-white mt-5 pt-1">
+    <div class="row mt-5 pt-0">
+
+        <div class="col-12 text-center" >            <h1>Administration du tournoi <a class="btn btn-sm float-end btn-info mt-2" href="{{ path("app_admin") }}">retour à l'accueil</a></h1>
+        </div>
+
+        <div class="row">{% for category in categories %}
+
+                <div class="col"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_category",{id:category.id}) }}">{{ category.Name }}</a></div>
+
+            {% endfor %}
+        </div>
+
+    </div>
+</div>

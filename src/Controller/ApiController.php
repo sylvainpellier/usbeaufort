@@ -10,6 +10,7 @@ use function array_key_exists;
 use function array_push;
 use function array_splice;
 use function dump;
+use function is_null;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,36 +28,7 @@ class ApiController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @Route("/api/data/meets", name="app_api_meets")
-     */
-    public function index(Request $request, MeetRepository $meetRepository,  SerializerInterface $serializer): Response
-    {
-
-        $category = $request->get("category");
-        $phase = $request->get("phase");
-        $poule = $request->get("poule");
-
-       $matchs = $meetRepository->findAllCriterias($category, $phase, $poule);
-
-
-        return $this->json(json_decode($serializer->serialize($matchs, 'json', ['groups' => 'matchs'])));
-
-    }
-
-
-
-    /**
-     * @Route("/api/data/phase", name="app_api_phase")
-     */
-    public function old(Request $request,  MeetRepository $meetRepository, SerializerInterface $serializer): Response
-    {
-
-        $category = $request->get("category");
-        $phase = $request->get("phase");
-
-
-        $conn = $this->entityManager->getConnection();
+    public function data($category,$phase,$conn, $groupe = null){
 
         $sql = '
             SELECT teams.Name, teams.id FROM  usb_teams teams, usb_groups categories
@@ -82,14 +54,23 @@ class ApiController extends AbstractController
 
             $sql = '
             SELECT * FROM  usb_meets matchs
-            WHERE 
-            matchs.team_a_id = :team_id OR matchs.team_b_id = :team_id AND
-                matchs.phase_id = :phase
-            ';
+            WHERE ( matchs.team_a_id = :team_id OR matchs.team_b_id = :team_id ) AND matchs.phase_id = :phase ';
+
+            if($groupe)
+            {
+                $sql .= " AND matchs.poule = :groupe";
+            }
 
 
-        $stmt = $conn->prepare($sql);
-            $resultSet = $stmt->executeQuery(['phase' => $phase, 'team_id' => $team["id"]]);
+            $stmt = $conn->prepare($sql);
+
+            $parameters = ['phase' => $phase, 'team_id' => $team["id"]];
+
+            if($groupe) { $parameters["groupe"] = $groupe; }
+
+
+
+            $resultSet = $stmt->executeQuery($parameters);
             $resultats = $resultSet->fetchAll();
 
             foreach($resultats as $match) {
@@ -107,23 +88,23 @@ class ApiController extends AbstractController
                     $againstPenalty = "penalty_a";
                 }
 
-                if ($me && $against)
+                if ($me && $against &&  !is_null($match[$me])  && !is_null($match[$against]))
 
-            {
-                $teams[$key]["but_pour"] += $match["score_a"];
-                $teams[$key]["but_contre"] += $match["score_b"];
+                {
+                    $teams[$key]["but_pour"] += $match["score_a"];
+                    $teams[$key]["but_contre"] += $match["score_b"];
 
-                if (
-                ($match[$me] > $match[$against] || ($match[$me] === $match[$against] && $match[$mePenalty] > $match[$againstPenalty]))) {
-                    $teams[$key]["pts"] += 3;
-                    $teams[$key]["victoire"]++;
-                } else if ($match[$me] === $match[$against]) {
-                    $teams[$key]["pts"] += 1;
-                    $teams[$key]["nul"]++;
-                } else {
-                    $teams[$key]["defaite"]++;
+                    if (
+                    ($match[$me] > $match[$against] || ($match[$me] === $match[$against] && $match[$mePenalty] > $match[$againstPenalty]))) {
+                        $teams[$key]["pts"] += 3;
+                        $teams[$key]["victoire"]++;
+                    } else if ($match[$me] === $match[$against]) {
+                        $teams[$key]["pts"] += 1;
+                        $teams[$key]["nul"]++;
+                    } else {
+                        $teams[$key]["defaite"]++;
+                    }
                 }
-            }
 
             }
 
@@ -156,8 +137,8 @@ class ApiController extends AbstractController
                 //PRENDRE EN COMPTE LES ÉGALITÉS
                 //DIVERSES VOIR LE RELGEMENT
                 //TODO : classement
-            return $a['pts']<$b['pts'];
-        });
+                return $a['pts']<$b['pts'];
+            });
 
         }
 
@@ -179,6 +160,39 @@ class ApiController extends AbstractController
 
         }
 
+        return $poules;
+    }
+    /**
+     * @Route("/api/data/meets", name="app_api_meets")
+     */
+    public function index(Request $request, MeetRepository $meetRepository,  SerializerInterface $serializer): Response
+    {
+
+        $category = $request->get("category");
+        $phase = $request->get("phase");
+        $poule = $request->get("poule");
+
+       $matchs = $meetRepository->findAllCriterias($category, $phase, $poule);
+
+
+        return $this->json(json_decode($serializer->serialize($matchs, 'json', ['groups' => 'matchs'])));
+
+    }
+
+
+    /**
+     * @Route("/api/data/phase", name="app_api_phase")
+     */
+    public function old(Request $request,  MeetRepository $meetRepository, SerializerInterface $serializer): Response
+    {
+
+        $category = $request->get("category");
+        $phase = $request->get("phase");
+
+
+        $conn = $this->entityManager->getConnection();
+
+        $poules = $this->data($category,$phase,$conn, $groupe);
 
         return $this->json(json_decode($serializer->serialize($poules, 'json', ['groups' => 'matchs'])));
 

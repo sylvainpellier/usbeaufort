@@ -32,6 +32,16 @@ class Phase
      */
     private $meets;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TypePhase::class)
+     */
+    private $Type;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Phase::class)
+     */
+    private $PhasePrecente;
+
     public function __construct()
     {
         $this->meets = new ArrayCollection();
@@ -80,6 +90,30 @@ class Phase
                 $meet->setPhase(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getType(): ?TypePhase
+    {
+        return $this->Type;
+    }
+
+    public function setType(?TypePhase $Type): self
+    {
+        $this->Type = $Type;
+
+        return $this;
+    }
+
+    public function getPhasePrecente(): ?self
+    {
+        return $this->PhasePrecente;
+    }
+
+    public function setPhasePrecente(?self $PhasePrecente): self
+    {
+        $this->PhasePrecente = $PhasePrecente;
 
         return $this;
     }

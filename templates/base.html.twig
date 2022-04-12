@@ -52,6 +52,19 @@
         </div>
     </nav>
 
+    {% block secondNav %} {% endblock %}
+
+    <div class="container">
+        <div class="row align-items-center">
+    {% for message in app.flashes('success') %}
+
+        <div class="alert mt-5 alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+        </div></div>
+
     <section id="features">
         <div class="container px-5">
             <div class="row gx-5 align-items-center">

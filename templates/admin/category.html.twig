@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catégorie {{ category.Name }}{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+
+    <h3 class="">Catégorie {{ category.Name }} </h3>
+
+    <hr class="mt-5">
+
+    <h4>Phases</h4>
+
+    {% for phase in category.phases  %}
+        <a class="btn btn-primary btn-lg ml-4 mb-3" href="{{ path("app_admin_category_phase", {idCategory:category.id, idPhase:phase.id}) }}">{{ phase.Name }}</a>
+    {% endfor %}
+
+    <hr class="mt-5">
+
+    <h4>Équipes</h4>
+
+    {% for team in category.teams  %}
+    <a class="btn btn-primary btn-lg ml-4 mb-3" href="">{{ team.Name }}</a>
+        {% endfor %}
+
+    <hr class="mt-5">
+
+    <div class="row mt-5">
+
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path('app_add_team', {idCategory:category.id}) }}">Ajouter une équipe</a></div>
+
+
+
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="">Ajouter une phase</a></div>
+
+    </div>
+
+
+</div>
+{% endblock %}
+
+{% block secondNav %}
+    {% include "admin/adminMenu.html.twig" %}
+{% endblock %}
