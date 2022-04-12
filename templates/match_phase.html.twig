@@ -11,36 +11,79 @@
 {% endblock %}
 
 {% block javascript %}
+var tour1 = [];
+var tour2 = [];
+var tour3 = []; // trouver sollution 
+
+function afficheTour(TableauEquipe){
+    let test = false;
+    let a = 0;
+
+    TableauEquipe.forEach(function(e){
+        while(test == false){
+            let h3 = document.createElement("h3");
+            h3.innerText ="Tour "+TableauEquipe[a].Tour;
+            document.getElementById("data").appendChild(h3);
+            test = true;
+        }
+
+        let tr = document.createElement("tr");
+        document.getElementById("data").appendChild(tr);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe[a].TeamA.Name;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = "-";
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe[a].TeamB.Name;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe[a].ScoreA;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = "/";
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe[a].ScoreB;
+        tr.appendChild(td);
+
+        a++;
+    });
+}
 
 fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
-  console.log(data);
-       data.json().then((jsonData)=>{
-           console.log(jsonData);
-           jsonData.forEach((match)=>{
-               console.log(match);
-               let tr = document.createElement("tr");
-               document.getElementById("data").appendChild(tr);
-                td = document.createElement("td");
-               td.innerText = match.TeamA.Name;
-               tr.appendChild(td)
+    //console.log(data);
+    data.json().then((jsonData)=>{
+        //console.log(jsonData);
+        console.log(jsonData)
+        jsonData.forEach((match)=>{
+            //console.log(match);
 
-                td = document.createElement("td");
-               td.innerText = "-";
-               tr.appendChild(td)
+            if(match.Tour === 1){
+                tour1.push(match); // faire un tab qui boucle
 
-                td = document.createElement("td");
-               td.innerText = match.TeamB.Name;
-               tr.appendChild(td)
+            }else if(match.Tour === 2){
+                tour2.push(match);
 
-                td = document.createElement("td");
-               td.innerText = match.ScoreA;
-               tr.appendChild(td)
+            }else if(match.Tour === 3){
+                tour3.push(match);
 
-                td = document.createElement("td");
-               td.innerText = match.ScoreB;
-               tr.appendChild(td)
+            }
 
-           });
-       });
+        });
+
+        afficheTour(tour1);
+        afficheTour(tour2);
+        afficheTour(tour3);
+        
     });
+});
+
 {% endblock %}
