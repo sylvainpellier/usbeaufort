@@ -77,4 +77,24 @@ class MeetRepository extends ServiceEntityRepository
                 ->getResult();
     }
 
+    public function findByTeam($idTeam)
+    {
+        $query =  $this->createQueryBuilder('m')
+            ->join('m.TeamA', 'team_a')
+            ->join('m.TeamB', 'team_b');
+
+        $parameters = [];
+
+            $query->andWhere('team_a.id = :id');
+            $query->orWhere('team_b.id = :id');
+            $parameters["id"] = $idTeam;
+
+        $query->orderBy("m.Tour","ASC");
+
+        $query->setParameters($parameters);
+
+        return $query->getQuery()
+            ->getResult();
+    }
+
 }

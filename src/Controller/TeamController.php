@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\MeetRepository;
 use App\Repository\TeamRepository;
 use function json_encode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -43,4 +44,23 @@ class TeamController extends OverrideApiController
     {
        return $this->send($teamRepository->findAll(),["team","category"],$serializer);
     }
+
+    /**
+     * @Route("/api/team/{idTeam}", name="teams_api_show")
+     */
+    public function show(string $idTeam, TeamRepository $teamRepository, SerializerInterface $serializer): Response
+    {
+        return $this->send($teamRepository->find($idTeam),["team"],$serializer);
+    }
+
+
+    /**
+     * @Route("/api/team/{idTeam}/matchs", name="teams_api_show_match")
+     */
+    public function show_match(string $idTeam, MeetRepository $meetRepository, TeamRepository $teamRepository, SerializerInterface $serializer): Response
+    {
+        return $this->send($meetRepository->findByTeam($idTeam),["matchs"],$serializer);
+    }
+
+
 }

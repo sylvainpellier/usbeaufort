@@ -116,7 +116,7 @@ class AdminController extends AbstractController
             $poules = [];
             $alphas = range('A', 'Z');
             $pouleC = 0;
-            $count=0;
+            $count=1;
             foreach ($teams as $team)
             {
 

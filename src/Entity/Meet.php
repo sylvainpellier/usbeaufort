@@ -21,19 +21,19 @@ class Meet
 
     /**
      * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="meets")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $TeamA;
 
     /**
      * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="fsfsd")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $TeamB;
 
     /**
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="meets")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      *
      */
     private $Field;
@@ -41,42 +41,43 @@ class Meet
     /**
      * @ORM\ManyToOne(targetEntity=Phase::class, inversedBy="meets")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $Phase;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $ScoreA;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $ScoreB;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $PenaltyA;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $PenaltyB;
 
     /**
      * @ORM\ManyToOne(targetEntity=Team::class)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","match_detail"})
      */
     private $TeamForfait;
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
+     * @Groups({"matchs","match_detail"})
      */
     private $Poule;
 
@@ -85,6 +86,11 @@ class Meet
      * @Groups({"matchs"})
      */
     private $Tour;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $principal;
 
     public function getId(): ?int
     {
@@ -221,5 +227,22 @@ class Meet
         $this->Tour = $Tour;
 
         return $this;
+    }
+
+    public function getPrincipal(): ?bool
+    {
+        return $this->principal;
+    }
+
+    public function setPrincipal(?bool $principal): self
+    {
+        $this->principal = $principal;
+
+        return $this;
+    }
+
+    public function getMatchs()
+    {
+
     }
 }

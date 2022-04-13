@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use function usort;
 use function var_dump;
 
 class ApiController extends AbstractController
@@ -159,7 +160,7 @@ class ApiController extends AbstractController
             }
 
         }
-
+        
         return $poules;
     }
     /**
