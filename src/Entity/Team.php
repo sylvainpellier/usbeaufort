@@ -43,11 +43,17 @@ class Team
      */
     private $meets;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Poule::class, mappedBy="Teams")
+     */
+    private $poules;
+
 
 
     public function __construct()
     {
         $this->meets = new ArrayCollection();
+        $this->poules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -104,6 +110,33 @@ class Team
             if ($meet->getTeamA() === $this) {
                 $meet->setTeamA(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Poule>
+     */
+    public function getPoules(): Collection
+    {
+        return $this->poules;
+    }
+
+    public function addPoule(Poule $poule): self
+    {
+        if (!$this->poules->contains($poule)) {
+            $this->poules[] = $poule;
+            $poule->addTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removePoule(Poule $poule): self
+    {
+        if ($this->poules->removeElement($poule)) {
+            $poule->removeTeam($this);
         }
 
         return $this;

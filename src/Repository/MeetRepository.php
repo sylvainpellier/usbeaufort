@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use function var_dump;
 
 /**
  * @method Meet|null find($id, $lockMode = null, $lockVersion = null)
@@ -47,9 +48,13 @@ class MeetRepository extends ServiceEntityRepository
 
     public function findAllCriterias($category_id, $phase_id, $poule = null)
     {
-        $query =  $this->createQueryBuilder('m')
-            ->join('m.TeamA', 'team_a')
+
+        $query =  $this->createQueryBuilder('m');
+        if($category_id)
+        {
+            $query->join('m.TeamA', 'team_a')
             ->join('m.TeamB', 'team_b');
+        }
 
         $parameters = [];
         if($category_id)
@@ -67,14 +72,59 @@ class MeetRepository extends ServiceEntityRepository
 
         if($poule)
         {
-            $query->andWhere('m.Poule = :poule');
+            $query->andWhere("m.Poule LIKE :poule");
             $parameters["poule"] = $poule;
         }
+
         $query->orderBy("m.Tour","ASC");
         $query->setParameters($parameters);
 
+
+
         return $query->getQuery()
                 ->getResult();
+    }
+
+
+    public function findGroupes($category_id, $phase_id)
+    {
+        $query =  $this->createQueryBuilder('m')
+            ->select("m.Poule");
+
+
+
+
+        if($phase_id)
+        {
+            $query->andWhere('m.Phase = :phase_id');
+            $parameters["phase_id"] = $phase_id;
+        }
+
+        $query->groupBy("m.Poule");
+        $query->setParameters($parameters);
+
+        return $query->getQuery()
+            ->getResult();
+    }
+
+    public function findByTeam($idTeam)
+    {
+        $query =  $this->createQueryBuilder('m')
+            ->join('m.TeamA', 'team_a')
+            ->join('m.TeamB', 'team_b');
+
+        $parameters = [];
+
+            $query->andWhere('team_a.id = :id');
+            $query->orWhere('team_b.id = :id');
+            $parameters["id"] = $idTeam;
+
+        $query->orderBy("m.Tour","ASC");
+
+        $query->setParameters($parameters);
+
+        return $query->getQuery()
+            ->getResult();
     }
 
 }

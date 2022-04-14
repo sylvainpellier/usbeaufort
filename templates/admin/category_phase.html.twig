@@ -8,15 +8,18 @@
 
         <h3 class="">Catégorie {{ category.Name }} - Phase : {{ phase.Name }}</h3>
 
-        <hr class="mt-5">
+        {% if classement|length > 0 %}
+            <hr class="">
 
-        <h4>Classement</h4>
+            <h4>Classement</h4>
+
+        <hr/>
 
 
         {% for key,groupe in classement %}
 
         <h5 class="mt-4">Groupe {{ key }} <a href="{{ path("app_admin_category_phase_groupe", {groupe:key,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs du groupe {{ key }}</a></h5>
-
+<hr >
              <table class="table table-striped table-bordered">
                  <tr>
                      <th>Équipe</th>
@@ -43,17 +46,44 @@
 
             {% endfor %}
             </table>
+
+            <hr class="mt-5">
+
+
         {% endfor %}
 
+            {% else %}
+
+            <div class="alert alert-info mb-5">Aucun classement pour l'instant car aucun match n'a été joué</div>
+
+        {% endif %}
+
+        <hr>
+        <h4>Matchs</h4>
+<hr >
+
+        {% for groupe_array in groupes %}
+                    {% set groupe = groupe_array["Poule"] %}
+
+            <h5>Matchs de la poule {{ groupe }}</h5>
+            <hr />
+
+                {% include "admin/block/matchs.html.twig" %}
+            <hr  class="mt-5" />
+            {% endfor %}
 
 
-        <hr class="mt-5">
+
 
         <div class="row mt-5">
 
-            <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs de la phase</a></div>
+            <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs réels de la phase</a></div>
+            <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate_fictif",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs fictifs de la phase</a></div>
+            <div class="col"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>
+
 
         </div>
+
 
 
     </div>

@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PhaseRepository::class)
+ * @ORM\Table(name="usb_phases")
  */
 class Phase
 {
@@ -42,9 +43,15 @@ class Phase
      */
     private $PhasePrecente;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Poule::class, mappedBy="Phase")
+     */
+    private $poules;
+
     public function __construct()
     {
         $this->meets = new ArrayCollection();
+        $this->poules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -114,6 +121,36 @@ class Phase
     public function setPhasePrecente(?self $PhasePrecente): self
     {
         $this->PhasePrecente = $PhasePrecente;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Poule>
+     */
+    public function getPoules(): Collection
+    {
+        return $this->poules;
+    }
+
+    public function addPoule(Poule $poule): self
+    {
+        if (!$this->poules->contains($poule)) {
+            $this->poules[] = $poule;
+            $poule->setPhase($this);
+        }
+
+        return $this;
+    }
+
+    public function removePoule(Poule $poule): self
+    {
+        if ($this->poules->removeElement($poule)) {
+            // set the owning side to null (unless already changed)
+            if ($poule->getPhase() === $this) {
+                $poule->setPhase(null);
+            }
+        }
 
         return $this;
     }
