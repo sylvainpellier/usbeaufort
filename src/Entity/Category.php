@@ -36,6 +36,7 @@ class Category
 
     /**
      * @ORM\ManyToMany(targetEntity=Phase::class)
+     * @ORM\JoinTable(name="usb_phases_categories")
      */
     private $Phases;
 

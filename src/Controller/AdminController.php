@@ -14,6 +14,8 @@ use function array_splice;
 use function d;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use function str_contains;
+use function str_replace;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,7 +75,7 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}", name="app_admin_category_phase")
      */
-    public function categoryphase(string $idCategory, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function categoryphase(string $idCategory, string $idPhase, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $c = new ApiController($entityManager);
@@ -81,10 +83,182 @@ class AdminController extends AbstractController
         return $this->render('admin/category_phase.html.twig', [
             'category' => $categoryRepository->find($idCategory),
             'phase' => $phaseRepository->find($idPhase),
+            'groupes' => $meetRepository->findGroupes($idCategory,$idPhase),
             'categories' => $categoryRepository->findAll(),
             'classement' =>$c->data($idCategory,$idPhase, $conn = $entityManager->getConnection(),false)
         ]);
     }
+
+
+    /**
+     * @Route("/admin/category/{idCategory}/phase/{idPhase}/delete", name="app_admin_category_phase_delete")
+     */
+    public function category_phase_delete(string $idCategory, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    {
+        $phase = $phaseRepository->find($idPhase);
+        $matchs = $meetRepository->findBy(["Phase"=>$phase]);
+
+
+        //On supprime tous les matchs de la phase
+        foreach ($matchs as $match)
+        {
+            $entityManager->remove($match);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute("app_admin_category_phase", ["idCategory"=>$idCategory,"idPhase"=>$idPhase]);
+
+
+    }
+
+    /**
+     * @Route("/admin/category/{idCategory}/phase/{idPhase}/generate_fictif", name="app_admin_category_phase_generate_fictif")
+     */
+    public function generatePhaseFictive(string $idCategory, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    {
+
+        $phase = $phaseRepository->find($idPhase);
+        $matchs = $meetRepository->findBy(["Phase"=>$phase]);
+
+
+        $teams = $teamRepository->findBy(["Category"=>$idCategory]);
+        $teamByPoule = $phase->getType()->getTeamByPoule();
+
+        //mode normal
+        if($phase->getType()->getFormat() === "normal")
+        {
+            //shuffle($teams);
+
+            $poules = [];
+            $alphas = range('A', 'Z');
+            $pouleC = 0;
+            $count=1;
+            foreach ($teams as $team)
+            {
+
+                if($count>$teamByPoule) {
+                    $pouleC++;
+                    $count = 1;
+                }
+                if(!array_key_exists($alphas[$pouleC],$poules)) {
+                    $poules[$alphas[$pouleC]] = [];
+                }
+                $poules[$alphas[$pouleC]][] = $team;
+                $count++;
+
+            }
+
+
+
+        } else if($phase->getType()->getFormat() === "principal-consolante") //Mode principal-consolante
+        {
+            $equipes_principales = [];
+            $equipes_consolantes = [];
+
+            $poules = [];
+
+            $c = new ApiController($entityManager);
+            $resultats = $c->data($idCategory,$phase->getPhasePrecente()->getId(),$entityManager->getConnection());
+
+            $poulesTemporaire = [];
+            $poulesTemporaire["equipes_principales"] = [];
+            $poulesTemporaire["equipes_consolantes"] = [];
+            foreach($resultats as $poule)
+            {
+                foreach($poule as $key=>$t)
+                {
+                    if($key <= 1)
+                    {
+                        $poulesTemporaire["equipes_principales"][] = $t;
+                    } else
+                    {
+                        $poulesTemporaire["equipes_consolantes"][] = $t;
+                    }
+                }
+            }
+
+
+            $alphas = range('A', 'Z');
+            $pouleC = 0;
+            $c=0;
+            foreach($poulesTemporaire as $nameT =>  $pouleT)
+            {
+                foreach ($pouleT as $team)
+                {
+
+                    if($c>=$teamByPoule) {
+                        $pouleC++;
+                        $c = 0;
+                    }
+                    $name = $alphas[$pouleC] . " " . ( $nameT === "equipes_principales" ? "Principale" : "Consolante" );
+                    if(!array_key_exists($name,$poules)) {
+                        $poules[$name] = [];
+                    }
+                    $poules[$name][] = $teamRepository->find($team["id"]);
+                    $c++;
+
+                }
+            }
+
+
+
+
+        }
+
+
+
+
+        foreach($poules as $keyPoule => $poule) {
+
+            $teamsPoule = $poule;
+
+            $meets = [];
+
+            for($i=0;$i<(($teamByPoule- 1) * 2); $i++) {
+
+                $match = new Meet();
+                $match->setPhase($phase);
+                $match->setPoule($keyPoule);
+                $match->setPrincipal( str_contains($keyPoule,"Principale") );
+                $match->setTour(1);
+                $meets[] = $match;
+
+                $entityManager->persist($match);
+            }
+
+
+            $entityManager->flush();
+
+            $tours = [];
+            for ($i = 1; $i <= count($teamsPoule) - 1; $i++) {
+                $tours[$i] = [];
+            }
+
+            $nbMatch = ($teamByPoule - 1) * 2;
+            $nbMatchParTour = $nbMatch / count($tours);
+
+            $i=1;
+            $c=1;
+            foreach ($meets as $key_match => &$match) {
+                    $match->setTour($i);
+                    $c++;
+                    if($c>$nbMatchParTour)
+                    {
+                        $c=1;
+                        $i++;
+                    }
+                    $entityManager->persist($match);
+            }
+
+            $entityManager->flush();
+
+
+        }
+        return $this->redirectToRoute("app_admin_category_phase", ["idCategory"=>$idCategory,"idPhase"=>$idPhase]);
+
+
+    }
+
 
 
     /**
@@ -94,22 +268,15 @@ class AdminController extends AbstractController
     {
 
         $phase = $phaseRepository->find($idPhase);
-
         $matchs = $meetRepository->findBy(["Phase"=>$phase]);
-
-
-        //On supprime tous les matchs de la phase
-    foreach ($matchs as $match)
-        {
-            $entityManager->remove($match);
-            $entityManager->flush();
-        }
-
         $teams = $teamRepository->findBy(["Category"=>$idCategory]);
+
+        $modeUpdate = (count($matchs) > 0);
+
         $teamByPoule = $phase->getType()->getTeamByPoule();
 
         //mode normal
-        if($phase->getType()->getFormat() === "all_teams")
+        if($phase->getType()->getFormat() === "normal")
         {
             //shuffle($teams);
 
@@ -172,7 +339,7 @@ class AdminController extends AbstractController
                         $pouleC++;
                         $c = 0;
                     }
-                    $name = $alphas[$pouleC] . " " . ( $nameT === "equipes_principales" ? " Principale" : "Consolante" );
+                    $name = $alphas[$pouleC] . " " . ( $nameT === "equipes_principales" ? "Principale" : "Consolante" );
                     if(!array_key_exists($name,$poules)) {
                         $poules[$name] = [];
                     }
@@ -190,59 +357,83 @@ class AdminController extends AbstractController
 
 
 
-        foreach($poules as $keyPoule => $poule) {
 
-            $teamsPoule = $poule;
+            foreach ($poules as $keyPoule => $poule) {
 
-            $meets = [];
-            foreach ($teamsPoule as $teamA) {
+                $teamsPoule = $poule;
 
-                foreach ($teamsPoule as $teamB) {
+                $meets = [];
+                foreach ($teamsPoule as $teamA) {
 
-                    $find = false;
+                    foreach ($teamsPoule as $teamB) {
 
-                    foreach ($meets as $meet2) {
-                        if (($meet2->getTeamA() === $teamA && $meet2->getTeamB() === $teamB) OR ($meet2->getTeamA() === $teamB && $meet2->getTeamB() === $teamA)) {
-                            $find = true;
+                        $find = false;
+
+                        foreach ($meets as $meet2) {
+                            if (($meet2->getTeamA() === $teamA && $meet2->getTeamB() === $teamB) OR ($meet2->getTeamA() === $teamB && $meet2->getTeamB() === $teamA)) {
+                                $find = true;
+                            }
+                        }
+
+                        if ($teamA !== $teamB && !$find) {
+
+                            if (!$modeUpdate) {
+
+                                $match = new Meet();
+                                $match->setTeamA($teamA);
+                                $match->setTeamB($teamB);
+                                $match->setPhase($phase);
+                                $match->setPoule($keyPoule);
+                                $match->setPrincipal(str_contains($keyPoule, "Principale"));
+                                $meets[] = $match;
+                                $entityManager->persist($match);
+                            } else {
+                                //TODO: vérifier principale et consolante
+                                //TODO : vérifier les tours propres
+                                $matchsPoule = $meetRepository->findAllCriterias(null, $idPhase, $keyPoule);
+                                foreach ($matchsPoule as &$matchP) {
+                                    if (!$matchP->getTeamA() && !$matchP->getTeamB()) {
+                                        $matchP->setTeamA($teamA);
+                                        $matchP->setTeamB($teamB);
+                                        $matchP->setTour(null);
+                                        $meets[] = $matchP;
+
+                                        $entityManager->persist($matchP);
+                                        $entityManager->flush();
+                                        break;
+                                    }
+                                }
+
+                            }
                         }
                     }
 
-                    if ($teamA !== $teamB && !$find) {
-                        $match = new Meet();
-                        $match->setTeamA($teamA);
-                        $match->setTeamB($teamB);
-                        $match->setPhase($phase);
-                        $match->setPoule($keyPoule);
 
-                        $meets[] = $match;
 
-                        $entityManager->persist($match);
-                    }
+                $entityManager->flush();
+                $tours = [];
+                for ($i = 1; $i <= count($teamsPoule) - 1; $i++) {
+                    $tours[$i] = [];
+                }
+
+
+                foreach ($meets as $key_match => &$match) {
+
+                    $tourToAdd = $this->findCorrectTour($tours, $match->getTeamA(), $match->getTeamB());
+
+
+                    $tours[$tourToAdd][] = $match;
+                    $match->setTour((int)$tourToAdd);
+                    $entityManager->persist($match);
+                    $entityManager->flush();
+
+
                 }
             }
-
-
-            $entityManager->flush();
-            $tours = [];
-            for ($i = 1; $i <= count($teamsPoule) - 1; $i++) {
-                $tours[$i] = [];
-            }
-
-            foreach ($meets as $key_match => &$match) {
-
-                $tourToAdd = $this->findCorrectTour($tours, $match->getTeamA(), $match->getTeamB());
-
-
-                $tours[$tourToAdd][] = $match;
-                $match->setTour((int)$tourToAdd);
-                $entityManager->persist($match);
-                $entityManager->flush();
-
-
             }
 
 
-        }
+
         return $this->redirectToRoute("app_admin_category_phase", ["idCategory"=>$idCategory,"idPhase"=>$idPhase]);
     }
 

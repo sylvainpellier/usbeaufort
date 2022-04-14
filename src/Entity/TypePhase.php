@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=TypePhaseRepository::class)
+ * @ORM\Table(name="usb_type_phase")
  */
 class TypePhase
 {
@@ -31,6 +32,11 @@ class TypePhase
      * @ORM\Column(type="string", length=30, nullable=true)
      */
     private $format;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $Detail;
 
     public function getId(): ?int
     {
@@ -69,6 +75,18 @@ class TypePhase
     public function setFormat(?string $format): self
     {
         $this->format = $format;
+
+        return $this;
+    }
+
+    public function getDetail(): ?string
+    {
+        return $this->Detail;
+    }
+
+    public function setDetail(?string $Detail): self
+    {
+        $this->Detail = $Detail;
 
         return $this;
     }
