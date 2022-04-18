@@ -193,7 +193,7 @@ class ApiController extends AbstractController
 
         $conn = $this->entityManager->getConnection();
 
-        $poules = $this->data($category,$phase,$conn, $groupe);
+        $poules = $this->data($category,$phase,$conn);
 
         return $this->json(json_decode($serializer->serialize($poules, 'json', ['groups' => 'matchs'])));
 
