@@ -13,25 +13,24 @@
 {% block javascript %}
 var tour1 = [];
 var tour2 = [];
-var tour3 = []; // trouver sollution 
+var tour3 = []; // trouver sollution
+var x =0;
+
+var TableauMatch =[];
+
+var titre = false;
+// faire une variable qui compte les match par phase et mettre tous les match dans un meme tableau ?
 
 function afficheTour(TableauEquipe){
     let test = false;
     let a = 0;
 
     TableauEquipe.forEach(function(e){
-        while(test == false){
-            let h3 = document.createElement("h3");
-            h3.innerText ="Tour "+TableauEquipe[a].Tour;
-            document.getElementById("data").appendChild(h3);
-            test = true;
-        }
-
         let tr = document.createElement("tr");
         document.getElementById("data").appendChild(tr);
 
         td = document.createElement("td");
-        td.innerText = TableauEquipe[a].TeamA.Name;
+        td.innerText = TableauEquipe.TeamA.Name;
         tr.appendChild(td);
 
         td = document.createElement("td");
@@ -39,11 +38,11 @@ function afficheTour(TableauEquipe){
         tr.appendChild(td);
 
         td = document.createElement("td");
-        td.innerText = TableauEquipe[a].TeamB.Name;
+        td.innerText = TableauEquipe.TeamB.Name;
         tr.appendChild(td);
 
         td = document.createElement("td");
-        td.innerText = TableauEquipe[a].ScoreA;
+        td.innerText = TableauEquipe.ScoreA;
         tr.appendChild(td);
 
         td = document.createElement("td");
@@ -51,10 +50,8 @@ function afficheTour(TableauEquipe){
         tr.appendChild(td);
 
         td = document.createElement("td");
-        td.innerText = TableauEquipe[a].ScoreB;
+        td.innerText = TableauEquipe.ScoreB;
         tr.appendChild(td);
-
-        a++;
     });
 }
 
@@ -68,7 +65,10 @@ fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id
 
             if(match.Tour === 1){
                 tour1.push(match); // faire un tab qui boucle
-coucou
+                TableauMatch.push(match);
+                let compteTour1 = 0;
+                
+
             }else if(match.Tour === 2){
                 tour2.push(match);
 
@@ -85,5 +85,9 @@ coucou
         
     });
 });
+
+setInterval(() => {
+    location.reload();
+}, 30000);
 
 {% endblock %}

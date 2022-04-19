@@ -7,7 +7,7 @@
     </div>
 
 
-    <div class="col-4"><table class="table table-bordered table-striped text-center" id="U11"><tr><th>U1</th></tr></table></div>
+    <div class="col-4"><table class="table table-bordered table-striped text-center" id="U11"><tr><th>U11</th></tr></table></div>
     <div class="col-4"><table class="table table-bordered table-striped text-center" id="U13"><tr><th>U13</th></tr></table></div>
     <div class="col-4">  <table class="table table-bordered table-striped text-center" id="U13F"><tr><th>U13F</th></tr></table></div>
 
@@ -16,23 +16,13 @@
 
 {% block javascript %}
 
-    fetch("//localhost:8000/api/teams").then((data)=>{
-        console.log(data);
-       data.json().then((jsonData)=>{
-           console.log(jsonData);
-           jsonData.forEach((team)=>{
-               console.log(team);
-               let tr = document.createElement("tr");
-               let td = document.createElement("td");
+    var url = "http://localhost:8000/teams";
+    fetch(url).then(function(resultas){
+        console.log(resultas);
 
-               let a = document.createElement("a");
-               a.innerText = team.Name;
-               a.setAttribute("href","/equipe/"+team.id);
-               td.appendChild(a);
-               tr.appendChild(td)
-               document.getElementById(team.Category.Name).appendChild(tr);
-           });
-       });
+        resultas.json().then(function(data){
+            console.log(data);
+        });
     });
 
 {% endblock %}
