@@ -1,0 +1,36 @@
+<div class="row small">
+    <div class="col">
+        {% if poule.positionsTo %}
+            <h5>Composition de la poule : </h5>
+            <ul>
+                {% if poule.positionsTo|length == 0 %}
+                    {% for team in poule.teams %}
+                        <li>{{ team.Name }}</li>
+                        {% endfor %}
+                {% endif %}
+            {% for key, position in poule.positionsTo %}
+                {% if phase.param == 24  and position.intParam is not null  %}
+                <li>3ème de poule ({{ position.intParam }}{% if position.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)</li>
+                {% else %}
+                <li>{{ position.Rang  }}{% if position.Rang == 1 %}er{% else %}ème{% endif %}  de la poule {{ position.pouleFrom.Name }}</li>
+                {% endif %}
+            {% endfor %}
+            </ul>{% endif %}
+    </div>
+
+    <div class="col">
+        {% if poule.positionsFrom %}     <h5>Phase suivante : </h5>
+            <ul>
+                {% for key,position in poule.positionsFrom %}
+                    {% if key == 2 and phase.param == 24   %}<li>les 4 meilleurs 3e sont qualifiés en principal et les deux moins bons 3e sont qualifiés en consolante</li>
+                {% else %}  <li>{{ position.Rang }}{% if position.Rang == 1 %}er{% else %}ème{% endif %}{% if position.pouleTo is not null %} de la poule ira dans la poule {{ position.pouleTo.Name }}{% endif %}</li>{% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+    </div>
+
+    <hr />
+
+
+</div>

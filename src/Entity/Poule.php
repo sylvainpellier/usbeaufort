@@ -41,9 +41,31 @@ class Poule
      */
     private $principal;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="Poule")
+     */
+    private $meets;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Position::class, mappedBy="PouleFrom", cascade={"persist"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private $positionsFrom;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Position::class, mappedBy="PouleTo", cascade={"persist"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private $positionsTo;
+
+
+
     public function __construct()
     {
         $this->Teams = new ArrayCollection();
+        $this->meets = new ArrayCollection();
+        $this->positionsFrom = new ArrayCollection();
+        $this->positionsTo = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -110,4 +132,101 @@ class Poule
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Meet>
+     */
+    public function getMeets(): Collection
+    {
+        return $this->meets;
+    }
+
+    public function addMeet(Meet $meet): self
+    {
+        if (!$this->meets->contains($meet)) {
+            $this->meets[] = $meet;
+            $meet->setPoule($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMeet(Meet $meet): self
+    {
+        if ($this->meets->removeElement($meet)) {
+            // set the owning side to null (unless already changed)
+            if ($meet->getPoule() === $this) {
+                $meet->setPoule(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString() : string
+    {
+        return $this->getName();
+    }
+
+    /**
+     * @return Collection<int, Position>
+     */
+    public function getPositionsFrom(): Collection
+    {
+        return $this->positionsFrom;
+    }
+
+    public function addPositionFrom(Position $position): self
+    {
+        if (!$this->positionsFrom->contains($position)) {
+            $this->positionsFrom[] = $position;
+            $position->setPouleFrom($this);
+        }
+
+        return $this;
+    }
+
+    public function removePositionFrom(Position $position): self
+    {
+        if ($this->positionsFrom->removeElement($position)) {
+            // set the owning side to null (unless already changed)
+            if ($position->getPouleFrom() === $this) {
+                $position->setPouleFrom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Position>
+     */
+    public function getPositionsTo(): Collection
+    {
+        return $this->positionsTo;
+    }
+
+    public function addPositionsTo(Position $positionsTo): self
+    {
+        if (!$this->positionsTo->contains($positionsTo)) {
+            $this->positionsTo[] = $positionsTo;
+            $positionsTo->setPouleTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removePositionsTo(Position $positionsTo): self
+    {
+        if ($this->positionsTo->removeElement($positionsTo)) {
+            // set the owning side to null (unless already changed)
+            if ($positionsTo->getPouleTo() === $this) {
+                $positionsTo->setPouleTo(null);
+            }
+        }
+
+        return $this;
+    }
+
+
 }

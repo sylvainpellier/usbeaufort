@@ -18,7 +18,7 @@
 
     <hr class="mt-5">
 
-    <h4>Équipes</h4>
+    <h4>{{ category.teams|length }} équipes</h4>
 
     {% for team in category.teams  %}
     <a class="btn btn-primary btn-lg ml-4 mb-3" href="">{{ team.Name }}</a>
@@ -35,6 +35,7 @@
         <div class="col"><a class="btn btn-secondary w-100 m-2" href="">Ajouter une phase</a></div>
 
 
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_generate", { idCategory:category.id }) }}">Générer les matchs des différentes phases</a></div>
 
     </div>
 

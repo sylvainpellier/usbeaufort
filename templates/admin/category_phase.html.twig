@@ -8,62 +8,69 @@
 
         <h3 class="">Catégorie {{ category.Name }} - Phase : {{ phase.Name }}</h3>
 
-        {% if classement|length > 0 %}
-            <hr class="">
-
-            <h4>Classement</h4>
-
-        <hr/>
 
 
-        {% for key,groupe in classement %}
 
-        <h5 class="mt-4">Groupe {{ key }} <a href="{{ path("app_admin_category_phase_groupe", {groupe:key,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs du groupe {{ key }}</a></h5>
-<hr >
-             <table class="table table-striped table-bordered">
-                 <tr>
-                     <th>Équipe</th>
-                     <th>Points</th>
-                     <th>Pour</th>
-                     <th>Contre</th>
-                     <th>Victoire</th>
-                     <th>Défaite</th>
-                     <th>Nul</th>
+{% for poule in phase.poules %}
 
-                 </tr>
-            {% for team in groupe %}
-
-                <tr>
-                    <td>{{ team.Name }}</td>
-                    <td>{{ team.pts }}</td>
-                    <td>{{ team.but_pour }}</td>
-                    <td>{{ team.but_contre }}</td>
-                    <td>{{ team.victoire }}</td>
-                    <td>{{ team.defaite }}</td>
-                    <td>{{ team.nul }}</td>
-                </tr>
+    <h5 class="mt-4">Poule {{ poule.Name }} <a href="{{ path("app_admin_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de la poule {{ poule.Name }}</a></h5>
+    <hr >
 
 
-            {% endfor %}
-            </table>
+    {% if classement[poule.Id] is defined %}
 
-            <hr class="mt-5">
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th>Équipe</th>
+            <th>Points</th>
+            <th>Pour</th>
+            <th>Contre</th>
+            <th>Victoire</th>
+            <th>Défaite</th>
+            <th>Nul</th>
+
+        </tr>
+        {% for team in classement[poule.Id] %}
+
+            <tr>
+                <td>{{ team.Name }}</td>
+                <td>{{ team.pts }}</td>
+                <td>{{ team.but_pour }}</td>
+                <td>{{ team.but_contre }}</td>
+                <td>{{ team.victoire }}</td>
+                <td>{{ team.defaite }}</td>
+                <td>{{ team.nul }}</td>
+            </tr>
 
 
         {% endfor %}
 
-            {% else %}
 
-            <div class="alert alert-info mb-5">Aucun classement pour l'instant car aucun match n'a été joué</div>
+    </table>
 
-        {% endif %}
+    {% else %}
+
+        {% for team in poule.teams %}
+            {{ team }}
+        {% endfor %}
+
+    {% endif %}
+
+        {% include "admin/block/positions.html.twig" %}
+
+
+        {% endfor %}
+
+
+
 
         <hr>
         <h4>Matchs</h4>
 <hr >
 
         {% for groupe_array in groupes %}
-                    {% set groupe = groupe_array["Poule"] %}
+
+                    {% set groupe = groupe_array["poule"] %}
 
             <h5>Matchs de la poule {{ groupe }}</h5>
             <hr />
@@ -77,8 +84,7 @@
 
         <div class="row mt-5">
 
-            <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs réels de la phase</a></div>
-            <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate_fictif",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs fictifs de la phase</a></div>
+            <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs de la phase suivante</a></div>
             <div class="col"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>
 
 

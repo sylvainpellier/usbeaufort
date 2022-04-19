@@ -38,8 +38,9 @@ class Team
     private $Category;
 
     /**
-     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamA")
+     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamA",cascade={"persist"})
      * @Groups({"team"})
+     *
      */
     private $meets;
 
@@ -47,6 +48,11 @@ class Team
      * @ORM\ManyToMany(targetEntity=Poule::class, mappedBy="Teams")
      */
     private $poules;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $Rang;
 
 
 
@@ -140,6 +146,23 @@ class Team
         }
 
         return $this;
+    }
+
+    public function getRang(): ?int
+    {
+        return $this->Rang;
+    }
+
+    public function setRang(?int $Rang): self
+    {
+        $this->Rang = $Rang;
+
+        return $this;
+    }
+
+    public function __toString() : string
+    {
+        return $this->getName();
     }
 
 

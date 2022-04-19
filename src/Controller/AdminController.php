@@ -3,10 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Meet;
+use App\Entity\Position;
+use App\Entity\Poule;
 use App\Entity\Team;
 use App\Repository\CategoryRepository;
 use App\Repository\MeetRepository;
 use App\Repository\PhaseRepository;
+use App\Repository\PositionRepository;
+use App\Repository\PouleRepository;
 use App\Repository\TeamRepository;
 use function array_key_exists;
 use function array_push;
@@ -14,6 +18,7 @@ use function array_splice;
 use function d;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use function shuffle;
 use function str_contains;
 use function str_replace;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -106,338 +111,126 @@ class AdminController extends AbstractController
             $entityManager->flush();
         }
 
+
+
         return $this->redirectToRoute("app_admin_category_phase", ["idCategory"=>$idCategory,"idPhase"=>$idPhase]);
 
 
     }
 
-    /**
-     * @Route("/admin/category/{idCategory}/phase/{idPhase}/generate_fictif", name="app_admin_category_phase_generate_fictif")
-     */
-    public function generatePhaseFictive(string $idCategory, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
-    {
-
-        $phase = $phaseRepository->find($idPhase);
-        $matchs = $meetRepository->findBy(["Phase"=>$phase]);
-
-
-        $teams = $teamRepository->findBy(["Category"=>$idCategory]);
-        $teamByPoule = $phase->getType()->getTeamByPoule();
-
-        //mode normal
-        if($phase->getType()->getFormat() === "normal")
-        {
-            //shuffle($teams);
-
-            $poules = [];
-            $alphas = range('A', 'Z');
-            $pouleC = 0;
-            $count=1;
-            foreach ($teams as $team)
-            {
-
-                if($count>$teamByPoule) {
-                    $pouleC++;
-                    $count = 1;
-                }
-                if(!array_key_exists($alphas[$pouleC],$poules)) {
-                    $poules[$alphas[$pouleC]] = [];
-                }
-                $poules[$alphas[$pouleC]][] = $team;
-                $count++;
-
-            }
-
-
-
-        } else if($phase->getType()->getFormat() === "principal-consolante") //Mode principal-consolante
-        {
-            $equipes_principales = [];
-            $equipes_consolantes = [];
-
-            $poules = [];
-
-            $c = new ApiController($entityManager);
-            $resultats = $c->data($idCategory,$phase->getPhasePrecente()->getId(),$entityManager->getConnection());
-
-            $poulesTemporaire = [];
-            $poulesTemporaire["equipes_principales"] = [];
-            $poulesTemporaire["equipes_consolantes"] = [];
-            foreach($resultats as $poule)
-            {
-                foreach($poule as $key=>$t)
-                {
-                    if($key <= 1)
-                    {
-                        $poulesTemporaire["equipes_principales"][] = $t;
-                    } else
-                    {
-                        $poulesTemporaire["equipes_consolantes"][] = $t;
-                    }
-                }
-            }
-
-
-            $alphas = range('A', 'Z');
-            $pouleC = 0;
-            $c=0;
-            foreach($poulesTemporaire as $nameT =>  $pouleT)
-            {
-                foreach ($pouleT as $team)
-                {
-
-                    if($c>=$teamByPoule) {
-                        $pouleC++;
-                        $c = 0;
-                    }
-                    $name = $alphas[$pouleC] . " " . ( $nameT === "equipes_principales" ? "Principale" : "Consolante" );
-                    if(!array_key_exists($name,$poules)) {
-                        $poules[$name] = [];
-                    }
-                    $poules[$name][] = $teamRepository->find($team["id"]);
-                    $c++;
-
-                }
-            }
-
-
-
-
-        }
-
-
-
-
-        foreach($poules as $keyPoule => $poule) {
-
-            $teamsPoule = $poule;
-
-            $meets = [];
-
-            for($i=0;$i<(($teamByPoule- 1) * 2); $i++) {
-
-                $match = new Meet();
-                $match->setPhase($phase);
-                $match->setPoule($keyPoule);
-                $match->setPrincipal( str_contains($keyPoule,"Principale") );
-                $match->setTour(1);
-                $meets[] = $match;
-
-                $entityManager->persist($match);
-            }
-
-
-            $entityManager->flush();
-
-            $tours = [];
-            for ($i = 1; $i <= count($teamsPoule) - 1; $i++) {
-                $tours[$i] = [];
-            }
-
-            $nbMatch = ($teamByPoule - 1) * 2;
-            $nbMatchParTour = $nbMatch / count($tours);
-
-            $i=1;
-            $c=1;
-            foreach ($meets as $key_match => &$match) {
-                    $match->setTour($i);
-                    $c++;
-                    if($c>$nbMatchParTour)
-                    {
-                        $c=1;
-                        $i++;
-                    }
-                    $entityManager->persist($match);
-            }
-
-            $entityManager->flush();
-
-
-        }
-        return $this->redirectToRoute("app_admin_category_phase", ["idCategory"=>$idCategory,"idPhase"=>$idPhase]);
-
-
-    }
 
 
 
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}/generate", name="app_admin_category_phase_generate")
      */
-    public function generatePhase(string $idCategory, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function generatePhase(string $idCategory, PouleRepository $pouleRepository, PositionRepository $positionRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $phase = $phaseRepository->find($idPhase);
-        $matchs = $meetRepository->findBy(["Phase"=>$phase]);
-        $teams = $teamRepository->findBy(["Category"=>$idCategory]);
+        $phase = $phase->getPhaseSuivante();
 
-        $modeUpdate = (count($matchs) > 0);
 
-        $teamByPoule = $phase->getType()->getTeamByPoule();
-
-        //mode normal
-        if($phase->getType()->getFormat() === "normal")
+        if($phase->getType()->getFormat() === "principal-consolante" || $phase->getType()->getFormat()=== "demifinalesfinales")
         {
-            //shuffle($teams);
 
-            $poules = [];
-            $alphas = range('A', 'Z');
-            $pouleC = 0;
-            $count=1;
-            foreach ($teams as $team)
-            {
+        $c = new ApiController($entityManager);
+        $data = $c->data($idCategory,$phase->getPhasePrecedente()->getId(), $conn = $entityManager->getConnection());
 
-                if($count>$teamByPoule) {
-                    $pouleC++;
-                    $count = 1;
+        if($phase->getParam() == 24) {
+            foreach ($data as $keyGroupe => $teamsGroupe) {
+                foreach ($teamsGroupe as $key => $team) {
+
+                    $wait = [];
+                    if ($team["rang"] == 3 && $phase->getParam() == 24) {
+                        $wait[$key] = $team;
+                    }
                 }
-                if(!array_key_exists($alphas[$pouleC],$poules)) {
-                    $poules[$alphas[$pouleC]] = [];
-                }
-                $poules[$alphas[$pouleC]][] = $team;
-                $count++;
 
             }
 
+            //on tri les troisièmes
+            usort($wait, function ($a,$b) {
 
+                //PRENDRE EN COMPTE LES ÉGALITÉS
+                //DIVERSES VOIR LE RELGEMENT
+                //TODO : classement
+                return $a['pts']<$b['pts'];
+            });
 
-        } else if($phase->getType()->getFormat() === "principal-consolante") //Mode principal-consolante
+            $rang = 1;
+            foreach($wait as $key => $twait)
+            {
+                if($rang <= 4)
+                { $r= 3; } else { $r = 4; }
+                    foreach ($data as $keyGroupe => $teamsGroupe) {
+                        foreach ($teamsGroupe as $keyG => $team) {
+                            if($team["id"] === $twait["id"])
+                            {
+                                $data[$keyGroupe][$keyG]["rang"] = $r;
+                            }
+                        }
+                    }
+
+                $rang++;
+            }
+        }
+
+        dump($data);
+        die();
+
+        foreach($data as $keyGroupe => $teamsGroupe)
         {
-            $equipes_principales = [];
-            $equipes_consolantes = [];
-
-            $c = new ApiController($entityManager);
-            $resultats = $c->data($idCategory,$phase->getPhasePrecente()->getId(),$entityManager->getConnection());
-
-            $poulesTemporaire = [];
-            $poulesTemporaire["equipes_principales"] = [];
-            $poulesTemporaire["equipes_consolantes"] = [];
-            foreach($resultats as $poule)
+            foreach ($teamsGroupe as $team)
             {
-                foreach($poule as $key=>$t)
-                {
-                    if($key <= 1)
-                    {
-                        $poulesTemporaire["equipes_principales"][] = $t;
-                    } else
-                    {
-                        $poulesTemporaire["equipes_consolantes"][] = $t;
-                    }
-                }
-            }
+                $t = $teamRepository->find($team["id"]);
 
-            $poules = [];
-            $alphas = range('A', 'Z');
-            $pouleC = 0;
-            $c=0;
-            foreach($poulesTemporaire as $nameT =>  $pouleT)
-            {
-                foreach ($pouleT as $team)
-                {
+                $position = $positionRepository->findOneBy(["PouleFrom"=> $team["poule"], "Rang"=> $team["rang"]]);
 
-                    if($c>=$teamByPoule) {
-                        $pouleC++;
-                        $c = 0;
+                if($position)
+                {
+                    $t->addPoule( $pouleRepository->find( $position->getPouleTo()) );
+                    $entityManager->persist($position);
+                    $entityManager->persist($t);
+                    $entityManager->flush();
+
+                    $meets = $meetRepository->findBy(["PositionA"=>$position]);
+                    foreach ($meets as $meet)
+                    {
+                        $meet->setTeamA($t);
+                        $entityManager->persist($meet);
                     }
-                    $name = $alphas[$pouleC] . " " . ( $nameT === "equipes_principales" ? "Principale" : "Consolante" );
-                    if(!array_key_exists($name,$poules)) {
-                        $poules[$name] = [];
+
+                    $meets = $meetRepository->findBy(["PositionB"=>$position]);
+                    foreach ($meets as $meet)
+                    {
+                        $meet->setTeamB($t);
+                        $entityManager->persist($meet);
                     }
-                    $poules[$name][] = $teamRepository->find($team["id"]);
-                    $c++;
+                    $entityManager->flush();
 
                 }
             }
-
-
-
-
         }
 
 
 
 
-
-            foreach ($poules as $keyPoule => $poule) {
-
-                $teamsPoule = $poule;
-
-                $meets = [];
-                foreach ($teamsPoule as $teamA) {
-
-                    foreach ($teamsPoule as $teamB) {
-
-                        $find = false;
-
-                        foreach ($meets as $meet2) {
-                            if (($meet2->getTeamA() === $teamA && $meet2->getTeamB() === $teamB) OR ($meet2->getTeamA() === $teamB && $meet2->getTeamB() === $teamA)) {
-                                $find = true;
-                            }
-                        }
-
-                        if ($teamA !== $teamB && !$find) {
-
-                            if (!$modeUpdate) {
-
-                                $match = new Meet();
-                                $match->setTeamA($teamA);
-                                $match->setTeamB($teamB);
-                                $match->setPhase($phase);
-                                $match->setPoule($keyPoule);
-                                $match->setPrincipal(str_contains($keyPoule, "Principale"));
-                                $meets[] = $match;
-                                $entityManager->persist($match);
-                            } else {
-                                //TODO: vérifier principale et consolante
-                                //TODO : vérifier les tours propres
-                                $matchsPoule = $meetRepository->findAllCriterias(null, $idPhase, $keyPoule);
-                                foreach ($matchsPoule as &$matchP) {
-                                    if (!$matchP->getTeamA() && !$matchP->getTeamB()) {
-                                        $matchP->setTeamA($teamA);
-                                        $matchP->setTeamB($teamB);
-                                        $matchP->setTour(null);
-                                        $meets[] = $matchP;
-
-                                        $entityManager->persist($matchP);
-                                        $entityManager->flush();
-                                        break;
-                                    }
-                                }
-
-                            }
-                        }
-                    }
+            $entityManager->flush();
 
 
 
-                $entityManager->flush();
-                $tours = [];
-                for ($i = 1; $i <= count($teamsPoule) - 1; $i++) {
-                    $tours[$i] = [];
-                }
 
-
-                foreach ($meets as $key_match => &$match) {
-
-                    $tourToAdd = $this->findCorrectTour($tours, $match->getTeamA(), $match->getTeamB());
-
-
-                    $tours[$tourToAdd][] = $match;
-                    $match->setTour((int)$tourToAdd);
-                    $entityManager->persist($match);
-                    $entityManager->flush();
-
-
-                }
-            }
-            }
-
-
-
-        return $this->redirectToRoute("app_admin_category_phase", ["idCategory"=>$idCategory,"idPhase"=>$idPhase]);
     }
 
-    public function findCorrectTour($tours, $teamA, $teamB)
+
+
+
+
+        return $this->redirectToRoute("app_admin_category_phase", ["idCategory"=>$idCategory,"idPhase"=>$phase->getId()]);
+    }
+
+    public function findCorrectTour(&$tours, $teamA, $teamB)
     {
 
         foreach($tours as $key => &$tour)
@@ -448,7 +241,7 @@ class AdminController extends AbstractController
             } else {
                 foreach ($tour as $matchDansTour) {
 
-                    if ($matchDansTour->getTeamA() !== $teamA && $matchDansTour->getTeamA() !== $teamB && $matchDansTour->getTeamB() !== $teamB && $matchDansTour->getTeamB() !== $teamA) {
+                    if ($matchDansTour["a"] !== $teamA && $matchDansTour["b"] !== $teamB && $matchDansTour["a"] !== $teamB && $matchDansTour["b"] !== $teamA) {
                         return $key;
                     } else
                     {
@@ -463,7 +256,7 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}/groupe/{groupe}", name="app_admin_category_phase_groupe")
      */
-    public function categoryphasgroupe(string $idCategory, string $idPhase, string $groupe, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function categoryphasgroupe(string $idCategory, PouleRepository $pouleRepository, string $idPhase, string $groupe, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $c = new ApiController($entityManager);
@@ -472,8 +265,462 @@ class AdminController extends AbstractController
             'category' => $categoryRepository->find($idCategory),
             'phase' => $phaseRepository->find($idPhase),
             'groupe' => $groupe,
+            'poule' => $pouleRepository->find($groupe),
             'categories' => $categoryRepository->findAll(),
             'classement' =>$c->data($idCategory,$idPhase, $conn = $entityManager->getConnection(), $groupe)
         ]);
     }
+
+    /**
+     * @Route("/admin/category/{idCategory}/generate", name="app_admin_category_generate")
+     */
+    public function generateFictive(string $idCategory, PositionRepository $positionRepository, PouleRepository $pouleRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    {
+
+        $alphas = range('A', 'Z');
+        $category = $categoryRepository->find($idCategory);
+        $phases = $category->getPhases();
+        $teams = $teamRepository->findBy(["Category"=>$category], ["Rang"=>"ASC"]);
+
+        foreach ($phases as $phase)
+        {
+            //On supprime les matchs existant
+            $matchs = $meetRepository->findBy(["Phase"=>$phase]);
+
+            //On supprime tous les matchs de la phase
+            foreach ($matchs as $match)
+            {
+                $entityManager->remove($match);
+                $entityManager->flush();
+            }
+
+            foreach($phase->getPoules() as $poule)
+            {
+                $entityManager->remove($poule);
+                $entityManager->flush();
+            }
+
+            $poules = [];
+            $nbTeamByPoule = $phase->getType()->getTeamByPoule();
+            $count3=1;
+
+            if($phase->getType()->getFormat() === "normal")
+            {
+                for($i = 0; $i <= (count($teams) / $nbTeamByPoule) - 1 ; $i++)
+                {
+                    $poule = new Poule();
+                    $poule->setName($alphas[$i]);
+                    $poule->setPhase($phase);
+                    $entityManager->persist($poule);
+                    $poules[] = $poule;
+
+                        for($rang=1;$rang<=$nbTeamByPoule;$rang++)
+                        {
+                                $position = new Position();
+                                $position->setPouleFrom($poule);
+                                $position->setRang($rang);
+                                if($phase->getParam() == 24 && $rang === 3)
+                                {
+                                    $position->setIntParam( $count3 );
+                                    $count3++;
+                                }
+                                $position->setPhaseFrom($phase);
+                                $entityManager->persist($position);
+                                $entityManager->persist($poule);
+                                $entityManager->flush();
+
+
+                        }
+                    }
+
+
+                $entityManager->flush();
+
+
+                //premier parcours pour les équipes classés
+                foreach ($teams as $team)
+                {
+                    if($team->getRang())
+                    {
+                        foreach($poules as $poule)
+                        {
+                            $find = false;
+                            foreach ($poule->getTeams() as $t)
+                            {
+                                if($t->getRang() === $team->getRang())
+                                {
+                                    $find = true;
+                                }
+                            }
+                            if(!$find)
+                            {
+                                $poule->addTeam($team);
+                                break;
+                            }
+
+                        }
+                        $entityManager->persist($team);
+                        $entityManager->flush();
+                    }
+                }
+
+
+                //deuxième parcour pour les équipes non classés
+                foreach ($teams as $team)
+                {
+
+                    if(!$team->getRang()) {
+                        //random
+                        foreach ($poules as $poule)
+                        {
+
+                            if( count($poule->getTeams()) < $nbTeamByPoule)
+                            {
+                                $poule->addTeam($team);
+                                $entityManager->persist($poule);
+                                $entityManager->flush();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+               $this->genereMatch($poules,$phase,$entityManager);
+
+            }
+            else if($phase->getType()->getFormat() === "principal-consolante") {
+
+                for($i = 0; $i <= (count($teams) / $nbTeamByPoule) - 1 ; $i++)
+                {
+
+                    $poule = new Poule();
+                    $poule->setPhase($phase);
+
+
+                    if( ($phase->getParam() == 32 && $i< (count($teams) / $nbTeamByPoule) / 2) || ($phase->getParam() == 24 && $i < 4))
+                    {
+                        $poule->setPrincipal(true);
+                        $poule->setName($alphas[$i]. " - Principale");
+
+                    } else
+                    {
+                        $poule->setPrincipal(false);
+                        $poule->setName($alphas[$i]." - Consolante");
+                    }
+
+
+                    for($rang=1;$rang<=4;$rang++) {
+                        $position = new Position();
+                        $position->setPouleFrom($poule);
+                        $position->setPhaseFrom($phase);
+                        $position->setPrincipal($i< (count($teams) / $nbTeamByPoule) / 2);
+                        $position->setRang($rang);
+                        $entityManager->persist($position);
+                   }
+
+                   $entityManager->flush();
+
+
+                    $entityManager->persist($poule);
+                    $entityManager->flush();
+                    $poules[] = $poule;
+                }
+
+                while(count($positionRepository->findBy([ "PhaseFrom"=>$phase->getPhasePrecedente(), "PouleTo" => null])) > 0)
+                {
+                    $conn = $entityManager->getConnection();
+                    shuffle($poules);
+                    foreach ($poules as $poule) {
+
+                        for ($rang = 1; $rang <= $nbTeamByPoule; $rang++) {
+
+                            //if ($phase->getParam() == 32 || ($phase->getParam() == 24 && $rang != 3)) {
+                            $parameters = [];
+                                $sql = "SELECT * FROM usb_positions p WHERE p.phase_from_id = :phase AND 1 = 1 ";
+                                $parameters["phase"] = $phase->getPhasePrecedente()->getId();
+                                if ($phase->getParam() == 32)
+                                {
+                                    $sql .= " AND p.poule_from_id NOT IN ( SELECT p2.poule_from_id FROM usb_positions p2 WHERE p2.poule_to_id = :poule ) ";
+                                    $sql .= " AND p.rang != :rang ";
+                                    $parameters["rang"] = $rang;
+                                    $parameters["poule"] = $poule->getId();
+
+                                }
+                                if ($phase->getParam() == 32)
+                                {
+                                    $sql .= ($poule->getPrincipal()) ? " AND p.rang <= 2" : " AND p.rang > 2";
+                                } else
+                                {
+                                    $sql .= ($poule->getPrincipal()) ? " AND ( p.rang <= 2 OR ( p.rang = 3 AND int_param <= 4)) " : " AND p.rang >= 4 OR (p.rang = 3 AND int_param >= 5)  ";
+                                }
+                                $sql .= " AND p.poule_to_id IS  NULL";
+
+
+                                $stmt = $conn->prepare($sql);
+                                $resultSet = $stmt->executeQuery($parameters);
+                                $positionsPossibles = $resultSet->fetchAll();
+
+                                shuffle($positionsPossibles);
+                                $find = false;
+
+                                foreach ($positionsPossibles as $positionTo) {
+                                    if (count($positionRepository->findBy(["PouleFrom" => $positionTo["poule_from_id"], "PouleTo" => $poule])) === 0) {
+                                        if (count($positionRepository->check($poule->getId(), $rang)) <= 1) {
+                                            if (count($positionRepository->check($poule->getId())) < 4) {
+                                                $find = $positionTo;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                                if ($find) {
+
+                                    $poule->addPositionsTo($positionRepository->find($find["id"]));
+                                    $entityManager->persist($poule);
+                                    $entityManager->flush();
+                                }
+
+
+
+
+
+                        }
+                    }
+
+
+                    }
+
+//                    $perfect = true;
+//                    while($perfect)
+//                    {
+//
+//                        $perfect = true;
+//                        foreach ($poules as $poule) {
+//                            $positions = $positionRepository->findBy(["PouleTo" => $poule]);
+//                            if(count($positions) !== $nbTeamByPoule)
+//                            {
+//                                $perfect = false;
+//                                if(count($positions) > $nbTeamByPoule)
+//                                {
+//                                    $positions[0]->setPouleTo(null);
+//                                } else {
+//
+//                                    $positionsSearch = $positionRepository->findBy(["PhaseFrom" => $phase->getId(), "Principal"=>$poule->getPrincipal() ]);
+//
+//                                    if(count($positionsSearch) > 0)
+//                                    {
+//                                        $positionsSearch[0]->setPouleTo($poule);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+
+
+                foreach ($poules as $poule) {
+
+                    $tours = [];
+                    for ($i = 1; $i <= $nbTeamByPoule - 1; $i++) {
+                        $tours[$i] = [];
+                    }
+
+                    $meetsPoule = [];
+                    $positionsA = $positionRepository->findBy(["PouleTo" => $poule]);
+
+
+                    foreach ($positionsA as $pA) {
+                        $positionsB = $positionRepository->findBy(["PouleTo" => $poule]);
+
+                        foreach ($positionsB as $pB) {
+                            $find = false;
+
+
+                            foreach ($meetsPoule as $meet2) {
+                                if (($meet2->getPositionA() === $pA && $meet2->getPositionB() === $pB) || ($meet2->getPositionA() === $pB && $meet2->getPositionB() === $pA)) {
+                                    $find = true;
+
+                                }
+                            }
+
+                            if ($pA !== $pB && !$find) {
+
+                                $match = new Meet();
+                                $match->setPoule($poule);
+                                $match->setPositionA($pA);
+                                $match->setPositionB($pB);
+                                $match->setPrincipal($poule->getPrincipal());
+                                $match->setPhase($phase);
+                                $tour = $this->findCorrectTour($tours, $pA,$pB);
+                                $match->setTour($tour);
+                                $entityManager->persist($match);
+                                $entityManager->flush();
+                                $meetsPoule[] = $match;
+                                $tours[$tour][] = ["a"=>$pA,"b"=>$pB];
+                            }
+                        }
+                    }
+                }
+
+
+
+
+
+
+
+
+                }
+            else if($phase->getType()->getFormat() === "demifinalesfinales") {
+
+
+                $poules = [];
+                $x = 1;
+                $principal = true;
+                for($i = 0; $i <= (count($teams) / $nbTeamByPoule) -1 ; $i++)
+                {
+                    if($i===4) { $x = 1; $principal = false;}
+                    $poule = new Poule();
+                    $poule->setPhase($phase);
+                    $poule->setPrincipal($principal);
+                    $str = ($x<2)?"er":"ème";
+                    $str2 = ($principal) ? "principales" : "consolantes";
+                    $poule->setName($alphas[$i]. " - ". $x."".$str." des poules $str2 de phase 2");
+
+                    $entityManager->persist($poule);
+                    $poules[] = $poule;
+
+                    $positionsPrecedentes = $positionRepository->findBy(["PouleTo"=>null,"Rang"=>$x,"Principal"=>$poule->getPrincipal() ,"PhaseFrom"=>$phase->getPhasePrecedente()]);
+
+                    foreach ($positionsPrecedentes as $pp)
+                    {
+                        $pp->setPouleTo($poule);
+                        $entityManager->persist($pp);
+                        $entityManager->flush();
+                    }
+
+                    $x++;
+
+
+                }
+                $entityManager->flush();
+
+                //on créé les matchs
+                foreach ($poules as $poule) {
+                    $positions = $positionRepository->findBy(["PouleTo" => $poule]);
+
+                    if(count($positions) === 4) {
+                        shuffle($positions);
+
+                        $match = new Meet();
+                        $match->setPoule($poule);
+                        $match->setPositionA($positions[0]);
+                        $match->setPositionB($positions[1]);
+                        $match->setName("Demie Finale - 1");
+                        $match->setPrincipal($poule->getPrincipal());
+                        $match->setPhase($phase);
+                        $entityManager->persist($match);
+                        $entityManager->flush();
+
+                        $match = new Meet();
+                        $match->setPoule($poule);
+                        $match->setPositionA($positions[2]);
+                        $match->setPositionB($positions[3]);
+                        $match->setName("Demie Finale - 2");
+                        $match->setPrincipal($poule->getPrincipal());
+                        $match->setPhase($phase);
+                        $entityManager->persist($match);
+                        $entityManager->flush();
+
+                        $match = new Meet();
+                        $match->setPoule($poule);
+                        $match->setName("Finale des perdants");
+                        $match->setPrincipal($poule->getPrincipal());
+                        $match->setPhase($phase);
+                        $entityManager->persist($match);
+                        $entityManager->flush();
+
+                        $match = new Meet();
+                        $match->setPoule($poule);
+                        $match->setName("Finale des vainqueurs");
+                        $match->setPrincipal($poule->getPrincipal());
+                        $match->setPhase($phase);
+                        $entityManager->persist($match);
+                        $entityManager->flush();
+
+
+                    }
+
+
+
+                            }
+
+                            $entityManager->flush();
+
+                }
+
+
+
+
+
+
+
+            }
+
+
+
+            $entityManager->flush();
+
+        return $this->redirectToRoute("app_admin_category", ["id"=>$idCategory]);
+
+
+    }
+
+    public function genereMatch($poules, $phase, $entityManager)
+    {
+         //on génère les matchs
+                foreach ($poules as $poule)
+                {
+                    $tours = [];
+                    $meets = [];
+
+                    for ($i = 1; $i <= count($poule->getTeams()) - 1; $i++) {
+                        $tours[$i] = [];
+                    }
+
+
+                    foreach ($poule->getTeams() as $teamA)
+                    {
+                        foreach ($poule->getTeams() as $teamB)
+                        {
+                            $find = false;
+
+                            foreach ($meets as $meet2) {
+                                if (($meet2->getTeamA() === $teamA && $meet2->getTeamB() === $teamB) OR ($meet2->getTeamA() === $teamB && $meet2->getTeamB() === $teamA)) {
+                                    $find = true;
+                                }
+                            }
+
+                            if ($teamA !== $teamB && !$find) {
+                                $match = new Meet();
+                                $match->setTeamA($teamA);
+                                $match->setTeamB($teamB);
+                                $match->setPhase($phase);
+                                $match->setPoule($poule);
+
+                                $tour = $this->findCorrectTour($tours, $teamA, $teamB);
+                                $match->setTour($tour);
+
+                                $entityManager->persist($match);
+                                $entityManager->flush();
+                                $meets[] = $match;
+                                $tours[$tour][] = ["a"=>$teamA,"b"=>$teamB];
+                            }
+
+                        }
+                    }
+                }
+    }
+
 }
