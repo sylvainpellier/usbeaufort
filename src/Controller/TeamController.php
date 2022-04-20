@@ -42,7 +42,7 @@ class TeamController extends OverrideApiController
      */
     public function index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
-       return $this->send($teamRepository->findAll(),["team","category"],$serializer);
+       return $this->send($serializer->serialize($teamRepository->findAll(),'json',['groups' => ['team','category']]));
     }
 
     /**
@@ -50,7 +50,7 @@ class TeamController extends OverrideApiController
      */
     public function show(string $idTeam, TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
-        return $this->send($teamRepository->find($idTeam),["team"],$serializer);
+        return $this->send($serializer->serialize($teamRepository->find($idTeam),'json',['groups' => ['team']]));
     }
 
 
@@ -59,7 +59,7 @@ class TeamController extends OverrideApiController
      */
     public function show_match(string $idTeam, MeetRepository $meetRepository, TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
-        return $this->send($meetRepository->findByTeam($idTeam),["matchs"],$serializer);
+        return $this->send($serializer->serialize($meetRepository->findByTeam($idTeam),'json',['groups' => ['matchs']]));
     }
 
 

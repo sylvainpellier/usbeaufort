@@ -41,6 +41,6 @@ class FieldController extends OverrideApiController
      */
     public function index(FieldRepository $fieldRepository, SerializerInterface $serializer): Response
     {
-       return $this->send($fieldRepository->findAll(),["field"],$serializer);
+       return $this->send($serializer->serialize($fieldRepository->findAll(),'json',['groups' => ['field']]));
     }
 }

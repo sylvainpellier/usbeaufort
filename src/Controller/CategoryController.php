@@ -53,6 +53,6 @@ class CategoryController extends OverrideApiController
      */
     public function index(CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {
-       return $this->send($categoryRepository->findAll(),["category"],$serializer);
+       return $this->send($serializer->serialize($categoryRepository->findAll(),'json',['groups' => ['category']]));
     }
 }

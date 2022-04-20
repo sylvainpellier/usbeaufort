@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Meet;
 use App\Entity\Team;
 use App\Repository\MeetRepository;
+use App\Repository\PhaseRepository;
 use App\Repository\TeamRepository;
 use function array_key_exists;
 use function array_push;
@@ -21,7 +22,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use function usort;
 use function var_dump;
 
-class ApiController extends AbstractController
+class ApiController extends OverrideApiController
 {
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -65,7 +66,7 @@ class ApiController extends AbstractController
 
             $stmt = $conn->prepare($sql);
 
-            $parameters = ['phase' => $phase, 'team_id' => $team["id"]];
+            $parameters = ['phase' => $phase->getId(), 'team_id' => $team["id"]];
 
             if($groupe) { $parameters["groupe"] = $groupe; }
 
@@ -81,7 +82,7 @@ class ApiController extends AbstractController
         
                        ';
 
-                $parameters = ['phase' => $phase];
+                $parameters = ['phase' => $phase->getId()];
 
                 $stmt = $conn->prepare($sql);
                 $resultSet = $stmt->executeQuery($parameters);
@@ -197,7 +198,7 @@ class ApiController extends AbstractController
     /**
      * @Route("/api/data/meets", name="app_api_meets")
      */
-    public function index(Request $request, MeetRepository $meetRepository,  SerializerInterface $serializer): Response
+    public function index(Request $request, MeetRepository $meetRepository, PhaseRepository $phaseRepository, SerializerInterface $serializer): Response
     {
 
         $category = $request->get("category");
@@ -213,7 +214,8 @@ class ApiController extends AbstractController
        }
 
 
-        return $this->json(json_decode($serializer->serialize($matchs, 'json', ['groups' => 'matchs'])));
+
+        return $this->send($serializer->serialize($matchs, 'json', ['groups' => 'matchs']),$phaseRepository->find($phase)->getType());
 
     }
 
@@ -221,7 +223,7 @@ class ApiController extends AbstractController
     /**
      * @Route("/api/data/phase", name="app_api_phase")
      */
-    public function old(Request $request,  MeetRepository $meetRepository, SerializerInterface $serializer): Response
+    public function old(Request $request,  MeetRepository $meetRepository, PhaseRepository $phaseRepository, SerializerInterface $serializer): Response
     {
 
         $category = $request->get("category");
@@ -230,10 +232,10 @@ class ApiController extends AbstractController
 
         $conn = $this->entityManager->getConnection();
 
-        $poules = $this->data($category,$phase,$conn);
+        $poules = $this->data($category,$phaseRepository->find($phase),$conn);
 
 
-        return $this->json(json_decode($serializer->serialize($poules, 'json', ['groups' => 'matchs'])));
+        return $this->send($serializer->serialize($poules, 'json', ['groups' => 'matchs']),$phaseRepository->find($phase)->getType());
 
     }
 }
