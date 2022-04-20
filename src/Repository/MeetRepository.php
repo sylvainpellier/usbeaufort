@@ -89,7 +89,8 @@ class MeetRepository extends ServiceEntityRepository
     public function findGroupes($category_id, $phase_id)
     {
         $query =  $this->createQueryBuilder('m')
-            ->select("m.Poule");
+            ->join('m.Poule', 'p')
+           ->select("max(p.id) as poule");
 
 
 
@@ -100,8 +101,10 @@ class MeetRepository extends ServiceEntityRepository
             $parameters["phase_id"] = $phase_id;
         }
 
-        $query->groupBy("m.Poule");
+        $query->groupBy("p.id");
         $query->setParameters($parameters);
+
+
 
         return $query->getQuery()
             ->getResult();

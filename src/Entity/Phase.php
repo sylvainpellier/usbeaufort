@@ -41,17 +41,43 @@ class Phase
     /**
      * @ORM\ManyToOne(targetEntity=Phase::class)
      */
-    private $PhasePrecente;
+    private $PhasePrecedente;
 
     /**
      * @ORM\OneToMany(targetEntity=Poule::class, mappedBy="Phase")
      */
     private $poules;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Phase::class)
+     */
+    private $PhaseSuivante;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $TempsMatch;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $TempsEntreMatch;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Position::class, mappedBy="PhaseFrom")
+     */
+    private $positions;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable="true")
+     */
+    private $param;
+
     public function __construct()
     {
         $this->meets = new ArrayCollection();
         $this->poules = new ArrayCollection();
+        $this->positions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,14 +139,14 @@ class Phase
         return $this;
     }
 
-    public function getPhasePrecente(): ?self
+    public function getPhasePrecedente(): ?self
     {
-        return $this->PhasePrecente;
+        return $this->PhasePrecedente;
     }
 
-    public function setPhasePrecente(?self $PhasePrecente): self
+    public function setPhasePrecedente(?self $PhasePrecedente): self
     {
-        $this->PhasePrecente = $PhasePrecente;
+        $this->PhasePrecedente = $PhasePrecedente;
 
         return $this;
     }
@@ -151,6 +177,84 @@ class Phase
                 $poule->setPhase(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPhaseSuivante(): ?self
+    {
+        return $this->PhaseSuivante;
+    }
+
+    public function setPhaseSuivante(?self $PhaseSuivante): self
+    {
+        $this->PhaseSuivante = $PhaseSuivante;
+
+        return $this;
+    }
+
+    public function getTempsMatch(): ?int
+    {
+        return $this->TempsMatch;
+    }
+
+    public function setTempsMatch(?int $TempsMatch): self
+    {
+        $this->TempsMatch = $TempsMatch;
+
+        return $this;
+    }
+
+    public function getTempsEntreMatch(): ?int
+    {
+        return $this->TempsEntreMatch;
+    }
+
+    public function setTempsEntreMatch(?int $TempsEntreMatch): self
+    {
+        $this->TempsEntreMatch = $TempsEntreMatch;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Position>
+     */
+    public function getPositions(): Collection
+    {
+        return $this->positions;
+    }
+
+    public function addPosition(Position $position): self
+    {
+        if (!$this->positions->contains($position)) {
+            $this->positions[] = $position;
+            $position->setPhaseFrom($this);
+        }
+
+        return $this;
+    }
+
+    public function removePosition(Position $position): self
+    {
+        if ($this->positions->removeElement($position)) {
+            // set the owning side to null (unless already changed)
+            if ($position->getPhaseFrom() === $this) {
+                $position->setPhaseFrom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getParam(): ?string
+    {
+        return $this->param;
+    }
+
+    public function setParam(string $param): self
+    {
+        $this->param = $param;
 
         return $this;
     }

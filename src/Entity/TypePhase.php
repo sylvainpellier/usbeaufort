@@ -38,6 +38,11 @@ class TypePhase
      */
     private $Detail;
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $param;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -87,6 +92,23 @@ class TypePhase
     public function setDetail(?string $Detail): self
     {
         $this->Detail = $Detail;
+
+        return $this;
+    }
+
+    public function __toString() : string
+    {
+        return $this->getName();
+    }
+
+    public function getParam(): ?string
+    {
+        return $this->param;
+    }
+
+    public function setParam(?string $param): self
+    {
+        $this->param = $param;
 
         return $this;
     }

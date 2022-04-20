@@ -75,11 +75,7 @@ class Meet
      */
     private $TeamForfait;
 
-    /**
-     * @ORM\Column(type="string", length=20, nullable=true)
-     * @Groups({"matchs","match_detail"})
-     */
-    private $Poule;
+
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -91,6 +87,29 @@ class Meet
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $principal;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Poule::class, inversedBy="meets", cascade={"persist"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private $Poule;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Position::class)
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private $PositionA;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Position::class)
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private $PositionB;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $Name;
 
     public function getId(): ?int
     {
@@ -205,17 +224,7 @@ class Meet
         return $this;
     }
 
-    public function getPoule(): ?string
-    {
-        return $this->Poule;
-    }
 
-    public function setPoule(?string $Poule): self
-    {
-        $this->Poule = $Poule;
-
-        return $this;
-    }
 
     public function getTour(): ?int
     {
@@ -244,5 +253,53 @@ class Meet
     public function getMatchs()
     {
 
+    }
+
+    public function getPoule(): ?Poule
+    {
+        return $this->Poule;
+    }
+
+    public function setPoule(?Poule $Poule): self
+    {
+        $this->Poule = $Poule;
+
+        return $this;
+    }
+
+    public function getPositionA(): ?Position
+    {
+        return $this->PositionA;
+    }
+
+    public function setPositionA(?Position $PositionA): self
+    {
+        $this->PositionA = $PositionA;
+
+        return $this;
+    }
+
+    public function getPositionB(): ?Position
+    {
+        return $this->PositionB;
+    }
+
+    public function setPositionB(?Position $PositionB): self
+    {
+        $this->PositionB = $PositionB;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->Name;
+    }
+
+    public function setName(?string $Name): self
+    {
+        $this->Name = $Name;
+
+        return $this;
     }
 }

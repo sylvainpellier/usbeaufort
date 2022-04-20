@@ -44,6 +44,7 @@ class ApiController extends AbstractController
         // returns an array of arrays (i.e. a raw data set)
         $teams = $resultSet->fetchAll();
 
+
         foreach($teams as $key => $team)
         {
             $teams[$key]["pts"] = 0;
@@ -54,12 +55,12 @@ class ApiController extends AbstractController
             $teams[$key]["nul"] = 0;
 
             $sql = '
-            SELECT * FROM  usb_meets matchs
-            WHERE ( matchs.team_a_id = :team_id OR matchs.team_b_id = :team_id ) AND matchs.phase_id = :phase ';
+            SELECT * FROM  usb_meets matchs, usb_poules poules
+            WHERE matchs.poule_id = poules.id AND ( matchs.team_a_id = :team_id OR matchs.team_b_id = :team_id ) AND matchs.phase_id = :phase ';
 
             if($groupe)
             {
-                $sql .= " AND matchs.poule = :groupe";
+                $sql .= " AND matchs.poule_id = :groupe";
             }
 
 
@@ -74,8 +75,10 @@ class ApiController extends AbstractController
             $resultSet = $stmt->executeQuery($parameters);
             $resultats = $resultSet->fetchAll();
 
+
             foreach($resultats as $match) {
-                $teams[$key]["poule"] = $match["poule"];
+
+                $teams[$key]["poule"] = $match["poule_id"];
 
                 if ($team["id"] === $match["team_a_id"]) {
                     $me = "score_a";
@@ -143,7 +146,6 @@ class ApiController extends AbstractController
 
         }
 
-
         //CLASSEMENT FINAL
         foreach ($poules as $key => $poule)
         {
@@ -151,11 +153,12 @@ class ApiController extends AbstractController
 
             foreach($poule as $keyTeam => $team)
             {
-                if($team["poule"] === $key)
+                if($team["poule"] == $key)
                 {
                     $i++;
                     $poules[$key][$keyTeam]["rang"] = $i;
                     $team["rang"] = $i;
+
                 }
             }
 
@@ -193,7 +196,7 @@ class ApiController extends AbstractController
 
         $conn = $this->entityManager->getConnection();
 
-        $poules = $this->data($category,$phase,$conn, $groupe);
+        $poules = $this->data($category,$phase,$conn);
 
         return $this->json(json_decode($serializer->serialize($poules, 'json', ['groups' => 'matchs'])));
 
