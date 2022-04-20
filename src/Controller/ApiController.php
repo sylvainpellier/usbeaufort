@@ -44,7 +44,6 @@ class ApiController extends AbstractController
         // returns an array of arrays (i.e. a raw data set)
         $teams = $resultSet->fetchAll();
 
-
         foreach($teams as $key => $team)
         {
             $teams[$key]["pts"] = 0;
@@ -75,44 +74,73 @@ class ApiController extends AbstractController
             $resultSet = $stmt->executeQuery($parameters);
             $resultats = $resultSet->fetchAll();
 
+            if(count($resultats) === 0){
+                        $sql = '
+                    SELECT * FROM  usb_positions positions
+                    WHERE phase_from_id = :phase
+        
+                       ';
 
-            foreach($resultats as $match) {
+                $parameters = ['phase' => $phase];
 
-                $teams[$key]["poule"] = $match["poule_id"];
-
-                if ($team["id"] === $match["team_a_id"]) {
-                    $me = "score_a";
-                    $against = "score_b";
-                    $mePenalty = "penalty_a";
-                    $againstPenalty = "penalty_b";
-                } else if ($team["id"] === $match["team_b_id"]) {
-                    $me = "score_b";
-                    $against = "score_a";
-                    $mePenalty = "penalty_b";
-                    $againstPenalty = "penalty_a";
-                }
-
-                if ($me && $against &&  !is_null($match[$me])  && !is_null($match[$against]))
-
+                $stmt = $conn->prepare($sql);
+                $resultSet = $stmt->executeQuery($parameters);
+                $resultats = $resultSet->fetchAll();
+                $teams = [];
+                foreach($resultats as $key1 => $team)
                 {
-                    $teams[$key]["but_pour"] += $match["score_a"];
-                    $teams[$key]["but_contre"] += $match["score_b"];
-
-                    if (
-                    ($match[$me] > $match[$against] || ($match[$me] === $match[$against] && $match[$mePenalty] > $match[$againstPenalty]))) {
-                        $teams[$key]["pts"] += 3;
-                        $teams[$key]["victoire"]++;
-                    } else if ($match[$me] === $match[$against]) {
-                        $teams[$key]["pts"] += 1;
-                        $teams[$key]["nul"]++;
-                    } else {
-                        $teams[$key]["defaite"]++;
-                    }
+                    $teams[$key1]["pts"] = 0;
+                    $teams[$key1]["but_pour"] = 0;
+                    $teams[$key1]["but_contre"] = 0;
+                    $teams[$key1]["victoire"] = 0;
+                    $teams[$key1]["defaite"] = 0;
+                    $teams[$key1]["nul"] = 0;
+                    $teams[$key1]["poule"] = $team["poule_to_id"];
+                    $teams[$key1]["Name"] = $team["rang"].($team["rang"] > 1 ? "ème" : "er")." de la poule".$team["poule_from_id"];
                 }
 
+
+
+            } else {
+
+
+                foreach ($resultats as $match) {
+
+                    $teams[$key]["poule"] = $match["poule_id"];
+
+                    if ($team["id"] === $match["team_a_id"]) {
+                        $me = "score_a";
+                        $against = "score_b";
+                        $mePenalty = "penalty_a";
+                        $againstPenalty = "penalty_b";
+                    } else if ($team["id"] === $match["team_b_id"]) {
+                        $me = "score_b";
+                        $against = "score_a";
+                        $mePenalty = "penalty_b";
+                        $againstPenalty = "penalty_a";
+                    }
+
+                    if ($me && $against && !is_null($match[$me]) && !is_null($match[$against])) {
+                        $teams[$key]["but_pour"] += $match["score_a"];
+                        $teams[$key]["but_contre"] += $match["score_b"];
+
+                        if (
+                        ($match[$me] > $match[$against] || ($match[$me] === $match[$against] && $match[$mePenalty] > $match[$againstPenalty]))) {
+                            $teams[$key]["pts"] += 3;
+                            $teams[$key]["victoire"]++;
+                        } else if ($match[$me] === $match[$against]) {
+                            $teams[$key]["pts"] += 1;
+                            $teams[$key]["nul"]++;
+                        } else {
+                            $teams[$key]["defaite"]++;
+                        }
+                    }
+
+                }
             }
 
         }
+
 
 
         $poules = [];
@@ -178,6 +206,12 @@ class ApiController extends AbstractController
 
        $matchs = $meetRepository->findAllCriterias($category, $phase, $poule);
 
+       if(count($matchs) === 0)
+       {
+           $matchs = $meetRepository->findAllCriteriasByPosition($category, $phase, $poule);
+
+       }
+
 
         return $this->json(json_decode($serializer->serialize($matchs, 'json', ['groups' => 'matchs'])));
 
@@ -197,6 +231,7 @@ class ApiController extends AbstractController
         $conn = $this->entityManager->getConnection();
 
         $poules = $this->data($category,$phase,$conn);
+
 
         return $this->json(json_decode($serializer->serialize($poules, 'json', ['groups' => 'matchs'])));
 

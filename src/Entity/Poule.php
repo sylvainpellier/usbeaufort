@@ -6,6 +6,7 @@ use App\Repository\PouleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PouleRepository::class)
@@ -22,11 +23,13 @@ class Poule
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Groups({"matchs"})
      */
     private $Name;
 
     /**
      * @ORM\ManyToOne(targetEntity=Phase::class, inversedBy="poules")
+     * @Groups({"matchs"})
      */
     private $Phase;
 

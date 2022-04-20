@@ -91,23 +91,27 @@ class Meet
     /**
      * @ORM\ManyToOne(targetEntity=Poule::class, inversedBy="meets", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups({"matchs"})
      */
     private $Poule;
 
     /**
      * @ORM\ManyToOne(targetEntity=Position::class)
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups({"matchs"})
      */
     private $PositionA;
 
     /**
      * @ORM\ManyToOne(targetEntity=Position::class)
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups({"matchs"})
      */
     private $PositionB;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
+     * @Groups({"matchs"})
      */
     private $Name;
 
