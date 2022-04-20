@@ -98,14 +98,14 @@ class Meet
     /**
      * @ORM\ManyToOne(targetEntity=Position::class)
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","positions"})
      */
     private $PositionA;
 
     /**
      * @ORM\ManyToOne(targetEntity=Position::class)
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","positions"})
      */
     private $PositionB;
 

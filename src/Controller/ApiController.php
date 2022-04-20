@@ -192,7 +192,8 @@ class ApiController extends OverrideApiController
             }
 
         }
-        
+
+
         return $poules;
     }
     /**

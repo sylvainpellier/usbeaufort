@@ -21,21 +21,21 @@ class Position
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","poules","poule_detail","positions"})
      */
     private $Rang;
 
     /**
      * @ORM\ManyToOne(targetEntity=Poule::class, inversedBy="positions",cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","poule_detail","positions"})
      */
     private $PouleFrom;
 
     /**
      * @ORM\ManyToOne(targetEntity=Poule::class, inversedBy="positionsTo",cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @Groups({"matchs"})
+     * @Groups({"matchs","poule_detail"})
      */
     private $PouleTo;
 
@@ -53,13 +53,13 @@ class Position
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","positions"})
      */
     private $id_string;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"matchs"})
+     * @Groups({"matchs","positions"})
      */
     private $int_param;
 
