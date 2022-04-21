@@ -16,7 +16,12 @@
 
     <div class="row mt-5">
 
-            <div class="col"><a class="btn btn-secondary w-100 m-2" href="">Gestion des terrains</a></div>
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="">Gestion des terrains</a></div>
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("teams_index_admin") }}">Gestion des équipes</a></div>
+
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("time_index") }}">Voir les horaires</a></div>
+
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_generate_time") }}">Générer les horaires</a></div>
 
 
     </div>

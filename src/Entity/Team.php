@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TeamRepository;
+use function array_merge;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,9 +41,16 @@ class Team
     /**
      * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamA",cascade={"persist"})
      * @Groups({"team"})
-     *
+     * @ORM\OrderBy({"time" = "ASC"})
      */
-    private $meets;
+    private $meetsA;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamB",cascade={"persist"})
+     * @Groups({"team"})
+     * @ORM\OrderBy({"time" = "ASC"})
+     */
+    private $meetsB;
 
     /**
      * @ORM\ManyToMany(targetEntity=Poule::class, mappedBy="Teams")
@@ -96,7 +104,7 @@ class Team
      */
     public function getMeets(): Collection
     {
-        return $this->meets;
+        return new ArrayCollection(array_merge($this->meetsA->toArray(),$this->meetsB->toArray()));
     }
 
     public function addMeet(Meet $meet): self

@@ -46,6 +46,19 @@ class MeetRepository extends ServiceEntityRepository
         }
     }
 
+    public function findBySpecial($ordre)
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.Phase', 'phase')
+            ->join("phase.Type","tp")
+            ->where("tp.format != 'echiquier' ")
+            ->andWhere('phase.ordre = :ordre')
+            ->setParameter("ordre",$ordre)
+            ->orderBy('t.Tour', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findAllCriterias($category_id, $phase_id, $poule = null)
     {
 

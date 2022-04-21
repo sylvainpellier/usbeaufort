@@ -61,6 +61,15 @@ class PhaseRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function findEchiquier()
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.Type',"t")
+            ->where("t.format = 'echiquier'")
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 
     /*
     public function findOneBySomeField($value): ?Phase

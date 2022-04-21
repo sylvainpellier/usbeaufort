@@ -8,6 +8,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass=Maepository::class)
  * @ORM\Table(name="usb_meets")
+ *
  */
 class Meet
 {
@@ -114,6 +115,19 @@ class Meet
      * @Groups({"matchs"})
      */
     private $Name;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $arbitre;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $time;
+
+
+
 
     public function getId(): ?int
     {
@@ -306,4 +320,29 @@ class Meet
 
         return $this;
     }
+
+    public function getArbitre(): ?string
+    {
+        return $this->arbitre;
+    }
+
+    public function setArbitre(?string $arbitre): self
+    {
+        $this->arbitre = $arbitre;
+
+        return $this;
+    }
+
+    public function getTime(): ?int
+    {
+        return $this->time;
+    }
+
+    public function setTime(?int $time): self
+    {
+        $this->time = $time;
+
+        return $this;
+    }
+
 }

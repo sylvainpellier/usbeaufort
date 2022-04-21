@@ -66,7 +66,7 @@ class ApiController extends OverrideApiController
 
             $stmt = $conn->prepare($sql);
 
-            $parameters = ['phase' => $phase->getId(), 'team_id' => $team["id"]];
+            $parameters = ['phase' => $phase, 'team_id' => $team["id"]];
 
             if($groupe) { $parameters["groupe"] = $groupe; }
 
@@ -82,7 +82,7 @@ class ApiController extends OverrideApiController
         
                        ';
 
-                $parameters = ['phase' => $phase->getId()];
+                $parameters = ['phase' => $phase];
 
                 $stmt = $conn->prepare($sql);
                 $resultSet = $stmt->executeQuery($parameters);

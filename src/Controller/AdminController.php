@@ -14,6 +14,7 @@ use App\Repository\PouleRepository;
 use App\Repository\TeamRepository;
 use function array_key_exists;
 use function array_push;
+use function array_search;
 use function array_splice;
 use function d;
 use Doctrine\ORM\EntityManager;
@@ -120,6 +121,13 @@ class AdminController extends AbstractController
 
 
 
+function findTeamByRang($teams,$rang)
+{
+    foreach($teams as $team)
+    {
+        if($team['rang'] == $rang) return $team;
+    }
+}
 
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}/generate", name="app_admin_category_phase_generate")
@@ -128,7 +136,7 @@ class AdminController extends AbstractController
     {
 
         $phase = $phaseRepository->find($idPhase);
-        $phase = $phase->getPhaseSuivante();
+        $phase = $phase->getPhaseSuivante() ?  $phase->getPhaseSuivante() : $phase;
 
 
         if($phase->getType()->getFormat() === "principal-consolante" || $phase->getType()->getFormat()=== "demifinalesfinales")
@@ -176,8 +184,7 @@ class AdminController extends AbstractController
             }
         }
 
-        dump($data);
-        die();
+
 
         foreach($data as $keyGroupe => $teamsGroupe)
         {
@@ -217,6 +224,72 @@ class AdminController extends AbstractController
 
 
             $entityManager->flush();
+
+
+
+
+    }
+        else if($phase->getType()->getFormat() === "echiquier")
+    {
+
+        $c = new ApiController($entityManager);
+        $data = $c->data($idCategory,$phase->getId(), $conn = $entityManager->getConnection());
+
+
+        $poule = $pouleRepository->findOneBy(["Phase"=>$phase]);
+        $teams = $poule->getTeams();
+
+        $tour = $meetRepository->findOneBy(["Phase"=>$phase,"TeamA"=>null,"TeamB"=>null],["Tour"=>"ASC"])->getTour();
+        foreach($data as $keyGroupe => $teamsGroupe)
+        {
+            foreach ($teamsGroupe as $key => $team)
+            {
+
+                $matchTourA = $meetRepository->findBy(["Phase"=>$phase,"Tour"=>$tour,"TeamA"=>$team["id"]]);
+                $matchTourB = $meetRepository->findBy(["Phase"=>$phase,"Tour"=>$tour,"TeamB"=>$team["id"]]);
+
+                if(count($matchTourA) === 0 && count($matchTourB) === 0) {
+                    $match = $meetRepository->findOneBy(["Tour" => $tour, "Phase" => $phase, "TeamA" => null, "TeamB" => null]);
+                    if ($match) {
+                        $teamA = $teamRepository->find($team["id"]);
+                        $match->setTeamA($teamA);
+                        $addRang = 1;
+                        $find = true;
+                        do {
+                            $against = $this->findTeamByRang($teamsGroupe, $team["rang"] + $addRang);
+                            if ($against !== $teamA) {
+
+                                $matchTourA = $meetRepository->findBy(["Phase"=>$phase,"TeamA"=>$team["id"],"TeamB"=>$against]);
+                                $matchTourB = $meetRepository->findBy(["Phase"=>$phase,"TeamB"=>$team["id"],"TeamA"=>$against]);
+
+                                if(count($matchTourA) > 0 || count($matchTourB) > 0) {
+                                    $find = true;
+                                } else
+                                {
+                                    $find = false;
+                                }
+
+                                if (!$find) {
+                                    $match->setTeamB($teamRepository->find($against["id"]));
+                                }
+
+                            }
+                            $addRang++;
+                        } while ($find);
+                        $entityManager->persist($match);
+                        $entityManager->flush();
+                    }
+
+                }
+
+            }
+        }
+
+
+
+
+
+        $entityManager->flush();
 
 
 
@@ -659,6 +732,53 @@ class AdminController extends AbstractController
                             $entityManager->flush();
 
                 }
+            else if($phase->getType()->getFormat() === "echiquier")
+            {
+                $tour = 1;
+                $poule = new Poule();
+                $poule->setPhase($phase);
+                $poule->setName("Poule Échiquier");
+                $entityManager->persist($poule);
+                shuffle($teams);
+                $against = null;
+                foreach ($teams as $team)
+                {
+                    $team->addPoule($poule);
+                    $entityManager->persist($team);
+                    if(!$against)
+                    {
+                        $against = $team;
+                    } else
+                    {
+                        $match = new Meet();
+                        $match->setTeamA($team);
+                        $match->setTeamB($against);
+                        $match->setPhase($phase);
+                        $match->setPoule($poule);
+                        $match->setTour($tour);
+                        $entityManager->persist($match);
+                        $against = null;
+                    }
+                }
+
+                //TODO : si impair, une équipe ne joue pas, gestion des points
+                $entityManager->flush();
+
+                for($i=0;$i<=$phase->getParam()-2;$i++)
+                {
+                    $tour++;
+                    for($j=0;$j<(count($teams) - 1) / 2;$j++) {
+                        $match = new Meet();
+                        $match->setName("à déterminer");
+                        $match->setPhase($phase);
+                        $match->setPoule($poule);
+                        $match->setTour($tour);
+                        $entityManager->persist($match);
+                        $against = null;
+                    }
+                }
+
+            }
 
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\CategoryRepository;
 use App\Repository\MeetRepository;
 use App\Repository\TeamRepository;
 use function json_encode;
@@ -17,6 +18,15 @@ use function var_dump;
 
 class TeamController extends OverrideApiController
 {
+
+    /**
+     * @Route("/admin/teams", name="teams_index_admin")
+     */
+    public function teams_index_admin(TeamRepository $teamRepository, CategoryRepository $categoryRepository,  SerializerInterface $serializer): Response
+    {
+        return $this->render("admin/teams/index.html.twig", ["categories"=>$categoryRepository->findAll(), "teams"=>$teamRepository->findBy([],["Category"=>"DESC"])]);
+
+    }
 
     /**
      * @Route("/teams", name="teams_index")

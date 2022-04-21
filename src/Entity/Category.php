@@ -34,16 +34,17 @@ class Category
      */
     private $teams;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Phase::class)
-     * @ORM\JoinTable(name="usb_phases_categories")
-     */
-    private $Phases;
+
 
     /**
      * @ORM\ManyToOne(targetEntity=Phase::class)
      */
     private $PhaseEnCours;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Phase::class, mappedBy="category")
+     */
+    private $Phases;
 
     public function __construct()
     {
@@ -98,29 +99,7 @@ class Category
         return $this;
     }
 
-    /**
-     * @return Collection<int, Phase>
-     */
-    public function getPhases(): Collection
-    {
-        return $this->Phases;
-    }
 
-    public function addPhase(Phase $phase): self
-    {
-        if (!$this->Phases->contains($phase)) {
-            $this->Phases[] = $phase;
-        }
-
-        return $this;
-    }
-
-    public function removePhase(Phase $phase): self
-    {
-        $this->Phases->removeElement($phase);
-
-        return $this;
-    }
 
     public function getPhaseEnCours(): ?Phase
     {
@@ -137,5 +116,35 @@ class Category
     public function __toString() : string
     {
         return $this->getName();
+    }
+
+    /**
+     * @return Collection<int, Phase>
+     */
+    public function getPhases(): Collection
+    {
+        return $this->Phases;
+    }
+
+    public function addPhase(Phase $phase): self
+    {
+        if (!$this->Phases->contains($phase)) {
+            $this->Phases[] = $phase;
+            $phase->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhase(Phase $phase): self
+    {
+        if ($this->Phases->removeElement($phase)) {
+            // set the owning side to null (unless already changed)
+            if ($phase->getCategory() === $this) {
+                $phase->setCategory(null);
+            }
+        }
+
+        return $this;
     }
 }
