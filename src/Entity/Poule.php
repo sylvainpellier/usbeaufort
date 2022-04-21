@@ -6,6 +6,7 @@ use App\Repository\PouleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PouleRepository::class)
@@ -22,22 +23,26 @@ class Poule
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Groups({"matchs","poules","poule_detail","positions"})
      */
     private $Name;
 
     /**
      * @ORM\ManyToOne(targetEntity=Phase::class, inversedBy="poules")
+     * @Groups({"matchs","poules"})
      */
     private $Phase;
 
     /**
      * @ORM\ManyToMany(targetEntity=Team::class, inversedBy="poules")
      * @ORM\JoinTable(name="usb_poules_teams")
+     * @Groups({"poules"})
      */
     private $Teams;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"poules","positions"})
      */
     private $principal;
 
@@ -49,12 +54,14 @@ class Poule
     /**
      * @ORM\OneToMany(targetEntity=Position::class, mappedBy="PouleFrom", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups({"poules"})
      */
     private $positionsFrom;
 
     /**
      * @ORM\OneToMany(targetEntity=Position::class, mappedBy="PouleTo", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups({"poules"})
      */
     private $positionsTo;
 

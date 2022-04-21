@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PositionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PositionRepository::class)
@@ -20,38 +21,45 @@ class Position
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"matchs","poules","poule_detail","positions"})
      */
     private $Rang;
 
     /**
      * @ORM\ManyToOne(targetEntity=Poule::class, inversedBy="positions",cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups({"matchs","poule_detail","positions"})
      */
     private $PouleFrom;
 
     /**
      * @ORM\ManyToOne(targetEntity=Poule::class, inversedBy="positionsTo",cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups({"matchs","poule_detail"})
      */
     private $PouleTo;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"matchs"})
      */
     private $Principal;
 
     /**
      * @ORM\ManyToOne(targetEntity=Phase::class, inversedBy="positions")
+     * @Groups({"matchs"})
      */
     private $PhaseFrom;
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
+     * @Groups({"matchs","positions"})
      */
     private $id_string;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"matchs","positions"})
      */
     private $int_param;
 

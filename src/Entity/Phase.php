@@ -73,6 +73,16 @@ class Phase
      */
     private $param;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $ordre;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="Phases")
+     */
+    private $category;
+
     public function __construct()
     {
         $this->meets = new ArrayCollection();
@@ -255,6 +265,30 @@ class Phase
     public function setParam(string $param): self
     {
         $this->param = $param;
+
+        return $this;
+    }
+
+    public function getOrdre(): ?int
+    {
+        return $this->ordre;
+    }
+
+    public function setOrdre(?int $ordre): self
+    {
+        $this->ordre = $ordre;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

@@ -46,6 +46,19 @@ class MeetRepository extends ServiceEntityRepository
         }
     }
 
+    public function findBySpecial($ordre)
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.Phase', 'phase')
+            ->join("phase.Type","tp")
+            ->where("tp.format != 'echiquier' ")
+            ->andWhere('phase.ordre = :ordre')
+            ->setParameter("ordre",$ordre)
+            ->orderBy('t.Tour', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findAllCriterias($category_id, $phase_id, $poule = null)
     {
 
@@ -56,6 +69,7 @@ class MeetRepository extends ServiceEntityRepository
             ->join('m.TeamB', 'team_b');
         }
 
+        $query->join('m.Poule', 'poule');
         $parameters = [];
         if($category_id)
         {
@@ -72,7 +86,7 @@ class MeetRepository extends ServiceEntityRepository
 
         if($poule)
         {
-            $query->andWhere("m.Poule LIKE :poule");
+            $query->andWhere("poule.id = :poule");
             $parameters["poule"] = $poule;
         }
 
@@ -83,6 +97,34 @@ class MeetRepository extends ServiceEntityRepository
 
         return $query->getQuery()
                 ->getResult();
+    }
+
+
+    public function findAllCriteriasByPosition($category_id, $phase_id, $poule = null)
+    {
+
+        $query =  $this->createQueryBuilder('m');
+                  $query->join('m.PositionA', 'positionA');
+                $query->join('m.PositionB', 'positionB');
+
+
+        $parameters = [];
+
+        if($phase_id)
+        {
+            $query->andWhere('m.Phase = :phase_id');
+            $parameters["phase_id"] = $phase_id;
+        }
+
+
+
+        $query->orderBy("m.Tour","ASC");
+        $query->setParameters($parameters);
+
+
+
+        return $query->getQuery()
+            ->getResult();
     }
 
 

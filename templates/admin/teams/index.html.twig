@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des équipes{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+
+   <table class="table table-responsive table-striped table-bordered">
+
+       <tr><th>Catégorie</th><th>Équipe</th><th>Horaires</th><th>Matchs</th><th>Pause minimum</th><th>Pause repas</th><th>Alertes</th></tr>
+
+       {% for team in teams %}
+           <tr>
+
+               <td>{{ team.Category }}</td>
+               <td>{{ team }} </td>
+               <td>{% for meet in team.meets|orderMeets  %}{{ meet.time|date("H:i:s") }}{% if not loop.last %} - {% endif %}{% endfor %}</td>
+               <td>{{ team.meets|length }}</td>
+               <td {% set min = team.meets|minPause %} {% if  min <= (30 * 60) %} class="alert-danger" {% endif %}>{{ min|date("H:i:s") }}</td>
+               <td></td>
+               <td>{% set last = 0 %}{% for meet in team.meets  %}{% if last == meet.time %}<span class="alert-danger">deux matchs en même temps</span>{% endif %}{% set last = meet.time %} {% endfor %}
+                   {% if  min <= (30 * 60) %}<span class="alert-danger">pas assez de pause</span>{% endif %}
+               </td>
+           </tr>
+       {% endfor %}
+   </table>
+
+    <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_generate_time") }}">Générer les horaires</a></div>
+
+
+</div>
+{% endblock %}
+
+{% block secondNav %}
+{% include "admin/adminMenu.html.twig" %}
+{% endblock %}

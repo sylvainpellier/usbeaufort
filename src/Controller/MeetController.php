@@ -34,6 +34,6 @@ class MeetController extends OverrideApiController
      */
     public function index(MeetRepository $meetRepository, SerializerInterface $serializer): Response
     {
-       return $this->send($meetRepository->findAll(),["matchs"], $serializer);
+       return $this->send($serializer->serialize($meetRepository->findAll(),'json',['groups' => ['matchs']]));
     }
 }
