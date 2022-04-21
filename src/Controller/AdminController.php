@@ -85,13 +85,14 @@ class AdminController extends AbstractController
     {
 
         $c = new ApiController($entityManager);
+        $phase = $phaseRepository->find($idPhase);
 
         return $this->render('admin/category_phase.html.twig', [
             'category' => $categoryRepository->find($idCategory),
-            'phase' => $phaseRepository->find($idPhase),
+            'phase' => $phase,
             'groupes' => $meetRepository->findGroupes($idCategory,$idPhase),
             'categories' => $categoryRepository->findAll(),
-            'classement' =>$c->data($idCategory,$idPhase, $conn = $entityManager->getConnection(),false)
+            'classement' =>$c->data($idCategory,$phase, $conn = $entityManager->getConnection(),false)
         ]);
     }
 
@@ -143,7 +144,7 @@ function findTeamByRang($teams,$rang)
         {
 
         $c = new ApiController($entityManager);
-        $data = $c->data($idCategory,$phase->getPhasePrecedente()->getId(), $conn = $entityManager->getConnection());
+        $data = $c->data($idCategory,$phase->getPhasePrecedente(), $conn = $entityManager->getConnection());
 
         if($phase->getParam() == 24) {
             foreach ($data as $keyGroupe => $teamsGroupe) {
@@ -233,7 +234,7 @@ function findTeamByRang($teams,$rang)
     {
 
         $c = new ApiController($entityManager);
-        $data = $c->data($idCategory,$phase->getId(), $conn = $entityManager->getConnection());
+        $data = $c->data($idCategory,$phase, $conn = $entityManager->getConnection());
 
 
         $poule = $pouleRepository->findOneBy(["Phase"=>$phase]);
@@ -333,14 +334,14 @@ function findTeamByRang($teams,$rang)
     {
 
         $c = new ApiController($entityManager);
-
+        $phase = $phaseRepository->find($idPhase);
         return $this->render('admin/category_phase_groupe_matchs.html.twig', [
             'category' => $categoryRepository->find($idCategory),
-            'phase' => $phaseRepository->find($idPhase),
+            'phase' => $phase,
             'groupe' => $groupe,
             'poule' => $pouleRepository->find($groupe),
             'categories' => $categoryRepository->findAll(),
-            'classement' =>$c->data($idCategory,$idPhase, $conn = $entityManager->getConnection(), $groupe)
+            'classement' =>$c->data($idCategory,$phase, $conn = $entityManager->getConnection(), $groupe)
         ]);
     }
 
@@ -487,8 +488,14 @@ function findTeamByRang($teams,$rang)
                         $position = new Position();
                         $position->setPouleFrom($poule);
                         $position->setPhaseFrom($phase);
-                        $position->setPrincipal($i< (count($teams) / $nbTeamByPoule) / 2);
-                        $position->setRang($rang);
+                        $position->setPrincipal($poule->getPrincipal());
+
+                        if($phase->getParam() == 24 && !$poule->getPrincipal())
+                        {
+                            if($rang <= 2)  $position->setIdString( "1_2" ); else  $position->setIdString( "3_4" );
+
+                            $count3++;
+                        }  $position->setRang($rang);
                         $entityManager->persist($position);
                    }
 
@@ -657,14 +664,39 @@ function findTeamByRang($teams,$rang)
                     $poule = new Poule();
                     $poule->setPhase($phase);
                     $poule->setPrincipal($principal);
-                    $str = ($x<2)?"er":"ème";
-                    $str2 = ($principal) ? "principales" : "consolantes";
-                    $poule->setName($alphas[$i]. " - ". $x."".$str." des poules $str2 de phase 2");
+                    if($phase->getParam() == 32 || $principal)
+                    {
+                        $str = ($x<2)?"er":"ème";
+                        $str2 = ($principal) ? "principales" : "consolantes";
+                        $poule->setName($alphas[$i]. " - ". $x."".$str." des poules $str2 de phase 2");
+                    } else if( $phase->getParam() == 24)
+                    {
+                        $str2 = ($principal) ? "principales" : "consolantes";
+                        if($i===4)
+                        {
+                            $poule->setName($alphas[$i]. " - 1er et 2ème des poules $str2 de phase 2");
+                        } else
+                        {
+                            $poule->setName($alphas[$i]. " - 3ème et 4ème des poules $str2 de phase 2");
+                        }
+
+
+
+                    }
+
 
                     $entityManager->persist($poule);
                     $poules[] = $poule;
 
-                    $positionsPrecedentes = $positionRepository->findBy(["PouleTo"=>null,"Rang"=>$x,"Principal"=>$poule->getPrincipal() ,"PhaseFrom"=>$phase->getPhasePrecedente()]);
+                    if($phase->getPhasePrecedente()->getParam() == 24 && !$poule->getPrincipal())
+                    {
+                        $id_string = ($i===4) ? "1_2" : "3_4";
+                        $positionsPrecedentes = $positionRepository->findBy(["PouleTo"=>null,"id_string"=> $id_string,"Principal"=>$poule->getPrincipal() ,"PhaseFrom"=>$phase->getPhasePrecedente()]);
+                    } else
+                    {
+                        $positionsPrecedentes = $positionRepository->findBy(["PouleTo"=>null,"Rang"=>$x,"Principal"=>$poule->getPrincipal() ,"PhaseFrom"=>$phase->getPhasePrecedente()]);
+
+                    }
 
                     foreach ($positionsPrecedentes as $pp)
                     {
@@ -679,9 +711,11 @@ function findTeamByRang($teams,$rang)
                 }
                 $entityManager->flush();
 
+
                 //on créé les matchs
                 foreach ($poules as $poule) {
                     $positions = $positionRepository->findBy(["PouleTo" => $poule]);
+
 
                     if(count($positions) === 4) {
                         shuffle($positions);

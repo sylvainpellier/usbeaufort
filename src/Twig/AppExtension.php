@@ -16,6 +16,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('minPause', [$this, 'formatMinPause']),
+            new TwigFilter('maxPause', [$this, 'formatMaxPause']),
             new TwigFilter('orderMeets', [$this, 'orderMeets']),
         ];
     }
@@ -47,6 +48,29 @@ class AppExtension extends AbstractExtension
             }
         }
         return $diff ? $min : null;
+    }
+
+    public function formatMaxPause( $meets )
+    {
+        $min = 0;
+
+        $meets = $meets->toArray();
+        usort($meets , function($a,$b){ return $a->getTime() > $b->getTime(); });
+
+        $diff = null;
+        if(count($meets)>1) {
+            $max = $meets[1]->getTime() - $meets[0]->getTime();
+            foreach ($meets as $key => $meet) {
+                if (isset($meets[$key + 1])) {
+
+                    $diff =  $meets[$key + 1]->getTime() - $meet->getTime() ;
+                    if ($diff > $max) {
+                        $max = $diff;
+                    }
+                }
+            }
+        }
+        return $diff ? $max : null;
     }
 
 }
