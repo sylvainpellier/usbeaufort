@@ -37,7 +37,6 @@ class ApiController extends OverrideApiController
             WHERE 
                 teams.category_id = categories.id AND
                  categories.id = :category
-
             ';
         $stmt = $conn->prepare($sql);
         $resultSet = $stmt->executeQuery(['category' => $category]);
@@ -66,7 +65,7 @@ class ApiController extends OverrideApiController
 
             $stmt = $conn->prepare($sql);
 
-            $parameters = ['phase' => $phase, 'team_id' => $team["id"]];
+            $parameters = ['phase' => $phase->getId(), 'team_id' => $team["id"]];
 
             if($groupe) { $parameters["groupe"] = $groupe; }
 
@@ -76,30 +75,23 @@ class ApiController extends OverrideApiController
             $resultats = $resultSet->fetchAll();
 
             if(count($resultats) === 0){
-                        $sql = '
-                    SELECT * FROM  usb_positions positions
-                    WHERE phase_from_id = :phase
-        
-                       ';
+            $teams = [];
+                $poules = $phase->getPhasePrecedente()->getPoules();
+                foreach($poules as $poule) {
 
-                $parameters = ['phase' => $phase];
-
-                $stmt = $conn->prepare($sql);
-                $resultSet = $stmt->executeQuery($parameters);
-                $resultats = $resultSet->fetchAll();
-                $teams = [];
-                foreach($resultats as $key1 => $team)
-                {
-                    $teams[$key1]["pts"] = 0;
-                    $teams[$key1]["but_pour"] = 0;
-                    $teams[$key1]["but_contre"] = 0;
-                    $teams[$key1]["victoire"] = 0;
-                    $teams[$key1]["defaite"] = 0;
-                    $teams[$key1]["nul"] = 0;
-                    $teams[$key1]["poule"] = $team["poule_to_id"];
-                    $teams[$key1]["Name"] = $team["rang"].($team["rang"] > 1 ? "ème" : "er")." de la poule".$team["poule_from_id"];
+                    foreach ($poule->getPositionsFrom() as $key1 => $position) {
+                        $t = [];
+                        $t["pts"] = 0;
+                        $t["but_pour"] = 0;
+                        $t["but_contre"] = 0;
+                        $t["victoire"] = 0;
+                        $t["defaite"] = 0;
+                        $t["nul"] = 0;
+                        $t["poule"] = $position->getPouleTo()->getId();
+                        $t["Name"] = $position->getRang() . ($position->getRang() > 1 ? "ème" : "er") . " de la poule " . $position->getPouleFrom()->getName();
+                        $teams[] = $t;
+                    }
                 }
-
 
 
             } else {
@@ -142,9 +134,8 @@ class ApiController extends OverrideApiController
 
         }
 
-
-
         $poules = [];
+
 
         foreach ($teams as $key => $team)
         {
@@ -160,6 +151,9 @@ class ApiController extends OverrideApiController
             }
 
         }
+
+
+
 
 
         //CLASSEMENT FINAL
