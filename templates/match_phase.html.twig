@@ -11,36 +11,83 @@
 {% endblock %}
 
 {% block javascript %}
+var tour1 = [];
+var tour2 = [];
+var tour3 = []; // trouver sollution
+var x =0;
+
+var TableauMatch =[];
+
+var titre = false;
+// faire une variable qui compte les match par phase et mettre tous les match dans un meme tableau ?
+
+function afficheTour(TableauEquipe){
+    let test = false;
+    let a = 0;
+
+    TableauEquipe.forEach(function(e){
+        let tr = document.createElement("tr");
+        document.getElementById("data").appendChild(tr);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe.TeamA.Name;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = "-";
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe.TeamB.Name;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe.ScoreA;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = "/";
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = TableauEquipe.ScoreB;
+        tr.appendChild(td);
+    });
+}
 
 fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
-  console.log(data);
-       data.json().then((jsonData)=>{
-           console.log(jsonData);
-           jsonData.forEach((match)=>{
-               console.log(match);
-               let tr = document.createElement("tr");
-               document.getElementById("data").appendChild(tr);
-                td = document.createElement("td");
-               td.innerText = match.TeamA.Name;
-               tr.appendChild(td)
+    //console.log(data);
+    data.json().then((jsonData)=>{
+        //console.log(jsonData);
+        console.log(jsonData)
+        jsonData.forEach((match)=>{
+            //console.log(match);
 
-                td = document.createElement("td");
-               td.innerText = "-";
-               tr.appendChild(td)
+            if(match.Tour === 1){
+                tour1.push(match); // faire un tab qui boucle
+                TableauMatch.push(match);
+                let compteTour1 = 0;
+                
 
-                td = document.createElement("td");
-               td.innerText = match.TeamB.Name;
-               tr.appendChild(td)
+            }else if(match.Tour === 2){
+                tour2.push(match);
 
-                td = document.createElement("td");
-               td.innerText = match.ScoreA;
-               tr.appendChild(td)
+            }else if(match.Tour === 3){
+                tour3.push(match);
 
-                td = document.createElement("td");
-               td.innerText = match.ScoreB;
-               tr.appendChild(td)
+            }
 
-           });
-       });
+        });
+
+        afficheTour(tour1);
+        afficheTour(tour2);
+        afficheTour(tour3);
+        
     });
+});
+
+setInterval(() => {
+    location.reload();
+}, 30000);
+
 {% endblock %}

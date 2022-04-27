@@ -18,7 +18,7 @@
 {% block javascript %}
 
 fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id }}").then((data)=>{
-    console.log(data);
+    //console.log(data);
     data.json().then((jsonData)=>{
         for(const namePoule in jsonData) {
             let poule = jsonData[namePoule];
@@ -38,7 +38,7 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
                     div.appendChild(table);
 
                 jsonData[namePoule].forEach((team)=>{
-                    console.log(team);
+                    //console.log(team);
                     tr = document.createElement("tr");
                     table.appendChild(tr);
                     td = document.createElement("td");
@@ -53,4 +53,7 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
     });
 });
 
+setInterval(function(){
+    location.reload();
+}30000)
 {% endblock %}
