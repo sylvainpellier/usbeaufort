@@ -11,12 +11,10 @@
 
                 <td>{% if meet.teamA %}
                         {{ meet.teamA.Name }} ({{ meet.scoreA }})
-                    {% elseif meet.phase.param == 24  and meet.positionA.intParam is not null %}3ème de poule ({{ meet.positionA.intParam }}{% if meet.positionA.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
                     {% elseif meet.positionA %}{{ meet.positionA.Rang }}{% if meet.positionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionA.pouleFrom }}
                     {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
                 <td>-</td>
                 <td>{% if meet.teamB %}{{ meet.teamB.Name }} ({{ meet.ScoreB }})
-                    {% elseif meet.phase.param == 24  and meet.positionB.intParam is not null %}3ème de poule ({{ meet.positionB.intParam }}{% if meet.positionB.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
                     {% elseif meet.positionB %}{{ meet.positionB.Rang }}{% if meet.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionB.pouleFrom }}
                     {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
         <td>{{ meet.phase.Name }}</td>

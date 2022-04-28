@@ -36,8 +36,8 @@ class TimeController extends AbstractController
 
         $debut_tournoi = new DateTime("2022-05-27 09:00:00");
         $time = $debut_tournoi;
-        $tpsMatch = 10;
-        $tpsPause = 2;
+        $tpsMatch = 12;
+        $tpsPause = 4;
         $entreMatch = $tpsMatch + $tpsPause;
         $fields = $fieldRepository->findAll();
 

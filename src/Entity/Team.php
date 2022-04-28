@@ -107,6 +107,22 @@ class Team
         return new ArrayCollection(array_merge($this->meetsA->toArray(),$this->meetsB->toArray()));
     }
 
+    /**
+     * @return Collection<int, Meet>
+     */
+    public function getMeetsA(): Collection
+    {
+        return $this->meetsA;
+    }
+
+    /**
+     * @return Collection<int, Meet>
+     */
+    public function getMeetsB(): Collection
+    {
+        return $this->meetsB;
+    }
+
     public function addMeet(Meet $meet): self
     {
         if (!$this->meets->contains($meet)) {
