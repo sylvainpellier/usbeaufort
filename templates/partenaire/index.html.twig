@@ -1,9 +1,14 @@
 {% extends "base.html.twig" %}
-{% block body %}
-    <div class="col-12 text-center">
-      <h3>Partenaires</h3>
 
-        <p>//afficher la liste des partenaires + lien vers le site du partenaire</p>
+{% block title %}Partenaires - {% endblock %}
+
+
+{% block body %}
+
+    <div class="row mt-5 text-center">
+        {% for partenaire in partenaires %}
+            <div class="col-3 mt-4 text-uppercase">{{ partenaire.Name }} <br ><img src="{{ partenaire.logo }}"  alt="{{ partenaire.Name }}"/></div>
+        {% endfor %}
     </div>
 
 {% endblock %}
