@@ -82,7 +82,9 @@
     <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
 
     <script>{% block javascript %}
-        let url_base = "http://localhost:8000";
+        let url_base = "{{ app.request.server.get('APP_ENV_URL_BASE') }}";
+        alert(url_base);
+
         {% endblock %}</script>
 
     </body>
