@@ -16,13 +16,9 @@
 
 {% block javascript %}
 
-    var url = "http://localhost:8000/teams";
+    var url = "http://localhost:8000/api/teams";
     fetch(url).then(function(resultas){
         console.log(resultas);
-
-        resultas.json().then(function(data){
-            console.log(data);
-        });
     });
 
 {% endblock %}

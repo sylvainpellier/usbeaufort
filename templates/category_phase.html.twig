@@ -20,9 +20,13 @@
 fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id }}").then((data)=>{
     //console.log(data);
     data.json().then((jsonData)=>{
-        for(const namePoule in jsonData) {
-            let poule = jsonData[namePoule];
-
+        //console.log(jsonData);
+        let equipe = jsonData.data;
+        //console.log(equipe);
+        for(const namePoule in equipe){
+            //console.log(namePoule);
+            let poule = equipe[namePoule];
+            //console.log(poule);
                     let div = document.createElement("div");
                     let h3 = document.createElement("h3");
                     h3.innerHTML = "Poule " + namePoule;
@@ -37,10 +41,11 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
                     table = document.createElement("table");
                     div.appendChild(table);
 
-                jsonData[namePoule].forEach((team)=>{
+                equipe[namePoule].forEach((team)=>{
                     //console.log(team);
                     tr = document.createElement("tr");
                     table.appendChild(tr);
+
                     td = document.createElement("td");
                     td.innerHTML = team.Name;
                     tr.appendChild(td);
@@ -48,12 +53,39 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
                     td = document.createElement("td");
                     td.innerHTML = team.pts + "pts";
                     tr.appendChild(td);
+
+                    td = document.createElement("td");
+                    td.innerHTML = team.victoire + "V";
+                    tr.appendChild(td);
+
+                    td = document.createElement("td");
+                    td.innerHTML = team.nul + "N";
+                    tr.appendChild(td);
+
+                    td = document.createElement("td");
+                    td.innerHTML = team.defaite + "D";
+                    tr.appendChild(td);
+
+                    td = document.createElement("td");
+                    td.innerText= team.victoire+team.defaite+team.nul+" Jouer";
+                    tr.appendChild(td);
+
                 });
         };
     });
 });
 
-setInterval(function(){
-    location.reload();
-}30000)
+
+var urlposition = "http://localhost:8000/api/poule/5486/positions";
+
+fetch(urlposition).then(function(resultas){
+    console.log(resultas);
+    resultas.json().then(function(data){
+        console.log(data);
+    })
+});
+
+//setInterval(function(){
+//    location.reload();
+//}30000)
 {% endblock %}

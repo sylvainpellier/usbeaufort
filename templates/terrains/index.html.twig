@@ -12,61 +12,61 @@
             <svg class="img-fluid" viewBox="0 0 1224 547" width="1224" height="547" preserveAspectRatio="xMinYMin meet" >
                 <image width="1224" height="547" xlink:href="/img/PlanTerrainsTournoi.png" />
 
-                <g opacity="0.5" id="terrain1">
+                <g opacity="0" id="terrain1">
                     <a xlink:href="//localhost:8000/terrain/1">
                         <rect x="660" y="50" opacity="1" fill="blue" width="90" height="110" style="transform: rotate(9deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain2">
+                <g opacity="0" id="terrain2">
                     <a xlink:href="//localhost:8000/terrain/2">
                         <rect x="770" y="55" opacity="1" fill="red" width="90" height="105" style="transform: rotate(9deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain3">
+                <g opacity="0" id="terrain3">
                     <a xlink:href="//localhost:8000/terrain/3">
                         <rect x="865" y="-90" opacity="1" fill="red" width="80" height="100" style="transform: rotate(9deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain4">
+                <g opacity="0" id="terrain4">
                     <a xlink:href="//localhost:8000/terrain/4">
                         <rect x="958" y="-88" opacity="1" fill="red" width="80" height="100" style="transform: rotate(9deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain5">
+                <g opacity="0" id="terrain5">
                     <a xlink:href="//localhost:8000/terrain/5">
                         <rect x="347" y="49" opacity="1" fill="pink" width="95" height="110" style="transform: rotate(20deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain6">
+                <g opacity="0" id="terrain6">
                     <a xlink:href="//localhost:8000/terrain/6">
                         <rect x="256" y="22" opacity="1" fill="red" width="95" height="110" style="transform: rotate(26deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain7">
+                <g opacity="0" id="terrain7">
                     <a xlink:href="//localhost:8000/terrain/7">
                         <rect x="378" y="99" opacity="1" fill="yellow" width="110" height="90" style="transform: rotate(37deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain8">
+                <g opacity="0" id="terrain8">
                     <a xlink:href="//localhost:8000/terrain/8">
                         <rect x="374" y="200" opacity="1" fill="crimson" width="110" height="90" style="transform: rotate(37deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain9">
+                <g opacity="0" id="terrain9">
                     <a xlink:href="//localhost:8000/terrain/9">
                         <rect x="206" y="133" opacity="1" fill="red" width="110" height="90" style="transform: rotate(34deg);" ></rect>
                     </a>
                 </g>
 
-                <g opacity="0.5" id="terrain10">
+                <g opacity="0" id="terrain10">
                     <a xlink:href="//localhost:8000/terrain/10">
                         <rect x="206" y="233" opacity="1" fill="blue" width="110" height="90" style="transform: rotate(34deg);" ></rect>
                     </a>
@@ -88,30 +88,32 @@ var url = "http://localhost:8000/api/fields";
 fetch(url).then(function(resultas){
     console.log(resultas);
 
-    resultas.json().then(function(data){
-        console.log(data);
-        data.forEach(function(liste){
-            
-            let div = document.createElement("div");
-            document.getElementById("container").appendChild(div);
+    resultas.json().then(function(object){
+        //console.log(object);
+        data = object.data
+        console.log(data)
+        var FinLien= 1;
+        let div = document.createElement("div");
+        document.getElementById("container").appendChild(div);
 
-            let h3 = document.createElement("h3");
-            h3.innerText = "Terrain "+liste.Name;
-            div.appendChild(h3);
+        data.forEach(function(affiche){
+
+            let tr = document.createElement("tr");
+            div.appendChild(tr);
+
+            let td =document.createElement("td");
+            td.innerText= affiche.Name;
+            tr.appendChild(td);
 
             let a = document.createElement("a");
-            a.innerText= 'voir les matchs'; 
-            a.setAttribute("href", "//localhost:8000/terrain/"+liste.Name);
-            div.appendChild(a);
-
+            a.innerText= 'voir les matchs';
+            a.setAttribute("href", "//localhost:8000/terrain/"+FinLien);
+            td.appendChild(a);
+            FinLien++;
         });
+
     });
 });
-
-var image = document.getElementById("terrain");
-image.addEventListener("click", function(e){
-    console.log(e);
-}); 
 
 //setInterval(() => {
 //    location.reload();
