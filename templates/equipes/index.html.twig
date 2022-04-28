@@ -20,9 +20,59 @@
 
 {% block javascript %}
 
-    var url = "http://localhost:8000/api/teams";
+{{ parent() }}
+
+    var url = url_base+"/api/teams";
     fetch(url).then(function(resultas){
         console.log(resultas);
+        resultas.json().then(function(resultasJson){
+            console.log(resultasJson);
+            var DivU11 = document.getElementById("U11");
+            var DivU13 = document.getElementById("U13");
+            var DivU13F = document.getElementById("U13F");
+
+            equipe = resultasJson.data;
+            console.log(equipe);
+
+            equipe.forEach(function(liste){
+                if(liste.Category.Name === "U11"){
+                    let idTeam = liste.id;
+
+                    let tr = document.createElement("tr");
+                    DivU11.appendChild(tr);
+
+                    let a = document.createElement("a");
+                    a.innerText=liste.Name;
+                    a.setAttribute("href", "//localhost:8000/equipe/"+idTeam);
+                    tr.appendChild(a);
+                }
+
+                if(liste.Category.Name === "U13"){
+                    let idTeam = liste.id;
+
+                    let tr = document.createElement("tr");
+                    DivU13.appendChild(tr);
+
+                    let a = document.createElement("a");
+                    a.innerText=liste.Name;
+                    a.setAttribute("href", "//localhost:8000/equipe/"+idTeam);
+                    tr.appendChild(a);
+                }
+
+                if(liste.Category.Name === "U13F"){
+                    let idTeam = liste.id;
+
+                    let tr = document.createElement("tr");
+                    DivU13F.appendChild(tr);
+
+                    let a = document.createElement("a");
+                    a.innerText=liste.Name;
+                    a.setAttribute("href", "//localhost:8000/equipe/"+idTeam);
+                    tr.appendChild(a);
+                }
+
+            });
+        });
     });
 
 {% endblock %}

@@ -83,10 +83,9 @@
 {% endblock %}
 
 {% block javascript %}
+{{ parent() }}
 
-//Url de l'api : /api/fields
-
-var url = "http://localhost:8000/api/fields";
+var url =url_base+"/api/fields";
 
 fetch(url).then(function(resultas){
     console.log(resultas);

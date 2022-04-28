@@ -15,15 +15,15 @@
 {% endblock %}
 
 {% block javascript %}
+{{ parent() }}
+
 var tour1 = [];
 var tour2 = [];
-var tour3 = []; // trouver sollution
+var tour3 = [];
 var x =0;
 
 var TableauMatch =[];
-
 var titre = false;
-// faire une variable qui compte les match par phase et mettre tous les match dans un meme tableau ?
 
 function afficheTour(TableauEquipe){
     let test = false;

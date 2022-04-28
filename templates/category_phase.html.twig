@@ -20,7 +20,6 @@
 {% endblock %}
 
 {% block javascript %}
-
 fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id }}").then((data)=>{
     //console.log(data);
     data.json().then((jsonData)=>{

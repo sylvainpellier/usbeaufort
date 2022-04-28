@@ -5,7 +5,7 @@
 
 {% block body %}
 
-<div class="col-12 text-center">
+<div class="col-12 text-center" id="container">
     <h2>{{ equipe.Name }}</h2>
 
     <p>//Liste des matchs</p>
@@ -14,6 +14,72 @@
 {% endblock %}
 
 {% block javascript %}
+{{ parent() }}
 
+var url = url_base+"/api/team/{{equipe.id}}/matchs"
+fetch(url).then(function(resultas){
+    console.log(resultas);
+    resultas.json().then(function(resultasJson){
+        console.log(resultasJson);
+        
+        let match = resultasJson.data;
+
+        console.log(match)
+        var div = document.getElementById("container");
+        match.forEach(function(liste){
+            let tr = document.createElement("tr");
+            div.appendChild(tr);
+
+            let td = document.createElement("td");
+            td.innerText= liste.Phase.Name;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText= "_";
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText= liste.TeamA.Name;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText="/"
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText= liste.TeamB.Name;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText= "_";
+            tr.appendChild(td);
+
+            if(!liste.ScoreA){
+                td = document.createElement("td");
+                td.innerText="0";
+                tr.appendChild(td);
+            }else{
+                td = document.createElement("td");
+                td.innerText= liste.ScoreA;
+                tr.appendChild(td);
+            }
+            
+            td = document.createElement("td");
+            td.innerText= "/";
+            tr.appendChild(td);
+
+            if(!liste.ScoreB){
+                td = document.createElement("td");
+                td.innerText="0";
+                tr.appendChild(td);
+            }else{
+                td = document.createElement("td");
+                td.innerText= liste.ScoreB;
+                tr.appendChild(td);
+            }
+        
+        });
+    });
+})
 
 {% endblock %}
