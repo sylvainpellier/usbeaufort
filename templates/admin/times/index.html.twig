@@ -1,6 +1,37 @@
 {% extends "base.html.twig" %}
 {% block body %}
-<h2>Tous les matchs du tournoi</h2>
+
+        <h2>Tous les matchs du tournoi</h2>
+
+   <form> <div class="row">
+
+           <div class="col">Catégorie : <select class="form-select" name="filterCategorie"><option  ></option>
+                   {% for categorie in categories %}
+                       <option {% if categorie.id == filterCategorie %} selected {% endif %} value="{{ categorie.id }}">{{ categorie }}</option>
+                   {% endfor %}
+               </select></div>
+
+            <div class="col">Phase : <select class="form-select" name="filterPhase"><option  ></option>
+                            {% for phase in phases %}
+                                <option {% if phase.id == filterPhase %} selected {% endif %} value="{{ phase.id }}">{{ phase }}</option>
+                            {% endfor %}
+                    </select></div>
+
+           <div class="col">Terrain : <select class="form-select" name="filterField"><option></option>
+                   {% for field in fields %}
+                       <option {% if field.id == filterField %} selected {% endif %} value="{{ field.id }}">{{ field }}</option>
+                   {% endfor %}
+               </select></div>
+
+           <div class="col">Équipe : <select class="form-select" name="filterTeam"><option></option>
+                   {% for team in teams %}
+                       <option {% if team.id == filterTeam %} selected {% endif %} value="{{ team.id }}">{{ team }} - {{ team.Category }}</option>
+                   {% endfor %}
+               </select></div>
+
+       <div class="col"><br /><input class="form-select" type="submit" value="Filtrer" /></div>
+       </div>
+   </form>
 
 <table class="table mt-3 table-responsive table-bordered table-striped">
 <tr>
@@ -27,6 +58,9 @@
     {% endfor %}
 
 </table>
+
+        <div class="mt-5"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_generate_time") }}">Générer les horaires</a></div>
+
 
 {% endblock %}
 

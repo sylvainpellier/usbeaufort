@@ -6,6 +6,8 @@ use App\Repository\CategoryRepository;
 use App\Repository\FieldRepository;
 use App\Repository\MeetRepository;
 use App\Repository\PhaseRepository;
+use App\Repository\TeamRepository;
+use function array_filter;
 use function array_merge;
 use function array_splice;
 use DateInterval;
@@ -14,6 +16,7 @@ use DateTimeZone;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -69,7 +72,7 @@ class TimeController extends AbstractController
 
 
                     }
-
+                    shuffle($fields);
                     foreach ($fields as $field) {
 
                         if (isset($matchs[0])) {
@@ -98,9 +101,51 @@ class TimeController extends AbstractController
     /**
      * @Route("/admin/times", name="time_index")
      */
-    public function times_index(MeetRepository $meetRepository, CategoryRepository $categoryRepository): Response
+    public function times_index(Request $request, PhaseRepository $phaseRepository, TeamRepository $teamRepository, FieldRepository $fieldRepository, MeetRepository $meetRepository, CategoryRepository $categoryRepository): Response
     {
-        return $this->render("admin/times/index.html.twig", ["categories"=>$categoryRepository->findAll(),"times"=>$meetRepository->findBy([],["time"=>"ASC"])]);
+        $parameters = [];
+        $filterPhase = $request->get("filterPhase");
+        if($filterPhase)
+        {
+            $parameters["Phase"] = $filterPhase;
+        }
+
+        $filterField = $request->get("filterField");
+        if($filterField)
+        {
+            $parameters["Field"] = $filterField;
+        }
+
+        $data = $meetRepository->findBy($parameters,["time"=>"ASC"]);
+
+
+
+        $filterTeam = $request->get("filterTeam");
+        if($filterTeam)
+        {
+            $data = array_filter($data,function($m) use($filterTeam){  return ($m->getTeamA() && $m->getTeamA()->getId() == $filterTeam) || ($m->getTeamB() && $m->getTeamB()->getId() == $filterTeam)  ;});
+
+        }
+
+        $filterCategorie = $request->get("filterCategorie");
+        if($filterCategorie)
+        {
+            $data = array_filter($data,function($m) use($filterCategorie){  return ($m->getTeamA() && $m->getTeamA()->getCategory()->getId() == $filterCategorie) || ($m->getTeamB() && $m->getTeamB()->getCategory()->getId() == $filterCategorie)  ;});
+
+        }
+
+        return $this->render("admin/times/index.html.twig", [
+            "filterTeam"=>$filterTeam,
+            "filterCategorie" =>$filterCategorie,
+            "teams"=>$teamRepository->findAll(),
+            "filterField"=>$filterField,
+            "fields"=>$fieldRepository->findAll(),
+            "Phases"=>$phaseRepository->findAll(),
+            "filterPhase"=>$filterPhase,
+            "phases"=>$phaseRepository->findAll(),
+            "categories"=>$categoryRepository->findAll(),
+            "times"=>$data
+        ]);
 
     }
 }

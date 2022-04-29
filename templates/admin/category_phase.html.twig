@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Catégorie {{ category.Name }}{% endblock %}
+{% block title %}Catégorie {{ category.Name }} - {% endblock %}
 
 {% block body %}
 
     <div class="example-wrapper">
 
-        <h3 class="">Catégorie {{ category.Name }} - Phase : {{ phase.Name }}</h3>
+        <h3 class=""><a href="{{ path("app_admin_category",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : {{ phase.Name }}</h3>
 
 
 
@@ -86,8 +86,10 @@
 
         <div class="row mt-5">
 
-            <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs de la phase suivante</a></div>
-            <div class="col"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>
+            <div class="col-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs de la phase suivante</a></div>
+            <div class="col-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>
+            <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_update_phase",{idCategory:category.id, id:phase.id}) }}">Modifier la phase</a></div>
+            <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_simulate_match",{idCategory:category.id, idPhase:phase.id}) }}">Simuler tous les matchs</a></div>
 
 
         </div>

@@ -11622,3 +11622,5 @@ footer a:hover, footer a:active, footer a:focus {
     max-width: 17rem;
   }
 }
+
+.match_input { width: 100px;}

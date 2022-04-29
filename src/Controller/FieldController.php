@@ -2,8 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Field;
+use App\Form\FieldType;
+use App\Repository\CategoryRepository;
 use App\Repository\FieldRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use function json_encode;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -21,10 +27,73 @@ class FieldController extends OverrideApiController
     /**
      * @Route("/terrain/{id}", name="terrain_show")
      */
-    public function terrain_show(string $id, FieldRepository $fieldRepository): Response
+    public function terrain_show( FieldRepository $fieldRepository): Response
     {
         return $this->render("terrains/show.html.twig",["terrain"=>$fieldRepository->find($id)]);
 
+    }
+
+    /**
+     * @Route("/admin/terrain", name="admin_terrain")
+     */
+    public function admin_terrain(CategoryRepository $categoryRepository, FieldRepository $fieldRepository): Response
+    {
+        return $this->render("admin/terrains/index.html.twig",["categories" =>$categoryRepository->findAll() ,"terrains"=>$fieldRepository->findAll()]);
+
+    }
+
+    /**
+     * @Route("/admin/terrain/add/", name="admin_terrain_add")
+     */
+    public function admin_terrain_add( Request $request, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, FieldRepository $fieldRepository): Response
+    {
+       $name = $request->get("name");
+       $field = new Field();
+       $field->setName($name);
+       $entityManager->persist($field);
+       $entityManager->flush();
+
+        return $this->redirectToRoute("admin_terrain");
+    }
+
+    /**
+     * @Route("/admin/terrain/delete/{id}", name="admin_terrain_delete")
+     */
+    public function admin_terrain_delete(string $id,CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, FieldRepository $fieldRepository): Response
+    {
+        $field = $fieldRepository->find($id);
+        if($field)
+        {
+            $entityManager->remove($field);
+            $entityManager->flush();
+        }
+        return $this->render("admin/terrains/index.html.twig",["categories" =>$categoryRepository->findAll() ,"terrains"=>$fieldRepository->findAll()]);
+
+    }
+
+    /**
+     * @Route("/admin/terrain/{id}", name="app_admin_update_terrain")
+     */
+    public function app_admin_update_terrain(string $id, Request $request, EntityManagerInterface $entityManager, FieldRepository $fieldRepository, CategoryRepository $categoryRepository): Response
+    {
+        $field = $fieldRepository->find($id);
+        $form = $this->createForm(FieldType::class, $field);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $field = $form->getData();
+            $entityManager->persist($field);
+            $entityManager->flush();
+            $this->addFlash("success","Terrain modifiée avec succès");
+            return $this->redirectToRoute("admin_terrain");
+        }
+
+        return $this->render('admin/terrains/update.html.twig', [
+            'form' => $form->createView(),
+            'team' => $field,
+            'categories' => $categoryRepository->findAll(),
+        ]);
     }
 
     /**

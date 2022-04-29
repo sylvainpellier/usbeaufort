@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Meet;
+use App\Entity\Phase;
 use App\Entity\Position;
 use App\Entity\Poule;
 use App\Entity\Team;
+use App\Form\PhaseType;
 use App\Repository\CategoryRepository;
 use App\Repository\MeetRepository;
 use App\Repository\PhaseRepository;
@@ -40,32 +42,57 @@ class AdminController extends AbstractController
         ]);
     }
 
+
     /**
-     * @Route("/admin/addTeam/{idCategory}", name="app_add_team")
+     * @Route("/admin/phase/add/{idCategory}", name="app_admin_add_phase")
      */
-    public function app_add_team(Request $request, EntityManagerInterface $entityManager, string $idCategory, CategoryRepository $categoryRepository): Response
+    public function app_admin_add_phase( string $idCategory, Request $request, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
+        $phase = new Phase();
+        $phase->setCategory($categoryRepository->find($idCategory));
+        $form = $this->createForm(PhaseType::class,$phase);
 
-        if($request->get("nameTeam") && $request->get("idCategory"))
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid())
         {
-            $category = $categoryRepository->find($request->get("idCategory"));
-
-                $team = new Team();
-                $team->setCategory($category);
-                $team->setName($request->get("nameTeam"));
-                $entityManager->persist($team);
-                $entityManager->flush();
-
-                $this->addFlash("success","Équipe ajoutée avec succès");
+            $phase = $form->getData();
+            $entityManager->persist($phase);
+            $entityManager->flush();
+            $this->addFlash("success","Phase ajoutée avec succès");
+            return $this->redirectToRoute("app_admin_category_phase",["idCategory"=>$phase->getCategory()->getId(),"idPhase"=>$phase->getId()]);
         }
 
-        return $this->render('admin/addTeam.html.twig', [
+        return $this->render('admin/phase/update.html.twig', [
+            'form' => $form->createView(),
             'categories' => $categoryRepository->findAll(),
-            'category' => $categoryRepository->find($idCategory)
         ]);
     }
 
 
+    /**
+     * @Route("/admin/phase/{id}", name="app_admin_update_phase")
+     */
+    public function app_admin_update_phase(string $id, Request $request, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    {
+        $phase = $phaseRepository->find($id);
+        $form = $this->createForm(PhaseType::class, $phase);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $phase = $form->getData();
+            $entityManager->persist($phase);
+            $entityManager->flush();
+            $this->addFlash("success","Phase modifiée avec succès");
+            return $this->redirectToRoute("app_admin_category_phase",["idCategory"=>$phase->getCategory()->getId(),"idPhase"=>$phase->getId()]);
+        }
+
+        return $this->render('admin/phase/update.html.twig', [
+            'form' => $form->createView(),
+            'phase' => $phase,
+            'categories' => $categoryRepository->findAll(),
+        ]);
+    }
 
     /**
      * @Route("/admin/category/{id}", name="app_admin_category")
@@ -129,6 +156,32 @@ function findTeamByRang($teams,$rang)
         if($team['rang'] == $rang) return $team;
     }
 }
+
+    /**
+     * @Route("/admin/category/{idCategory}/phase/{idPhase}/simulate", name="app_admin_simulate_match")
+     */
+    public function app_admin_simulate_match(string $idCategory, PouleRepository $pouleRepository, PositionRepository $positionRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    {
+        $conn = $entityManager->getConnection();
+        $sql = " UPDATE usb_meets SET score_a = FLOOR( 1 + RAND( ) *3 ) , score_b = FLOOR( 1 + RAND( ) *3 ) WHERE phase_id = :phase ";
+        $stmt = $conn->prepare($sql);
+        $parameters = ["phase"=>$idPhase];
+        $stmt->executeQuery($parameters);
+
+        $conn = $entityManager->getConnection();
+        $sql = " UPDATE usb_meets SET penalty_a = FLOOR( 1 + RAND( ) *5 ) , penalty_b = FLOOR( 1 + RAND( ) *5 ) WHERE score_a = score_b AND phase_id = :phase";
+        $stmt = $conn->prepare($sql);
+        $parameters = ["phase"=>$idPhase];
+        $stmt->executeQuery($parameters);
+
+        $this->addFlash("success","Score simulé avec succès");
+
+        return $this->redirectToRoute("app_admin_category_phase",["idPhase"=>$idPhase,"idCategory"=>$idCategory]);
+
+
+        ;
+
+    }
 
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}/generate", name="app_admin_category_phase_generate")
@@ -365,14 +418,16 @@ function findTeamByRang($teams,$rang)
             foreach ($matchs as $match)
             {
                 $entityManager->remove($match);
-                $entityManager->flush();
             }
+
 
             foreach($phase->getPoules() as $poule)
             {
                 $entityManager->remove($poule);
-                $entityManager->flush();
             }
+
+            $entityManager->flush();
+
 
             $poules = [];
             $nbTeamByPoule = $phase->getType()->getTeamByPoule();
@@ -401,7 +456,6 @@ function findTeamByRang($teams,$rang)
                                 $position->setPhaseFrom($phase);
                                 $entityManager->persist($position);
                                 $entityManager->persist($poule);
-                                $entityManager->flush();
 
 
                         }
@@ -434,10 +488,11 @@ function findTeamByRang($teams,$rang)
 
                         }
                         $entityManager->persist($team);
-                        $entityManager->flush();
                     }
                 }
 
+
+                $entityManager->flush();
 
                 //deuxième parcour pour les équipes non classés
                 foreach ($teams as $team)
@@ -499,7 +554,6 @@ function findTeamByRang($teams,$rang)
                         $entityManager->persist($position);
                    }
 
-                   $entityManager->flush();
 
 
                     $entityManager->persist($poule);

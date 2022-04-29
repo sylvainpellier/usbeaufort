@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+
+{% block secondNav %}
+    {% include "admin/adminMenu.html.twig" %}
+{% endblock %}
+
+{% block body %}
+
+
+    <div class="example-wrapper mt-1">
+{{ form(form) }}
+
+    </div>
+{% endblock %}
+
+

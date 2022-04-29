@@ -8,19 +8,20 @@
 
    <table class="table table-responsive table-striped table-bordered">
 
-       <tr><th>Catégorie</th><th>Équipe</th><th>Horaires</th><th>Matchs</th><th>Pause min.</th><th>Pause max.</th><th>Pause repas</th><th>Alertes</th></tr>
+       <tr><th>Catégorie</th><th>Équipe</th><th>Horaires</th><th>Matchs</th><th>Pause min.</th><th>Pause max.</th><th>Terrains</th><th>Alertes</th></tr>
 
        {% for team in teams %}
            <tr>
 
                <td>{{ team.Category }}</td>
-               <td>{{ team }} </td>
+               <td>{{ team }}
+               </td>
                <td>{% for meet in team.meets|orderMeets  %}{{ meet.time|date("H:i:s") }}{% if not loop.last %} - {% endif %}{% endfor %}</td>
-               <td>{{ team.meets|length }}</td>
+               <td>{{ team.meets|length }}  <a href="{{ path("time_index",{filterTeam:team.id}) }}" class="btn float-end btn-sm btn-primary">voir</a></td>
                <td {% set min = team.meets|minPause %} {% if  min <= (30 * 60) %} class="alert-danger" {% endif %}>{% if team.meets|length > 1 %}{{ min|date("H:i:s") }}{% endif %}</td>
                <td >{% if team.meets|length > 1 %}{{ team.meets|maxPause|date("H:i:s") }}{% endif %}</td>
 
-               <td></td>
+               <td>{% for meet in team.meets|orderMeets  %}{% if meet.field %}{{ meet.field.Id }}{% endif %}{% if not loop.last %} - {% endif %}{% endfor %}</td>
                <td>{% set last = 0 %}{% for meet in team.meets  %}{% if last == meet.time %}<span class="alert-danger">deux matchs en même temps</span>{% endif %}{% set last = meet.time %} {% endfor %}
                    {% if team.meets|length > 1 and  min <= (30 * 60) %}<span class="alert-danger">pas assez de pause</span>{% endif %}
                </td>

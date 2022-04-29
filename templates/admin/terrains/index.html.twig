@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des terrains{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+
+   <table class="table table-responsive table-striped table-bordered">
+
+       <tr><th>#</th><th>Équipe</th><th>Matchs</th><th>Actions</th></tr>
+
+       {% for terrain in terrains %}
+           <tr>
+                <td>{{ terrain.id }}</td>
+               <td>{{ terrain.Name }} </td>
+               <td><a href="{{ path("time_index",{filterField:terrain.id}) }}" class="btn btn-sm btn-primary">matchs</a></td>
+               <td><a href="{{ path('app_admin_update_terrain', {id:terrain.id}) }}" class="btn btn-primary btn-sm">modifier</a> - <a href="{{ path('admin_terrain_delete', {id:terrain.id}) }}" class="btn btn-danger btn-sm">supprimer</a></td>
+
+           </tr>
+       {% endfor %}
+   </table>
+
+
+    <h2 class="mt-5">Ajouter un terrain</h2>
+    <form  action="{{ path("admin_terrain_add") }}" method="POST">
+        <div class="form-group">
+            <input type="text" class="form-control" id="name" name="name"  placeholder="Nom du terrain">
+        </div>
+
+        <button type="submit" class="btn d-block w-100 mt-1 btn-primary">Ajouter le terrain</button>
+    </form>
+
+
+
+</div>
+{% endblock %}
+
+{% block secondNav %}
+{% include "admin/adminMenu.html.twig" %}
+{% endblock %}

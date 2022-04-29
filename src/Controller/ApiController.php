@@ -74,7 +74,7 @@ class ApiController extends OverrideApiController
             $resultSet = $stmt->executeQuery($parameters);
             $resultats = $resultSet->fetchAll();
 
-            if(count($resultats) === 0){
+            if(count($resultats) === 0 && $phase->getPhasePrecedente()){
             $teams = [];
                 $poules = $phase->getPhasePrecedente()->getPoules();
                 foreach($poules as $poule) {
@@ -87,7 +87,7 @@ class ApiController extends OverrideApiController
                         $t["victoire"] = 0;
                         $t["defaite"] = 0;
                         $t["nul"] = 0;
-                        $t["poule"] = $position->getPouleTo()->getId();
+                        $t["poule"] = $position->getPouleTo() ? $position->getPouleTo()->getId() : null;
                         $t["Name"] = $position->getRang() . ($position->getRang() > 1 ? "ème" : "er") . " de la poule " . $position->getPouleFrom()->getName();
                         $teams[] = $t;
                     }

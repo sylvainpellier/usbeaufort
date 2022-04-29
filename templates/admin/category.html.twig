@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Catégorie {{ category.Name }}{% endblock %}
+{% block title %}Catégorie {{ category.Name }} - {% endblock %}
 
 {% block body %}
 
@@ -21,7 +21,11 @@
     <h4>{{ category.teams|length }} équipes</h4>
 
     {% for team in category.teams  %}
-    <a class="btn btn-primary btn-lg ml-4 mb-3" href="">{{ team.Name }}</a>
+    <div class="btn btn-primary btn-lg ml-4 mb-3">
+        <a class="text-white text-decoration-none" href="{{ path("app_admin_update_team",{id:team.id}) }}">{{ team.Name }} {% if team.rang %}<span class="small">({{ team.rang }}</span>){% endif %}</a>
+        <a href="{{ path("admin_team_delete",{id:team.id}) }}" class="bg-danger px-1 py-0 text-decoration-none ml-3 small text-white rounded-1">x</a>
+    </div>
+
         {% endfor %}
 
     <hr class="mt-5">
@@ -32,7 +36,7 @@
 
 
 
-        <div class="col"><a class="btn btn-secondary w-100 m-2" href="">Ajouter une phase</a></div>
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_add_phase", {idCategory: category.id}) }}">Ajouter une phase</a></div>
 
 
         <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_generate", { idCategory:category.id }) }}">Générer les matchs des différentes phases</a></div>
