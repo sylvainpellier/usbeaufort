@@ -5,29 +5,13 @@
 
 {% block body %}
 
-    <div class="col-12 text-center">
+    <div class="col-12 mt-4 text-center">
        <h2>Règlement</h2>
 
-        <p>//pouvoir télécharger le fichier PDF</p>
-
-        <p>//affichage du fichier dans une iframe</p>
-
-        //voir comment faire pour l'afficher !! -> probleme de lien !
-        
-        <iframe id="Frame-reglement"
-            title="Reglement"
-            width="1000"
-            height="500"
-            src="./pdf-test.pdf ">
-        </iframe>
-
-        <a href="./pdf-test.pdf">Telecharger le reglement</a>
+        <object data="/docs/reglement.pdf" style="width: 100%; height: 700px;" type="application/pdf">
+            <embed src="/docs/reglement.pdf" type="application/pdf" />
+        </object>
+        <a class="btn btn-primary w-100"  href="/docs/reglement.pdf">Telecharger le reglement</a>
     </div>
-
-{% endblock %}
-
-{% block javascript %}
-
-//Url de l'api : /api/fields
 
 {% endblock %}
