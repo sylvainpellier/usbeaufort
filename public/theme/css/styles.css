@@ -11624,3 +11624,6 @@ footer a:hover, footer a:active, footer a:focus {
 }
 
 .match_input { width: 100px;}
+
+nav img { height: 50px;
+  margin-right: 20px; }
