@@ -62,6 +62,11 @@ class Team
      */
     private $Rang;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $GroupeInitial;
+
 
 
     public function __construct()
@@ -187,6 +192,18 @@ class Team
     public function __toString() : string
     {
         return $this->getName();
+    }
+
+    public function getGroupeInitial(): ?int
+    {
+        return $this->GroupeInitial;
+    }
+
+    public function setGroupeInitial(?int $GroupeInitial): self
+    {
+        $this->GroupeInitial = $GroupeInitial;
+
+        return $this;
     }
 
 
