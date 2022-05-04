@@ -6,11 +6,7 @@
 
     <div id="container" class="col-12 text-center">
 
-        <p>//pouvoir cliquer sur un terrain pour arriver à la liste des matchs du terrain</p>
 
-        <p>// plus afficher la liste des terrains (avec un lien aussi vers les matchs du terrain)</p>
-
-        <p>//URL pour les terrains /terrain/1</p>
         <figure id="terrain">
             <svg class="img-fluid" viewBox="0 0 1224 547" width="1224" height="547" preserveAspectRatio="xMinYMin meet" >
                 <image width="1224" height="547" xlink:href="/img/PlanTerrainsTournoi.png" />
@@ -96,21 +92,24 @@ fetch(url).then(function(resultas){
         console.log(data)
         var FinLien= 1;
         let div = document.createElement("div");
+                    div.classList.add("row");
+
         document.getElementById("container").appendChild(div);
 
         data.forEach(function(affiche){
 
-            let tr = document.createElement("tr");
-            div.appendChild(tr);
-
-            let td =document.createElement("td");
-            td.innerText= affiche.Name;
-            tr.appendChild(td);
 
             let a = document.createElement("a");
-            a.innerText= 'voir les matchs';
+            a.innerText= affiche.Name;
+             a.classList.add("col-4");
+            a.classList.add("btn");
+                    a.classList.add("btn-primary");
+                    a.classList.add("d-inline");
+                     a.classList.add("mb-2");
+
+
             a.setAttribute("href", "//localhost:8000/terrain/"+FinLien);
-            td.appendChild(a);
+            div.appendChild(a);
             FinLien++;
         });
 

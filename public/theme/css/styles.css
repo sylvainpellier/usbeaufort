@@ -11627,3 +11627,5 @@ footer a:hover, footer a:active, footer a:focus {
 
 nav img { height: 50px;
   margin-right: 20px; }
+
+.table > :not(:first-child) { border:0px; }

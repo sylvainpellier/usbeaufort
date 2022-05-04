@@ -123,7 +123,7 @@ class TeamController extends OverrideApiController
      */
     public function index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
-       return $this->send($serializer->serialize($teamRepository->findAll(),'json',['groups' => ['team','category']]));
+       return $this->send($serializer->serialize($teamRepository->findBy([],["Name"=>"ASC"]),'json',['groups' => ['team','category']]));
     }
 
     /**

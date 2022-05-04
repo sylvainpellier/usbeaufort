@@ -5,13 +5,8 @@
 
 {% block body %}
 
-    <div class="col-12 text-center">
 
-        <p>//Afficher trois colonnes, une colonne par catégorie, pouvoir cliquer sur une équipe et afficher les matchs de l'équipe </p>
-    </div>
-
-
-    <div class="col-4"><table class="table table-bordered table-striped text-center" id="U11"><tr><th>U11</th></tr></table></div>
+    <div class="col-4"><table class="table table-bordered table-striped  text-center" id="U11"><tr><th>U11</th></tr></table></div>
     <div class="col-4"><table class="table table-bordered table-striped text-center" id="U13"><tr><th>U13</th></tr></table></div>
     <div class="col-4">  <table class="table table-bordered table-striped text-center" id="U13F"><tr><th>U13F</th></tr></table></div>
 
@@ -44,6 +39,11 @@
                     let a = document.createElement("a");
                     a.innerText=liste.Name;
                     a.setAttribute("href", "//localhost:8000/equipe/"+idTeam);
+                    a.classList.add("btn");
+                    a.classList.add("btn-sm");
+                    a.classList.add("btn-primary");
+                    a.classList.add("w-100");
+                    a.classList.add("mt-2");
                     tr.appendChild(a);
                 }
 
@@ -54,6 +54,11 @@
                     DivU13.appendChild(tr);
 
                     let a = document.createElement("a");
+                    a.classList.add("btn");
+                    a.classList.add("btn-sm");
+                    a.classList.add("btn-primary");
+                    a.classList.add("w-100");
+                    a.classList.add("mt-2");
                     a.innerText=liste.Name;
                     a.setAttribute("href", "//localhost:8000/equipe/"+idTeam);
                     tr.appendChild(a);
@@ -67,6 +72,11 @@
 
                     let a = document.createElement("a");
                     a.innerText=liste.Name;
+                    a.classList.add("btn");
+                    a.classList.add("btn-sm");
+                    a.classList.add("btn-primary");
+                    a.classList.add("w-100");
+                    a.classList.add("mt-2");
                     a.setAttribute("href", "//localhost:8000/equipe/"+idTeam);
                     tr.appendChild(a);
                 }

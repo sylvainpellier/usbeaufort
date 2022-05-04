@@ -28,6 +28,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function usort;
 use function var_dump;
 
 class AdminController extends AbstractController
@@ -419,7 +420,8 @@ function findTeamByRang($teams,$rang)
         $alphas = range('A', 'Z');
         $category = $categoryRepository->find($idCategory);
         $phases = $category->getPhases();
-        $teams = $teamRepository->findBy(["Category"=>$category], ["Rang"=>"ASC"]);
+        $teams = $teamRepository->findBy(["Category"=>$category], ["GroupeInitial"=>"ASC","Rang"=>"ASC"]);
+
 
         foreach ($phases as $phase)
         {
@@ -475,6 +477,8 @@ function findTeamByRang($teams,$rang)
 
 
                 $entityManager->flush();
+
+
 
 
                 //premier parcours pour les équipes classés
