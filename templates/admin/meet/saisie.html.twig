@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Saisie - {% endblock %}
+
+{% block body %}
+
+    <div class="example-wrapper">
+
+        <hr class="">
+
+
+        <h4>Saisie du match entre {{ meet.teamA }} et {{ meet.teamB }} </h4>
+        <hr class="">
+
+        <table class="table table-striped table-bordered">
+
+        {% include "admin/block/displayMatch.html.twig" %}
+
+        </table>
+
+
+
+
+        <div class="row mt-5">
+
+            {#<div class="col"><a class="btn btn-secondary w-100 m-2" href="">Ajouter une équipe</a></div>#}
+
+        </div>
+
+
+    </div>
+{% endblock %}
+
+{% block secondNav %}
+    {% include "admin/adminMenu.html.twig" %}
+{% endblock %}

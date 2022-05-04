@@ -17,7 +17,7 @@
                <td>{{ team }}
                </td>
                <td>{% for meet in team.meets|orderMeets  %}{{ meet.time|date("H:i:s") }}{% if not loop.last %} - {% endif %}{% endfor %}</td>
-               <td>{{ team.meets|length }}  <a href="{{ path("time_index",{filterTeam:team.id}) }}" class="btn float-end btn-sm btn-primary">voir</a></td>
+               <td>{{ team.meets|length }}  <a href="{{ path("time_index",{filterTeam:team.id}) }}" class="btn float-end btn-sm btn-outline-primary">voir</a></td>
                <td {% set min = team.meets|minPause %} {% if  min <= (30 * 60) %} class="alert-danger" {% endif %}>{% if team.meets|length > 1 %}{{ min|date("H:i:s") }}{% endif %}</td>
                <td >{% if team.meets|length > 1 %}{{ team.meets|maxPause|date("H:i:s") }}{% endif %}</td>
 

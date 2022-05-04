@@ -4,33 +4,8 @@
     <table class="table table-striped table-bordered">
         <tr><th>Équipe A</th><th></th><th>Équipe B</th><th>Score A</th><th>Score B</th><th>TAB</th><th>TAB</th><th>Horaire</th><th colspan="2">Terrain</th></tr>
         {% for meet in group %}
-            <tr id="meet_{{ meet.id }}" class="text-black">
-                <form action="{{ path("admin_update_match",{id:meet.id}) }}" method="post">
-                    <input type="hidden" name="meet" value="{{ meet.id }}">
-                <td>{% if meet.teamA %}
-                        {{ meet.teamA.Name }} {% if meet.scoreA %}({{ meet.scoreA }}){% endif %} {% if meet.PenaltyA %}(tab {{ meet.PenaltyA }}){% endif %}
-                        {% elseif phase.param == 24  and meet.positionA is not null and meet.positionA.intParam is not null %}3ème de poule ({{ meet.positionA.intParam }}{% if meet.positionA.intParam is not null and meet.positionA.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
-                        {% elseif meet.positionA %}{{ meet.positionA.Rang }}{% if meet.positionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionA.pouleFrom }}
-                    {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
-                <td>-</td>
-                <td>{% if meet.teamB %}{{ meet.teamB.Name }} {% if meet.ScoreB %}({{ meet.ScoreB }}){% endif %}  {% if meet.PenaltyB %}(tab {{ meet.PenaltyB }}){% endif %}
-                    {% elseif phase.param == 24  and meet.positionB is not null  and meet.positionB.intParam is not null %}3ème de poule ({{ meet.positionB.intParam }}{% if meet.positionB.intParam is not null and meet.positionB.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
-                    {% elseif meet.positionB %}{{ meet.positionB.Rang }}{% if meet.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionB.pouleFrom }}
-                    {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
+           {% include "admin/block/displayMatch.html.twig" %}
 
-                <td class="{% if meet.scoreA > meet.ScoreB %} text-bold {% endif %}"><input type="text" class="match_input" name="scoreA" value="{{ meet.scoreA }}" /></td>
-                <td class="{% if meet.ScoreB > meet.scoreA %} text-bold {% endif %}"><input type="text" class="match_input" name="scoreB" value="{{ meet.ScoreB }}" /></td>
-                <td class="{% if meet.PenaltyA > meet.penaltyB %} text-bold {% endif %}"><input type="text" class="match_input" name="penaltyA" value="{% if meet.scoreA == meet.scoreB %}{{ meet.PenaltyA }}{% endif %}" /></td>
-                <td class="{% if meet.PenaltyB > meet.penaltyA %} text-bold {% endif %}"><input type="text" class="match_input" name="penalytB" value="{% if meet.scoreA == meet.scoreB %}{{ meet.PenaltyB }}{% endif %}" /></td>
-                <td>{% if meet.time is not null and meet.time %}{{ meet.time|date("H:i:s") }}{% endif %}</td>
-                <td colspan="2">{{ meet.field }}</td>
-            </tr><tr>
-            <td>Arbitres : </td>
-                <td colspan="8"><small><input type="text" class="w-100" name="arbitre" value="{{ meet.arbitre }}" /></small></td>
-                <td><input type="submit" name="submit" value="Enregistrer" class="btn btn-sm btn-primary" /></td>
-
-            </tr>
-            </form>
         {% endfor %}
 
     </table>

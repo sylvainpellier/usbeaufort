@@ -42,6 +42,18 @@ class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/admin/saisie/{id}", name="app_admin_saisie")
+     */
+    public function app_admin_saisie( string $id, Request $request, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    {
+
+        return $this->render('admin/meet/saisie.html.twig', [
+            'meet' => $meetRepository->find($id),
+            'categories' => $categoryRepository->findAll(),
+        ]);
+    }
+
 
     /**
      * @Route("/admin/phase/add/{idCategory}", name="app_admin_add_phase")

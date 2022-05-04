@@ -35,7 +35,7 @@
 
 <table class="table mt-3 table-responsive table-bordered table-striped">
 <tr>
-        <th>Equipe A</th><th>-</th><th>Equipe B</th><th>Phase</th><th>Tour</th><th>Terrain</th><th>Horaire</th><th>Arbitre</th></tr>
+        <th>Equipe A</th><th>-</th><th>Equipe B</th><th>Phase</th><th>Tour</th><th>Terrain</th><th>Horaire</th><th>Arbitre</th><th>Saisie</th></tr>
   {%  for meet in times %}
 
         <tr>
@@ -52,7 +52,8 @@
                 <td>{{ meet.tour }}</td>
                 <td>{% if meet.field %}{{ meet.field.Name }}{% endif %}</td>
                 <td>{{ meet.time|date("d/m/y H:i:s") }}</td>
-                <td><smal>{{ meet.arbitre }}</smal></td>
+                <td><small>{{ meet.arbitre }}</small></td>
+            <td>{% if meet.scoreA is null and meet.scoreB is null %}<a class="btn btn-sm btn-primary" href="{{ path("app_admin_saisie",{id:meet.id}) }}">saisir</a>{% endif %}</td>
         </tr>
 
     {% endfor %}

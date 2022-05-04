@@ -8,14 +8,14 @@
 
    <table class="table table-responsive table-striped table-bordered">
 
-       <tr><th>#</th><th>Équipe</th><th>Matchs</th><th>Actions</th></tr>
+       <tr><th>#</th><th>Équipe</th><th>Actions</th></tr>
 
        {% for terrain in terrains %}
            <tr>
                 <td>{{ terrain.id }}</td>
                <td>{{ terrain.Name }} </td>
-               <td><a href="{{ path("time_index",{filterField:terrain.id}) }}" class="btn btn-sm btn-primary">matchs</a></td>
-               <td><a href="{{ path('app_admin_update_terrain', {id:terrain.id}) }}" class="btn btn-primary btn-sm">modifier</a> - <a href="{{ path('admin_terrain_delete', {id:terrain.id}) }}" class="btn btn-danger btn-sm">supprimer</a></td>
+               <td>             <a href="{{ path("time_index",{filterField:terrain.id}) }}" class="btn btn-sm btn-info">voir les matchs</a>
+                - <a href="{{ path('app_admin_update_terrain', {id:terrain.id}) }}" class="btn btn-primary btn-sm">modifier</a> - <a href="{{ path('admin_terrain_delete', {id:terrain.id}) }}" class="btn btn-danger btn-sm">supprimer</a></td>
 
            </tr>
        {% endfor %}
