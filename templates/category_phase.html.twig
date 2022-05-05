@@ -25,7 +25,7 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
     data.json().then((jsonData)=>{
         //console.log(jsonData);
         let equipe = jsonData.data;
-        //console.log(equipe);
+        console.log(equipe);
         for(const namePoule in equipe){
             //console.log(namePoule);
             let poule = equipe[namePoule];
@@ -42,35 +42,89 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
                     btn.setAttribute("href","//localhost:8000/matchs/1/phase/{{ phase }}/groupe/"+namePoule);
 
                     table = document.createElement("table");
+                    table.setAttribute("class", "table table-bordered" )
                     div.appendChild(table);
+
+                    let thead = document.createElement("thead");
+                    table.appendChild(thead);
+
+                    let th = document.createElement("th");
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
+
+                    th = document.createElement("th");
+                    th.innerText = "Equipe";
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
+
+                    th = document.createElement("th");
+                    th.innerText = "Points";
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
+
+                    th = document.createElement("th");
+                    th.innerText = "But Pour";
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
+
+                    th = document.createElement("th");
+                    th.innerText = "But Contre";
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
+
+                    th = document.createElement("th");
+                    th.innerText = "V";
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
+
+                    th = document.createElement("th");
+                    th.innerText = "N";
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
+
+                    th = document.createElement("th");
+                    th.innerText = "D";
+                    th.setAttribute("scope", "col");
+                    thead.appendChild(th);
 
                 equipe[namePoule].forEach((team)=>{
                     //console.log(team);
                     tr = document.createElement("tr");
                     table.appendChild(tr);
 
+                    th = document.createElement("th");
+                    th.setAttribute("scope", "row");
+                    tr.appendChild(th);
+                    
                     td = document.createElement("td");
                     td.innerHTML = team.Name;
                     tr.appendChild(td);
 
                     td = document.createElement("td");
-                    td.innerHTML = team.pts + "pts";
+                    td.innerHTML = team.pts;
                     tr.appendChild(td);
 
                     td = document.createElement("td");
-                    td.innerHTML = team.victoire + "V";
+                    td.innerHTML= team.but_contre;
+                    tr.appendChild(td);
+
+
+                    td = document.createElement("td");
+                    td.innerHTML= team.but_pour;
+                    tr.appendChild(td);
+
+                    
+
+                    td = document.createElement("td");
+                    td.innerHTML = team.victoire;
                     tr.appendChild(td);
 
                     td = document.createElement("td");
-                    td.innerHTML = team.nul + "N";
+                    td.innerHTML = team.nul;
                     tr.appendChild(td);
 
                     td = document.createElement("td");
-                    td.innerHTML = team.defaite + "D";
-                    tr.appendChild(td);
-
-                    td = document.createElement("td");
-                    td.innerText= team.victoire+team.defaite+team.nul+" Jouer";
+                    td.innerHTML = team.defaite;
                     tr.appendChild(td);
 
                 });
@@ -82,9 +136,9 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
 var urlposition = "http://localhost:8000/api/poule/5486/positions";
 
 fetch(urlposition).then(function(resultas){
-    console.log(resultas);
+    //console.log(resultas);
     resultas.json().then(function(data){
-        console.log(data);
+        //console.log(data);
     })
 });
 

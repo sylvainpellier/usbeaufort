@@ -7,7 +7,7 @@
 
     <h1>Matchs de la catégorie {{ category.Name }} - Phase {{ phase }} - Groupe {{ groupe }}</h1>
 
-    <div class="table table-bordered" id="data">
+    <div class="table table-bordered" class="table-responsive" id="data">
 
     </div>
 
@@ -24,10 +24,12 @@ var x =0;
 
 var TableauMatch =[];
 var titre = false;
+var idTableau = 1;
 
-function afficheTour(TableauEquipe){
+function afficheTour(TableauEquipe, idboard){
     let test = false;
-    let a = 0;
+    console.log(idboard);
+    let a = 1;
 
     TableauEquipe.forEach(function(e){
         //console.log(e);
@@ -35,22 +37,88 @@ function afficheTour(TableauEquipe){
             let br = document.createElement("br");
             document.getElementById("data").appendChild(br);
 
+            let h3 = document.createElement("h3");
+            h3.innerText= "Tour "+e.Tour;
+            document.getElementById("data").appendChild(h3);
+
+            let table = document.createElement("table");
+            table.setAttribute("id", "board"+idboard);
+            table.setAttribute("class", "table table-bordered")
+            document.getElementById("data").appendChild(table);
+
+            let thead = document.createElement("thead");
+            table.appendChild(thead);
+
             let tr = document.createElement("tr");
-            tr.innerText= "Tour "+ e.Tour
-            document.getElementById("data").appendChild(tr);
+            thead.appendChild(tr);
+
+            let th = document.createElement("th");
+            th.innerText= "#"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Equipe A"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Equipe B"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Score A"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Score B"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Tir au but A"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Tir au but B"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Horaire"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Arbitre"
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Terrain";
+            th.setAttribute("scope", "col");
+            tr.appendChild(th);
+            
             test = true;
         }
-        
+
         let tr = document.createElement("tr");
-        document.getElementById("data").appendChild(tr);
+        document.getElementById("board"+idboard).appendChild(tr);
+
+        let th = document.createElement("th");
+        th.setAttribute("scope", "row");
+        th.innerText = a;
+        tr.appendChild(th);
+
+        a++;
 
         let td = document.createElement("td");
         td.innerText= e.TeamA.Name;
         tr.appendChild(td);
 
-        td = document.createElement("td");
-        td.innerText="-";
-        tr.appendChild(td);
 
         td = document.createElement("td");
         td.innerText= e.TeamB.Name;
@@ -59,7 +127,7 @@ function afficheTour(TableauEquipe){
         if(!e.ScoreA){
             //console.log(e.ScoreA);
             td = document.createElement("td");
-            td.innerText = "_";
+            td.innerText = "0";
             tr.appendChild(td);
         }else{
             //console.log(e.ScoreA);
@@ -68,14 +136,11 @@ function afficheTour(TableauEquipe){
             tr.appendChild(td);
         }
 
-        td = document.createElement("td");
-        td.innerText = "/";
-        tr.appendChild(td);
 
         if(!e.ScoreB){
             //console.log(e.ScoreB);
             td = document.createElement("td");
-            td.innerText = "_";
+            td.innerText = "0";
             tr.appendChild(td);
         }else{
             //console.log(e.ScoreB);
@@ -84,15 +149,54 @@ function afficheTour(TableauEquipe){
             tr.appendChild(td);
         }
 
+        if(!e.PenaltyA){
+            td = document.createElement("td");
+            td.innerText = "0";
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            td.innerText = e.PenaltyA;
+            tr.appendChild(td);
+        }
+
+        if(!e.PenaltyB){
+            td = document.createElement("td");
+            td.innerText = "0";
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            td.innerText = e.PenaltyB;
+            tr.appendChild(td);
+        }
+
+        td = document.createElement("td");
+        td.innerText ="definir";
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText ="definir";
+        tr.appendChild(td);
+
+        if(!e.Field.Name){
+            td = document.createElement("td");
+            td.innerText ="a definir";
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            td.innerText =e.Field.Name;
+            tr.appendChild(td);
+        }
     });
-}
+    idboard++;
+    return idboard;
+};
 
 fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
     //console.log(data);
     data.json().then((jsonData)=>{
-        console.log(jsonData)
+        //console.log(jsonData)
         let listeMatch = jsonData.data;
-        console.log(listeMatch)
+        //console.log(listeMatch)
         listeMatch.forEach((match)=>{
             //console.log(match);
 
@@ -112,9 +216,9 @@ fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id
 
         });
 
-        afficheTour(tour1);
-        afficheTour(tour2);
-        afficheTour(tour3);
+        idTableau= afficheTour(tour1, idTableau);
+        idTableau= afficheTour(tour2, idTableau);
+        idTableau= afficheTour(tour3, idTableau);
         
     });
 });
