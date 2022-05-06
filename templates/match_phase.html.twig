@@ -1,11 +1,11 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Matchs de la catégorie {{ category.Name }} - Phase {{ phase }} - Groupe {{ groupe }} - {% endblock %}
+{% block title %}Matchs de la catégorie {{ category.Name }} - {{ phase }} - Groupe {{ groupe }} - {% endblock %}
 
 
 {% block body %}
 
-    <h1>Matchs de la catégorie {{ category.Name }} - Phase {{ phase }} - Groupe {{ groupe }}</h1>
+    <h1>Matchs de la catégorie {{ category.Name }} - {{ phase }} - Groupe {{ groupe }}</h1>
 
     <div  id="data">
 
@@ -28,7 +28,7 @@ var idTableau = 1;
 
 var table, div, tbody;
 
-fetch("/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
+fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
     //console.log(data);
     data.json().then((jsonData)=>{
         //console.log(jsonData)

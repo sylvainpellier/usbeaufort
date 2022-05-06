@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\CategoryRepository;
+use App\Repository\PhaseRepository;
 use function json_encode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -23,25 +24,28 @@ class CategoryController extends OverrideApiController
     /**
      * @Route("/categorie/{id}/phase/{phase}", name="category_display_phase")
      */
-    public function display_phase(string $id, string $phase, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    public function display_phase(string $id, string $phase, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {
+        $phase = $phaseRepository->find($phase);
         return $this->render("category_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase]);
     }
 
     /**
      * @Route("/categorie/{id}", name="category_display")
      */
-    public function display(string $id, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    public function display(string $id, CategoryRepository $categoryRepository, PhaseRepository $phaseRepository, SerializerInterface $serializer): Response
     {
         $categorie = $categoryRepository->find($id);
         $phaseEnCours = $categorie->getPhaseEnCours();
 
         if($phaseEnCours)
         {
-            return $this->display_phase($id, $phaseEnCours->getId(), $categoryRepository, $serializer);
+            return $this->display_phase($id, $phaseEnCours->getId(), $phaseRepository, $categoryRepository, $serializer);
         } else
         {
-            return $this->render("category.html.twig", ["category"=>$categoryRepository->find($id)]);
+            $phaseEnCours = $phaseRepository->findOneBy(["category"=>$id]);
+            return $this->display_phase($id, $phaseEnCours->getId(), $phaseRepository, $categoryRepository, $serializer);
+
         }
 
     }

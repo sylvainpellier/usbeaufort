@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Repository\CategoryRepository;
 use App\Repository\TeamRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use function json_decode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -15,8 +17,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class OverrideApiController extends AbstractController
+class OverrideController extends AbstractController
 {
+
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -29,15 +32,4 @@ class OverrideApiController extends AbstractController
         return parent::render($view, $parameters, $response);
     }
 
-    public function send($dataToSend,$param = null): Response
-    {
-        $data = [];
-        $data["ok"] = true;
-        $data["param"] = $param;
-        $data["data"] = json_decode($dataToSend);
-
-        return $this->json(($data));
-
-
-    }
 }

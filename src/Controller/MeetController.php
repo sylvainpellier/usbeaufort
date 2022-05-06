@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Meet;
 use App\Repository\CategoryRepository;
 use App\Repository\MeetRepository;
+use App\Repository\PhaseRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,8 +48,9 @@ class MeetController extends OverrideApiController
     /**
      * @Route("/matchs/{id}/phase/{phase}/groupe/{groupe}", name="display_matchs")
      */
-    public function display_phase(string $id, string $phase, string $groupe, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    public function display_phase(string $id, string $phase, string $groupe, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {
+        $phase = $phaseRepository->find($phase);
         return $this->render("match_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase, "groupe" => $groupe]);
     }
 
