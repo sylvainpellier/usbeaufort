@@ -4,16 +4,16 @@
 
 
 {% block body %}
-
+{% if category.phases|length > 1 %}
     <div class="row mb-4">
         {% for phase in category.phases %}
             <div class="col-4"><a class="btn btn-primary w-100 text-center" href="{{ path("category_display_phase",{id:category.id,phase:phase.id}) }}">{{ phase.Name }}</a></div>
         {% endfor %}
 
 
-    </div>
+    </div>{% endif %}
 
-    <h1>Catégorie {{ category.Name }} - {{ phase }}</h1>
+    <h3 class=""><a href="{{ path("category_display",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : {{ phase.Name }}</h3>
 
 
     <div id="data">
