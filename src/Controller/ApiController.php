@@ -200,7 +200,7 @@ class ApiController extends OverrideApiController
         $phase = $request->get("phase");
         $poule = $request->get("poule");
 
-       $matchs = $meetRepository->findAllCriterias($category, $phase, $poule);
+       $matchs = $meetRepository->findAllCriterias(null, $phase, $poule);
 
        if(count($matchs) === 0)
        {

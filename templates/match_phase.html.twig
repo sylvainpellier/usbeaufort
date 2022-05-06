@@ -17,15 +17,6 @@
 {% block javascript %}
 {{ parent() }}
 
-var tour1 = [];
-var tour2 = [];
-var tour3 = [];
-var x =0;
-
-var TableauMatch =[];
-var titre = false;
-var idTableau = 1;
-
 var table, div, tbody;
 
 fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
@@ -117,12 +108,12 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
 
 
         let td = document.createElement("td");
-        td.innerText= match.TeamA.Name;
+        td.innerText= match.TeamA ? match.TeamA.Name : "à définir";
         tr.appendChild(td);
 
 
         td = document.createElement("td");
-        td.innerText= match.TeamB.Name;
+        td.innerText= match.TeamB ? match.TeamB.Name : "à définir";
         tr.appendChild(td);
 
         if(!match.ScoreA){
