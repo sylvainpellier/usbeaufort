@@ -28,7 +28,7 @@ var idTableau = 1;
 
 var table, div, tbody;
 
-fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
+fetch("/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
     //console.log(data);
     data.json().then((jsonData)=>{
         //console.log(jsonData)

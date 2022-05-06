@@ -24,7 +24,7 @@
 {% endblock %}
 
 {% block javascript %}
-fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id }}").then((data)=>{
+fetch("/api/data/phase?phase={{ phase }}&category={{ category.id }}").then((data)=>{
     //console.log(data);
     data.json().then((jsonData)=>{
         //console.log(jsonData);
@@ -144,7 +144,7 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
 });
 
 
-var urlposition = "http://localhost:8000/api/poule/5486/positions";
+var urlposition = "http:/api/poule/5486/positions";
 
 fetch(urlposition).then(function(resultas){
     //console.log(resultas);
