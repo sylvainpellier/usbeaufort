@@ -19,6 +19,7 @@ use function array_push;
 use function array_search;
 use function array_splice;
 use function d;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use function shuffle;
@@ -130,14 +131,23 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}", name="app_admin_category_phase")
      */
-    public function categoryphase(string $idCategory, string $idPhase, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function categoryphase(string $idCategory, string $idPhase, PositionRepository $positionRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $c = new ApiController($entityManager);
         $phase = $phaseRepository->find($idPhase);
+        $positions = new ArrayCollection();
+        foreach($categoryRepository->find($idCategory)->getPhases() as $phaseS)
+        { foreach($phaseS->getPositions() as $p)
+            {
+                $positions->add($p);
+            }
+
+        }
 
         return $this->render('admin/category_phase.html.twig', [
             'category' => $categoryRepository->find($idCategory),
+            'positions' => $positions,
             'phase' => $phase,
             'groupes' => $meetRepository->findGroupes($idCategory,$idPhase),
             'categories' => $categoryRepository->findAll(),

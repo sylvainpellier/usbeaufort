@@ -42,7 +42,6 @@ class MeetController extends OverrideApiController
 
         $referer = $request->headers->get('referer');
         return $this->redirect($referer."#meet_".$meet->getId());
-        return $this->redirectToRoute("app_admin_category_phase_groupe",["idPhase"=>$meet->getPhase()->getId(),"idCategory"=>$meet->getTeamA()->getCategory()->getId(),"groupe"=>$meet->getPoule()->getId()]);
     }
 
     /**

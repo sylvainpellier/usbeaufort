@@ -1,4 +1,4 @@
-<div class="row small">
+<div class="row small" id="poule_{{ poule.id }}">
     <div class="col">
         {% if poule.positionsTo %}
             <h5>Composition de la poule : </h5>
@@ -9,12 +9,19 @@
                         {% endfor %}
                 {% endif %}
             {% for key, position in poule.positionsTo %}
-                {% if phase.param == 24  and position.intParam is not null  %}
-                <li>3ème de poule ({{ position.intParam }}{% if position.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)</li>
+                <li>{% if phase.param == 24  and position.intParam is not null  %}
+                3ème de poule ({{ position.intParam }}{% if position.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
                 {% else %}
-                <li>{{ position.Rang  }}{% if position.Rang == 1 %}er{% else %}ème{% endif %}  de la poule {{ position.pouleFrom.Name }}</li>
+                {{ position.Rang  }}{% if position.Rang == 1 %}er{% else %}ème{% endif %}  de la poule {{ position.pouleFrom.Name }}
                 {% endif %}
+                     #{{ position.id }} -
+
+                    <form action="{{ path("app_position_echange") }}" class="d-inline"><input type="hidden" name="id" value="{{ poule.id }}"><input type="hidden" name="from" value="{{ position.id }}">échanger avec : <select name="to" class="small mr-2"><option></option>{% for position in positions %}<option>{{ position.id  }}</option>{% endfor %}</select><button class="btn btn-outline-primary ml-2 py-0 btn-sm" type="submit">ok</button></form>
+
+                </li>
             {% endfor %}
+
+
             </ul>{% endif %}
     </div>
 

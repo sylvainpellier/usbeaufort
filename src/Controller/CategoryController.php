@@ -30,6 +30,8 @@ class CategoryController extends OverrideApiController
         return $this->render("category_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase]);
     }
 
+
+
     /**
      * @Route("/categorie/{id}", name="category_display")
      */
@@ -37,6 +39,7 @@ class CategoryController extends OverrideApiController
     {
         $categorie = $categoryRepository->find($id);
         $phaseEnCours = $categorie->getPhaseEnCours();
+
 
         if($phaseEnCours)
         {
