@@ -44,6 +44,15 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @Route("/logout", name="app_logout", methods={"GET"})
+     */
+    public function logout(): void
+    {
+        // controller can be blank: it will never be called!
+        throw new \Exception('Don\'t forget to activate logout in security.yaml');
+    }
+
+    /**
      * @Route("/admin/saisie/{id}", name="app_admin_saisie")
      */
     public function app_admin_saisie( string $id, Request $request, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response

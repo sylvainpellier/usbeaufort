@@ -47,6 +47,10 @@
                     <li class="nav-item"><a class="nav-link me-lg-3" href="/terrains">Terrains</a></li>
                     <li class="nav-item"><a class="nav-link me-lg-3" href="/reglement">Règlement</a></li>
                     <li class="nav-item"><a class="nav-link me-lg-3" href="/partenaire">Partenaires</a></li>
+
+                    {% if is_granted('IS_AUTHENTICATED_FULLY')  %}
+                        <li class="nav-item"><a class="nav-link text-white me-lg-3 bg-secondary px-2 py-1 rounded" href="/admin">Admin</a></li>
+                    {% endif %}
                 </ul>
 
             </div>
