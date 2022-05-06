@@ -13,61 +13,61 @@
 
                 <g opacity="0" id="terrain1">
                     <a xlink:href="//localhost:8000/terrain/1">
-                        <rect x="660" y="50" opacity="1" fill="blue" width="90" height="110" style="transform: rotate(9deg);" ></rect>
+                        <rect x="510" y="210" opacity="1" fill="blue" width="155" height="45" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain2">
                     <a xlink:href="//localhost:8000/terrain/2">
-                        <rect x="770" y="55" opacity="1" fill="red" width="90" height="105" style="transform: rotate(9deg);" ></rect>
+                        <rect x="542" y="273" opacity="1" fill="red" width="130" height="45" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain3">
                     <a xlink:href="//localhost:8000/terrain/3">
-                        <rect x="865" y="-90" opacity="1" fill="red" width="80" height="100" style="transform: rotate(9deg);" ></rect>
+                        <rect x="800" y="245" opacity="1" fill="pink" width="160" height="45" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain4">
                     <a xlink:href="//localhost:8000/terrain/4">
-                        <rect x="958" y="-88" opacity="1" fill="red" width="80" height="100" style="transform: rotate(9deg);" ></rect>
+                        <rect x="870" y="312" opacity="1" fill="red" width="160" height="45" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain5">
                     <a xlink:href="//localhost:8000/terrain/5">
-                        <rect x="347" y="49" opacity="1" fill="pink" width="95" height="110" style="transform: rotate(20deg);" ></rect>
+                        <rect x="350" y="115" opacity="1" fill="cyan" width="145" height="35" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain6">
                     <a xlink:href="//localhost:8000/terrain/6">
-                        <rect x="256" y="22" opacity="1" fill="red" width="95" height="110" style="transform: rotate(26deg);" ></rect>
+                        <rect x="374" y="70" opacity="1" fill="red" width="125" height="30" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain7">
                     <a xlink:href="//localhost:8000/terrain/7">
-                        <rect x="378" y="99" opacity="1" fill="yellow" width="110" height="90" style="transform: rotate(37deg);" ></rect>
+                        <rect x="230" y="-243" opacity="1" fill="yellow" width="40" height="90" style="transform: rotate(55deg);" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain8">
                     <a xlink:href="//localhost:8000/terrain/8">
-                        <rect x="374" y="200" opacity="1" fill="crimson" width="110" height="90" style="transform: rotate(37deg);" ></rect>
+                        <rect x="187" y="-175" opacity="1" fill="crimson" width="42" height="115" style="transform: rotate(53deg);" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain9">
                     <a xlink:href="//localhost:8000/terrain/9">
-                        <rect x="206" y="133" opacity="1" fill="red" width="110" height="90" style="transform: rotate(34deg);" ></rect>
+                        <rect x="232" y="-110" opacity="1" fill="orange" width="40" height="110" style="transform: rotate(55deg);" ></rect>
                     </a>
                 </g>
 
                 <g opacity="0" id="terrain10">
                     <a xlink:href="//localhost:8000/terrain/10">
-                        <rect x="206" y="233" opacity="1" fill="blue" width="110" height="90" style="transform: rotate(34deg);" ></rect>
+                        <rect x="280" y="-182" opacity="1" fill="red" width="42" height="100" style="transform: rotate(56deg);" ></rect>
                     </a>
                 </g>
 
@@ -95,9 +95,42 @@ fetch(url).then(function(resultas){
                     div.classList.add("row");
 
         document.getElementById("container").appendChild(div);
+        let table = document.createElement("table");
+        table.setAttribute("class", "table table-bordered");
+        document.getElementById("container").appendChild(table);
+
+        let thead = document.createElement("thead");
+        table.appendChild(thead);
+
+        let th = document.createElement("th");
+        th.setAttribute("scope", "col");
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Terrains";
+        th.setAttribute("scope", "col");
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Lien vers les matchs";
+        th.setAttribute("scope", "col");
+        thead.appendChild(th);
 
         data.forEach(function(affiche){
 
+            let tr = document.createElement("tr");
+            table.appendChild(tr);
+
+            th =document.createElement("th");
+            th.setAttribute("scope", "row");
+            tr.appendChild(th);
+
+            let td =document.createElement("td");
+            td.innerText= affiche.Name;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            tr.appendChild(td);
 
             let a = document.createElement("a");
             a.innerText= affiche.Name;
@@ -111,6 +144,7 @@ fetch(url).then(function(resultas){
             a.setAttribute("href", "//localhost:8000/terrain/"+FinLien);
             div.appendChild(a);
             FinLien++;
+
         });
 
     });
