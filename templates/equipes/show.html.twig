@@ -16,7 +16,7 @@
 {% block javascript %}
 {{ parent() }}
 
-var url = url_base+"/api/team/{{equipe.id}}/matchs"
+var url = url_base+"api/team/{{equipe.id}}/matchs"
 fetch(url).then(function(resultas){
     console.log(resultas);
     resultas.json().then(function(resultasJson){
