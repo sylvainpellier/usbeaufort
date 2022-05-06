@@ -5,14 +5,18 @@
 
 {% block body %}
 
-    <a href="https://localhost:8000/categorie/1/phase/1">Phase 1</a>
-    <a href="https://localhost:8000/categorie/1/phase/2">Phase 2</a>
-    <a href="https://localhost:8000/categorie/1/phase/3">Phase 3</a>
+    <div class="row mb-4">
+        {% for phase in category.phases %}
+            <div class="col-4"><a class="btn btn-primary w-100 text-center" href="{{ path("category_display_phase",{id:category.id,phase:phase.id}) }}">{{ phase.Name }}</a></div>
+        {% endfor %}
+
+
+    </div>
 
     <h1>Catégorie {{ category.Name }} - Phase {{ phase }}</h1>
 
 
-    <div class="table table-bordered" id="data">
+    <div id="data">
 
     </div>
 
@@ -31,25 +35,33 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
             let poule = equipe[namePoule];
             //console.log(poule);
                     let div = document.createElement("div");
-                    let h3 = document.createElement("h3");
-                    h3.innerHTML = "Poule " + namePoule;
-                    document.getElementById('data').appendChild(div);
-                    div.appendChild(h3);
+                    div.classList.add("mb-5");
 
                     let btn = document.createElement("a");
                     div.append(btn);
                     btn.innerText = "voir tous les matchs";
                     btn.setAttribute("href","//localhost:8000/matchs/1/phase/{{ phase }}/groupe/"+namePoule);
+                    btn.classList.add("btn","btn-secondary","float-end","btn-sm");
+
+                    let h3 = document.createElement("h3");
+                    h3.innerHTML = "Poule " + namePoule;
+                    document.getElementById('data').appendChild(div);
+                    div.appendChild(h3);
+
+
 
                     table = document.createElement("table");
-                    table.setAttribute("class", "table table-bordered" )
+                    table.classList.add( "table","table-bordered","table-responsive", "table-striped" )
                     div.appendChild(table);
 
                     let thead = document.createElement("thead");
+                    thead.classList.add("thead-dark")
                     table.appendChild(thead);
 
-                    let th = document.createElement("th");
-                    th.setAttribute("scope", "col");
+                    let tbody = document.createElement("tbody");
+                    table.appendChild(tbody);
+
+                    let th = document.createElement("td");
                     thead.appendChild(th);
 
                     th = document.createElement("th");
@@ -90,11 +102,10 @@ fetch("//localhost:8000/api/data/phase?phase={{ phase }}&category={{ category.id
                 equipe[namePoule].forEach((team)=>{
                     //console.log(team);
                     tr = document.createElement("tr");
-                    table.appendChild(tr);
+                    tbody.appendChild(tr);
 
-                    th = document.createElement("th");
-                    th.setAttribute("scope", "row");
-                    tr.appendChild(th);
+                    td = document.createElement("td");
+                    tr.appendChild(td);
                     
                     td = document.createElement("td");
                     td.innerHTML = team.Name;

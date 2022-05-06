@@ -10,6 +10,9 @@
     <div class="col-4"><table class="table table-bordered table-striped text-center" id="U13"><tr><th>U13</th></tr></table></div>
     <div class="col-4">  <table class="table table-bordered table-striped text-center" id="U13F"><tr><th>U13F</th></tr></table></div>
 
+    <style>
+        .table > :not(:first-child) { border:0px!important; }
+    </style>
 
 {% endblock %}
 
@@ -39,11 +42,7 @@
                     let a = document.createElement("a");
                     a.innerText=liste.Name;
                     a.setAttribute("href", "//localhost:8000/equipe/"+idTeam);
-                    a.classList.add("btn");
-                    a.classList.add("btn-sm");
-                    a.classList.add("btn-primary");
-                    a.classList.add("w-100");
-                    a.classList.add("mt-2");
+                    a.classList.add("btn","btn-sm","btn-primary","w-100","mt-2");
                     tr.appendChild(a);
                 }
 
@@ -86,3 +85,4 @@
     });
 
 {% endblock %}
+

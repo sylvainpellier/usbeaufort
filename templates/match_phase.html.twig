@@ -7,7 +7,7 @@
 
     <h1>Matchs de la catégorie {{ category.Name }} - Phase {{ phase }} - Groupe {{ groupe }}</h1>
 
-    <div class="table table-bordered" class="table-responsive" id="data">
+    <div  id="data">
 
     </div>
 
@@ -26,170 +26,7 @@ var TableauMatch =[];
 var titre = false;
 var idTableau = 1;
 
-function afficheTour(TableauEquipe, idboard){
-    let test = false;
-    console.log(idboard);
-    let a = 1;
-
-    TableauEquipe.forEach(function(e){
-        //console.log(e);
-        while(test === false){
-            let br = document.createElement("br");
-            document.getElementById("data").appendChild(br);
-
-            let h3 = document.createElement("h3");
-            h3.innerText= "Tour "+e.Tour;
-            document.getElementById("data").appendChild(h3);
-
-            let table = document.createElement("table");
-            table.setAttribute("id", "board"+idboard);
-            table.setAttribute("class", "table table-bordered")
-            document.getElementById("data").appendChild(table);
-
-            let thead = document.createElement("thead");
-            table.appendChild(thead);
-
-            let tr = document.createElement("tr");
-            thead.appendChild(tr);
-
-            let th = document.createElement("th");
-            th.innerText= "#"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Equipe A"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Equipe B"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Score A"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Score B"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Tir au but A"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Tir au but B"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Horaire"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Arbitre"
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Terrain";
-            th.setAttribute("scope", "col");
-            tr.appendChild(th);
-            
-            test = true;
-        }
-
-        let tr = document.createElement("tr");
-        document.getElementById("board"+idboard).appendChild(tr);
-
-        let th = document.createElement("th");
-        th.setAttribute("scope", "row");
-        th.innerText = a;
-        tr.appendChild(th);
-
-        a++;
-
-        let td = document.createElement("td");
-        td.innerText= e.TeamA.Name;
-        tr.appendChild(td);
-
-
-        td = document.createElement("td");
-        td.innerText= e.TeamB.Name;
-        tr.appendChild(td);
-
-        if(!e.ScoreA){
-            //console.log(e.ScoreA);
-            td = document.createElement("td");
-            td.innerText = "0";
-            tr.appendChild(td);
-        }else{
-            //console.log(e.ScoreA);
-            td = document.createElement("td");
-            td.innerText = e.ScoreA;
-            tr.appendChild(td);
-        }
-
-
-        if(!e.ScoreB){
-            //console.log(e.ScoreB);
-            td = document.createElement("td");
-            td.innerText = "0";
-            tr.appendChild(td);
-        }else{
-            //console.log(e.ScoreB);
-            td = document.createElement("td");
-            td.innerText = e.ScoreB;
-            tr.appendChild(td);
-        }
-
-        if(!e.PenaltyA){
-            td = document.createElement("td");
-            td.innerText = "0";
-            tr.appendChild(td);
-        }else{
-            td = document.createElement("td");
-            td.innerText = e.PenaltyA;
-            tr.appendChild(td);
-        }
-
-        if(!e.PenaltyB){
-            td = document.createElement("td");
-            td.innerText = "0";
-            tr.appendChild(td);
-        }else{
-            td = document.createElement("td");
-            td.innerText = e.PenaltyB;
-            tr.appendChild(td);
-        }
-
-        td = document.createElement("td");
-        td.innerText ="definir";
-        tr.appendChild(td);
-
-        td = document.createElement("td");
-        td.innerText ="definir";
-        tr.appendChild(td);
-
-        if(!e.Field.Name){
-            td = document.createElement("td");
-            td.innerText ="a definir";
-            tr.appendChild(td);
-        }else{
-            td = document.createElement("td");
-            td.innerText =e.Field.Name;
-            tr.appendChild(td);
-        }
-    });
-    idboard++;
-    return idboard;
-};
+var table, div, tbody;
 
 fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
     //console.log(data);
@@ -197,28 +34,171 @@ fetch("//localhost:8000/api/data/meets?phase={{ phase }}&category={{ category.id
         //console.log(jsonData)
         let listeMatch = jsonData.data;
         //console.log(listeMatch)
+
+        let lastTour = false;
         listeMatch.forEach((match)=>{
-            //console.log(match);
+            console.log(match);
+            console.log(lastTour);
 
-            if(match.Tour === 1){
-                tour1.push(match); // faire un tab qui boucle
-                TableauMatch.push(match);
-                let compteTour1 = 0;
-                
 
-            }else if(match.Tour === 2){
-                tour2.push(match);
 
-            }else if(match.Tour === 3){
-                tour3.push(match);
+        if(!lastTour || lastTour != match.Tour){
 
-            }
+             div = document.createElement("div");
+            document.getElementById("data").appendChild(div);
 
-        });
+            let h3 = document.createElement("h3");
+            h3.innerText= "Tour "+match.Tour;
+            div.appendChild(h3);
 
-        idTableau= afficheTour(tour1, idTableau);
-        idTableau= afficheTour(tour2, idTableau);
-        idTableau= afficheTour(tour3, idTableau);
+            table = document.createElement("table");
+            table.classList.add("table","table-bordered","table-responsive","table-striped")
+            document.getElementById("data").appendChild(div);
+            div.appendChild(table);
+
+            let thead = document.createElement("thead");
+            table.appendChild(thead);
+
+            tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+
+            let tr = document.createElement("tr");
+            thead.appendChild(tr);
+
+            let th = document.createElement("th");
+            th.innerText= "#"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Equipe A"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Equipe B"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Score A"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Score B"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Tir au but A"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Tir au but B"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Horaire"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Arbitre"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Terrain";
+            tr.appendChild(th);
+
+        }
+
+        lastTour = match.Tour;
+
+        let tr = document.createElement("tr");
+        tbody.appendChild(tr);
+
+        let th = document.createElement("th");
+        tr.appendChild(th);
+
+
+        let td = document.createElement("td");
+        td.innerText= match.TeamA.Name;
+        tr.appendChild(td);
+
+
+        td = document.createElement("td");
+        td.innerText= match.TeamB.Name;
+        tr.appendChild(td);
+
+        if(!match.ScoreA){
+            td = document.createElement("td");
+            td.innerText = "0";
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            td.innerText = match.ScoreA;
+            tr.appendChild(td);
+        }
+
+
+        if(!match.ScoreB){
+            td = document.createElement("td");
+            td.innerText = "0";
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            td.innerText = match.ScoreB;
+            tr.appendChild(td);
+        }
+
+        if(!match.PenaltyA){
+            td = document.createElement("td");
+            td.innerText = "0";
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            td.innerText = match.PenaltyA;
+            tr.appendChild(td);
+        }
+
+        if(!match.PenaltyB){
+            td = document.createElement("td");
+            td.innerText = "0";
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            td.innerText = match.PenaltyB;
+            tr.appendChild(td);
+        }
+
+       if(match.time){
+            td = document.createElement("td");
+            var date = new Date(((match.time-7200)*1000))
+            td.innerText =  date.getHours()+":"+date.getMinutes();
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            tr.appendChild(td);
+        }
+
+       if(match.arbitre){
+            td = document.createElement("td");
+            td.innerText =match.arbitre;
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            tr.appendChild(td);
+        }
+
+        if(match.Field){
+            td = document.createElement("td");
+            td.innerText =match.Field.Name;
+            tr.appendChild(td);
+        }else{
+            td = document.createElement("td");
+            tr.appendChild(td);
+        }
+    });
+
+
+
+
+
         
     });
 });

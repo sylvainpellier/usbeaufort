@@ -92,57 +92,25 @@ fetch(url).then(function(resultas){
         console.log(data)
         var FinLien= 1;
         let div = document.createElement("div");
-                    div.classList.add("row");
+        div.classList.add("row");
 
         document.getElementById("container").appendChild(div);
-        let table = document.createElement("table");
-        table.setAttribute("class", "table table-bordered");
-        document.getElementById("container").appendChild(table);
-
-        let thead = document.createElement("thead");
-        table.appendChild(thead);
-
-        let th = document.createElement("th");
-        th.setAttribute("scope", "col");
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Terrains";
-        th.setAttribute("scope", "col");
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Lien vers les matchs";
-        th.setAttribute("scope", "col");
-        thead.appendChild(th);
 
         data.forEach(function(affiche){
 
-            let tr = document.createElement("tr");
-            table.appendChild(tr);
-
-            th =document.createElement("th");
-            th.setAttribute("scope", "row");
-            tr.appendChild(th);
-
-            let td =document.createElement("td");
-            td.innerText= affiche.Name;
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            tr.appendChild(td);
+           let divInside = document.createElement("div");
+           div.appendChild(divInside);
+           divInside.classList.add("col-4","mb-2");
 
             let a = document.createElement("a");
             a.innerText= affiche.Name;
-             a.classList.add("col-4");
+
             a.classList.add("btn");
-                    a.classList.add("btn-primary");
-                    a.classList.add("d-inline");
-                     a.classList.add("mb-2");
+            a.classList.add("btn-primary","d-block","w-100");
 
 
             a.setAttribute("href", "//localhost:8000/terrain/"+FinLien);
-            div.appendChild(a);
+            divInside.appendChild(a);
             FinLien++;
 
         });

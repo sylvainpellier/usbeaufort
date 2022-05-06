@@ -118,11 +118,13 @@ class Meet
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"matchs"})
      */
     private $arbitre;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"matchs"})
      */
     private $time;
 
