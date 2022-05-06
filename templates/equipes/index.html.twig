@@ -20,7 +20,7 @@
 
 {{ parent() }}
 
-    var url = url_base+"/api/teams";
+    var url = url_base+"api/teams";
     fetch(url).then(function(resultas){
         console.log(resultas);
         resultas.json().then(function(resultasJson){
