@@ -28,14 +28,22 @@ class MeetController extends OverrideApiController
     /**
      * @Route("/admin/match/update/{id}", name="admin_update_match")
      */
-    public function admin_update_match(string $id, Request $request, MeetRepository $meetRepository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    public function admin_update_match(string $id, Request $request, TeamRepository $teamRepository, MeetRepository $meetRepository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $meet = $meetRepository->find($id);
-        $meet->setScoreA((int)$request->get("scoreA") );
-        $meet->setScoreB((int)$request->get("scoreB"));
-        $meet->setPenaltyA((int)$request->get("penaltyA"));
-        $meet->setPenaltyB((int)$request->get("penaltyB"));
-        $meet->setArbitre($request->get("arbitre"));
+        $meet->setScoreA($request->get("scoreA") > 0 ? (int)$request->get("scoreA") : null );
+        $meet->setScoreB($request->get("scoreB") > 0 ? (int)$request->get("scoreB") : null);
+        $meet->setPenaltyA($request->get("penaltyA") > 0 ? (int)$request->get("penaltyA") : null);
+        $meet->setPenaltyB($request->get("penaltyB") > 0 ? (int)$request->get("penaltyB") : null);
+        $meet->setArbitre($request->get("arbitre") );
+
+        $forfait = $request->get("forfait");
+        if($forfait)
+        {
+            $meet->setTeamForfait($teamRepository->find($forfait));
+        }
+
+
         $entityManager->persist($meet);
         $entityManager->flush();
         $this->addFlash("success","Match mis à jour");
@@ -58,6 +66,6 @@ class MeetController extends OverrideApiController
      */
     public function index(MeetRepository $meetRepository, SerializerInterface $serializer): Response
     {
-       return $this->send($serializer->serialize($meetRepository->findAll(),'json',['groups' => ['matchs']]));
+       return $this->send($serializer->serialize($meetRepository->findBy([],["time"=>"ASC"]),'json',['groups' => ['matchs']]));
     }
 }

@@ -25,9 +25,20 @@ class FieldController extends OverrideApiController
 {
 
     /**
+     * @Route("/terrain/1_2", name="terrain_show12")
+     */
+    public function terrain_show12(FieldRepository $fieldRepository): Response
+    {
+
+
+        return $this->render("terrains/show12.html.twig",["terrain1"=>$fieldRepository->find(1),"terrain2"=>$fieldRepository->find(2)]);
+
+    }
+
+    /**
      * @Route("/terrain/{id}", name="terrain_show")
      */
-    public function terrain_show( FieldRepository $fieldRepository): Response
+    public function terrain_show( string $id, FieldRepository $fieldRepository): Response
     {
         return $this->render("terrains/show.html.twig",["terrain"=>$fieldRepository->find($id)]);
 

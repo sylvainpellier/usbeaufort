@@ -32,7 +32,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use function usort;
 use function var_dump;
 
-class AdminController extends AbstractController
+class AdminController extends OverrideApiController
 {
     /**
      * @Route("/admin", name="app_admin")
@@ -244,13 +244,7 @@ function findTeamByRang($teams,$rang)
             }
 
             //on tri les troisièmes
-            usort($wait, function ($a,$b) {
-
-                //PRENDRE EN COMPTE LES ÉGALITÉS
-                //DIVERSES VOIR LE RELGEMENT
-                //TODO : classement
-                return $a['pts']<$b['pts'];
-            });
+            usort($wait, array($this,"triClassement"));
 
             $rang = 1;
             foreach($wait as $key => $twait)
@@ -757,16 +751,16 @@ function findTeamByRang($teams,$rang)
                     {
                         $str = ($x<2)?"er":"ème";
                         $str2 = ($principal) ? "principales" : "consolantes";
-                        $poule->setName($alphas[$i]. " - ". $x."".$str." des poules $str2 de phase 2");
+                        $poule->setName($alphas[$i]. " - ". $x."".$str." des poules $str2");
                     } else if( $phase->getParam() == 24)
                     {
                         $str2 = ($principal) ? "principales" : "consolantes";
                         if($i===4)
                         {
-                            $poule->setName($alphas[$i]. " - 1er et 2ème des poules $str2 de phase 2");
+                            $poule->setName($alphas[$i]. " - 1er et 2ème des poules $str2");
                         } else
                         {
-                            $poule->setName($alphas[$i]. " - 3ème et 4ème des poules $str2 de phase 2");
+                            $poule->setName($alphas[$i]. " - 3ème et 4ème des poules $str2");
                         }
 
 
@@ -814,6 +808,8 @@ function findTeamByRang($teams,$rang)
                         $match->setPositionA($positions[0]);
                         $match->setPositionB($positions[1]);
                         $match->setName("Demie Finale - 1");
+                        $match->setTour(1);
+                        $match->setFormat("demi");
                         $match->setPrincipal($poule->getPrincipal());
                         $match->setPhase($phase);
                         $entityManager->persist($match);
@@ -824,6 +820,8 @@ function findTeamByRang($teams,$rang)
                         $match->setPositionA($positions[2]);
                         $match->setPositionB($positions[3]);
                         $match->setName("Demie Finale - 2");
+                        $match->setTour(1);
+                        $match->setFormat("demi");
                         $match->setPrincipal($poule->getPrincipal());
                         $match->setPhase($phase);
                         $entityManager->persist($match);
@@ -832,6 +830,8 @@ function findTeamByRang($teams,$rang)
                         $match = new Meet();
                         $match->setPoule($poule);
                         $match->setName("Finale des perdants");
+                        $match->setFormat("final_perdant");
+                        $match->setTour(3);
                         $match->setPrincipal($poule->getPrincipal());
                         $match->setPhase($phase);
                         $entityManager->persist($match);
@@ -840,6 +840,8 @@ function findTeamByRang($teams,$rang)
                         $match = new Meet();
                         $match->setPoule($poule);
                         $match->setName("Finale des vainqueurs");
+                        $match->setFormat("final_gagnant");
+                        $match->setTour(2);
                         $match->setPrincipal($poule->getPrincipal());
                         $match->setPhase($phase);
                         $entityManager->persist($match);

@@ -23,6 +23,13 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
     //console.log(data);
     data.json().then((jsonData)=>{
         //console.log(jsonData)
+
+        if(jsonData.param.format === "demifinalesfinales")
+        {
+
+
+        } else
+        {
         let listeMatch = jsonData.data;
         //console.log(listeMatch)
 
@@ -160,7 +167,7 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
        if(match.time){
             td = document.createElement("td");
             var date = new Date(((match.time-7200)*1000))
-            td.innerText =  date.getHours()+":"+date.getMinutes();
+            td.innerText =  (date.getHours() < 10 ? "0" : "") + date.getHours()+":" + (date.getMinutes() < 10 ? "0" : "") +date.getMinutes();
             tr.appendChild(td);
         }else{
             td = document.createElement("td");
@@ -188,7 +195,7 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
 
 
 
-
+}
 
         
     });

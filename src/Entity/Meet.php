@@ -128,6 +128,11 @@ class Meet
      */
     private $time;
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $format;
+
 
 
 
@@ -343,6 +348,18 @@ class Meet
     public function setTime(?int $time): self
     {
         $this->time = $time;
+
+        return $this;
+    }
+
+    public function getFormat(): ?string
+    {
+        return $this->format;
+    }
+
+    public function setFormat(?string $format): self
+    {
+        $this->format = $format;
 
         return $this;
     }

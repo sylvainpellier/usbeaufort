@@ -88,6 +88,7 @@ class ApiController extends OverrideApiController
                         $t["defaite"] = 0;
                         $t["nul"] = 0;
                         $t["poule"] = $position->getPouleTo() ? $position->getPouleTo()->getId() : null;
+                        $t["pouleNameString"] = $position->getPouleTo() ? $position->getPouleTo()->getName() : null;
                         $t["Name"] = $position->getRang() . ($position->getRang() > 1 ? "ème" : "er") . " de la poule " . $position->getPouleFrom()->getName();
                         $teams[] = $t;
                     }
@@ -113,26 +114,37 @@ class ApiController extends OverrideApiController
                         $againstPenalty = "penalty_a";
                     }
 
-                    if ($me && $against && !is_null($match[$me]) && !is_null($match[$against])) {
+                        if($match["team_forfait_id"]) {
+                            if ($match["team_forfait_id"] !== $team["id"]) {
+                                $teams[$key]["pts"] += 4;
+                                $teams[$key]["victoire"]++;
+                            } else {
+                                $teams[$key]["defaite"]++;
+                            }
+                        }else if ($me && $against && !is_null($match[$me]) && !is_null($match[$against])) {
                         $teams[$key]["but_pour"] += $match["score_a"];
                         $teams[$key]["but_contre"] += $match["score_b"];
 
-                        if (
-                        ($match[$me] > $match[$against] || ($match[$me] === $match[$against] && $match[$mePenalty] > $match[$againstPenalty]))) {
-                            $teams[$key]["pts"] += 3;
-                            $teams[$key]["victoire"]++;
-                        } else if ($match[$me] === $match[$against]) {
-                            $teams[$key]["pts"] += 1;
-                            $teams[$key]["nul"]++;
-                        } else {
-                            $teams[$key]["defaite"]++;
+
+
+                         if (  ($match[$me] > $match[$against] || ($match[$me] === $match[$against] && $match[$mePenalty] > $match[$againstPenalty]))) {
+                                $teams[$key]["pts"] += 4;
+                                $teams[$key]["victoire"]++;
+                            } else if ($match[$me] === $match[$against]) {
+                                $teams[$key]["pts"] += 2;
+                                $teams[$key]["nul"]++;
+                            } else {
+                                $teams[$key]["defaite"]++;
+                                $teams[$key]["pts"] += 1;
+                            }
                         }
+                        //TODO: forfait
                     }
 
                 }
             }
 
-        }
+
 
         $poules = [];
 
@@ -159,14 +171,7 @@ class ApiController extends OverrideApiController
         //CLASSEMENT FINAL
         foreach ($poules as $key => $poule)
         {
-            usort($poules[$key], function ($a,$b) {
-
-                //PRENDRE EN COMPTE LES ÉGALITÉS
-                //DIVERSES VOIR LE RELGEMENT
-                //TODO : classement
-                return $a['pts']<$b['pts'];
-            });
-
+            usort($poules[$key], array($this,'triClassement'));
         }
 
         //CLASSEMENT FINAL
@@ -188,6 +193,8 @@ class ApiController extends OverrideApiController
         }
 
 
+
+
         return $poules;
     }
     /**
@@ -199,12 +206,14 @@ class ApiController extends OverrideApiController
         $category = $request->get("category");
         $phase = $request->get("phase");
         $poule = $request->get("poule");
+        $order = $request->get("orderTime") ? "m.Time" : "m.Tour";
 
-       $matchs = $meetRepository->findAllCriterias(null, $phase, $poule);
+
+       $matchs = $meetRepository->findAllCriterias(null, $phase, $poule,$order);
 
        if(count($matchs) === 0)
        {
-           $matchs = $meetRepository->findAllCriteriasByPosition($category, $phase, $poule);
+           $matchs = $meetRepository->findAllCriteriasByPosition($category, $phase, $poule,$order);
 
        }
 

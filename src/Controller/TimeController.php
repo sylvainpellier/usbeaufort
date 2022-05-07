@@ -37,7 +37,7 @@ class TimeController extends AbstractController
         $entityManager->flush();
         $timeZone = new DateTimeZone('Europe/Paris');
 
-        $debut_tournoi = new DateTime("2022-05-27 09:00:00");
+        $debut_tournoi = new DateTime("2022-05-27 09:30:00");
         $time = $debut_tournoi;
         $tpsMatch = 12;
         $tpsPause = 4;

@@ -60,7 +60,7 @@ class MeetRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findAllCriterias($category_id, $phase_id, $poule = null)
+    public function findAllCriterias($category_id, $phase_id, $poule = null, $order = "m.Tour" )
     {
 
         $query =  $this->createQueryBuilder('m');
@@ -91,7 +91,7 @@ class MeetRepository extends ServiceEntityRepository
             $parameters["poule"] = $poule;
         }
 
-        $query->orderBy("m.Tour","ASC");
+        $query->orderBy($order,"ASC");
         $query->setParameters($parameters);
 
 
@@ -101,7 +101,7 @@ class MeetRepository extends ServiceEntityRepository
     }
 
 
-    public function findAllCriteriasByPosition($category_id, $phase_id, $poule = null)
+    public function findAllCriteriasByPosition($category_id, $phase_id, $poule = null, $order = "m.Tour")
     {
 
         $query =  $this->createQueryBuilder('m');
@@ -119,7 +119,7 @@ class MeetRepository extends ServiceEntityRepository
 
 
 
-        $query->orderBy("m.Tour","ASC");
+        $query->orderBy($order,"ASC");
         $query->setParameters($parameters);
 
 

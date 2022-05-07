@@ -1,19 +1,18 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Terrain {{ terrain.Name }} - {% endblock %}
+{% block title %}Terrain {{ terrain1.Name }} et {{ terrain2.Name }} - {% endblock %}
 
 {% block body %}
 
     <div id="container" class="col-12 text-center">
 
-        <h2 id="nomTerrain">{{ terrain.Name }}</h2>
 
 
-
-
-<div id="matchs"></div>
-
-
+<div class="row">
+        <div class="col" id="matchs1">        <h2 id="nomTerrain">{{ terrain1.Name }}</h2>
+        </div>
+        <div class="col" id="matchs2"> <h2 id="nomTerrain">{{ terrain2.Name }}</h2></div>
+</div>
 
 
         <hr />
@@ -92,48 +91,30 @@
 
 var url =url_base+"/api/matchs?orderTime=1"
 
+createTable("matchs1");
+createTable("matchs2")
+
 fetch(url).then(function(resultas){
     resultas.json().then(function(object){
         jsondata = object.data;
-        var div = document.createElement("div");
-        document.getElementById("matchs").appendChild(div);
-
-         let table = document.createElement("table");
-        table.setAttribute("class", "table table-bordered");
-        div.appendChild(table);
-
-        let thead = document.createElement("thead");
-        table.appendChild(thead);
-
-        let tbody = document.createElement("tbody");
-        table.appendChild(tbody);
-
-        let th = document.createElement("th");
-        th.innerText= "Catégorie - Poule";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Heure";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Arbitre";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Joué ?";
-        thead.appendChild(th);
 
 
 
         jsondata.forEach(function(match){
         console.log(match);
-            if(match.Field && match.Field.Name === "{{ terrain.Name }}")
+            if(match.Field && (match.Field.Name === "{{ terrain1.Name }}" || match.Field.Name === "{{ terrain2.Name }}"))
             {
 
             tr = document.createElement("tr");
             tr.innerText =  match.Phase.Name;
-           tbody.appendChild(tr);
+            if(match.Field.Name === "{{ terrain1.Name }}" )
+            {
+             document.querySelector("#matchs1 tbody").appendChild(tr);
+            } else
+            {
+             document.querySelector("#matchs2 tbody").appendChild(tr);
+            }
+
 
             let td = document.createElement("td");
             var date = new Date(((match.time-7200)*1000))
@@ -167,5 +148,38 @@ fetch(url).then(function(resultas){
 
     });
 });
+
+function createTable(name)
+{
+var div = document.createElement("div");
+        document.getElementById(name).appendChild(div);
+
+         let table = document.createElement("table");
+        table.setAttribute("class", "table table-bordered");
+        div.appendChild(table);
+
+        let thead = document.createElement("thead");
+        table.appendChild(thead);
+
+        let tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+
+        let th = document.createElement("th");
+        th.innerText= "Catégorie - Poule";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Heure";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Arbitre";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Joué ?";
+        thead.appendChild(th);
+
+}
 
 {% endblock %}

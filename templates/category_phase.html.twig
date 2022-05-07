@@ -28,25 +28,131 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
     //console.log(data);
     data.json().then((jsonData)=>{
         console.log(jsonData);
+
+
+
         let equipe = jsonData.data;
-        console.log(equipe);
+
         for(const namePoule in equipe){
             //console.log(namePoule);
             let poule = equipe[namePoule];
+            console.log({poule});
+            namePouleString = poule[0]["pouleNameString"]
             //console.log(poule);
                     let div = document.createElement("div");
-                    div.classList.add("mb-5");
+                    div.classList.add("mt-5","row","text-center");
+                    div.setAttribute("id","poule_"+namePoule);
 
-                    let btn = document.createElement("a");
-                    div.append(btn);
-                    btn.innerText = "voir tous les matchs";
-                    btn.setAttribute("href","/matchs/{{ category.id }}/phase/{{ phase.id }}/groupe/"+namePoule);
-                    btn.classList.add("btn","btn-secondary","float-end","btn-sm");
+
 
                     let h3 = document.createElement("h3");
-                    h3.innerHTML = "Poule " + namePoule;
+                                        h3.classList.add("mb-3");
+
+                    h3.innerHTML = "Poule " + namePouleString;
                     document.getElementById('data').appendChild(div);
                     div.appendChild(h3);
+
+
+                 if(jsonData.param.format === "demifinalesfinales")
+                        {
+                            var divGauche = document.createElement("div");
+                            divGauche.classList.add("col","text-center")
+                            div.appendChild(divGauche);
+
+                            h4 = document.createElement('h4');
+                            h4.innerHTML = "Demi-finale";
+                            divGauche.appendChild(h4)
+                            divGauche.classList.add("divDemiFinale1");
+
+
+
+
+                            var divMilieu = document.createElement("div");
+                            divMilieu.classList.add("col","text-center")
+                            div.appendChild(divMilieu);
+
+                            h4 = document.createElement('h4');
+                            h4.innerHTML = "Finale";
+                            divMilieu.appendChild(h4)
+
+                            var div1 = document.createElement("div");
+                            div1.classList.add("divFinaleGagnant");
+                            divMilieu.appendChild(div1);
+
+                            var div2 = document.createElement("div");
+                            div2.classList.add("divFinalePerdant");
+                            divMilieu.appendChild(div2);
+
+
+
+                            var divDroite = document.createElement("div");
+                            divDroite.classList.add("col","text-center")
+                            div.appendChild(divDroite);
+
+                             h4 = document.createElement('h4');
+                            h4.innerHTML = "Demi-finale";
+                            divDroite.appendChild(h4)
+                            divDroite.classList.add("divDemiFinale2");
+
+
+
+
+                            fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule="+namePoule).then((data)=>{
+                                    data.json().then((d)=>{
+                                    x= 1
+                                    for(const idMatch in d.data){
+
+                                    var match = d.data[idMatch];
+                                    console.log(match);
+                                        let divContenu = document.createElement("div");
+                                        console.log("#poule_"+namePoule +" .div1");
+                                            if(x == 1  ) document.querySelector("#poule_"+namePoule +" .divDemiFinale1") .appendChild(divContenu);
+                                            else if(x == 2  ) document.querySelector("#poule_"+namePoule +" .divDemiFinale2").appendChild(divContenu);
+                                             else if(x == 3  ) document.querySelector("#poule_"+namePoule +" .divFinalePerdant").appendChild(divContenu);
+                                              else if(x == 4  ) document.querySelector("#poule_"+namePoule +" .divFinaleGagnant").appendChild(divContenu);
+
+
+                                           divContenu.classList.add("border","bg-light","text-center","mb-4");
+                                            divContenu.innerHTML = match.Name + "<br />";
+
+                                            if(match.TeamA && match.TeamB)
+                                            {
+                                                if(match.TeamA) divContenu.innerHTML += match.TeamA.Name;
+                                                if(match.ScoreA) divContenu.innerHTML += " ("+match.ScoreA+")";
+                                                if(match.PenaltyA) divContenu.innerHTML += " ("+match.PenaltyA+")";
+                                                 divContenu.innerHTML += " - ";
+
+                                                  divContenu.innerHTML += match.TeamB.Name;
+                                                  if(match.ScoreB) divContenu.innerHTML += "("+match.ScoreB+")";
+                                                   if(match.PenaltyB) divContenu.innerHTML += " ("+match.PenaltyB+")";
+                                                   divContenu.innerHTML += "<br />";
+                                            } else  if(match.PositionA && match.PositionB)
+                                            {
+                                                if(match.PositionA) divContenu.innerHTML += match.PositionA.Rang + ((match.PositionA.Rang > 1) ? "ème" : "er");
+                                                if(match.PositionA) divContenu.innerHTML += " de la poule "+ match.PositionA.PouleFrom.Name;
+
+                                                 divContenu.innerHTML += " contre ";
+
+                                                 if(match.PositionB) divContenu.innerHTML += match.PositionB.Rang + ((match.PositionB.Rang > 1) ? "ème" : "er");
+                                                if(match.PositionB) divContenu.innerHTML += " de la poule "+ match.PositionB.PouleFrom.Name;
+                                                   divContenu.innerHTML += "<br />";
+                                            }
+
+                                             if(match.Field) divContenu.innerHTML += match.Field.Name+ " - "; else divContenu.innerHTML += "terrain à définir - ";
+
+                                              var date = new Date(((match.time-7200)*1000))
+                                                divContenu.innerHTML +=  match.time ? (date.getHours() < 10 ? "0" : "") + date.getHours()+"h"+ (date.getMinutes() < 10 ? "0" : "") + date.getMinutes() : "horaire à définir" + "<br />";
+ divContenu.innerHTML += "<br />";
+                                             if(match.arbitre) divContenu.innerHTML += "Arbitre : " + match.arbitre+ "<br />";
+
+                                            x++;
+                                        };
+                                        });
+                            });
+
+                        } else
+                        {
+
 
 
 
@@ -100,6 +206,7 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     thead.appendChild(th);
 
                 equipe[namePoule].forEach((team)=>{
+                if(team.Name != "Challenge"){
                     //console.log(team);
                     tr = document.createElement("tr");
                     tbody.appendChild(tr);
@@ -137,14 +244,22 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     td = document.createElement("td");
                     td.innerHTML = team.defaite;
                     tr.appendChild(td);
+                    }
+
 
                 });
+let btn = document.createElement("a");
+                    div.append(btn);
+                    btn.innerText = "voir tous les matchs";
+                    btn.setAttribute("href","//localhost:8000/matchs/1/phase/{{ phase.id }}/groupe/"+namePoule);
+                    btn.classList.add("btn","btn-secondary","float-end","btn-sm");
         };
+        }
     });
 });
 
 
-var urlposition = "http://localhost:8000/api/poule/5486/positions";
+var urlposition = "/api/poule/5486/positions";
 
 fetch(urlposition).then(function(resultas){
     //console.log(resultas);
