@@ -100,10 +100,10 @@ class Category
     }
 
 
-
     public function getPhaseEnCours(): ?Phase
     {
-        return $this->PhaseEnCours;
+
+        return $this->PhaseEnCours ?? $this->getPhases()[0] ?? null;
     }
 
     public function setPhaseEnCours(?Phase $PhaseEnCours): self

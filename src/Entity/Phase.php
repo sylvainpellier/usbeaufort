@@ -30,6 +30,7 @@ class Phase
 
     /**
      * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="Phase")
+     * @ORM\OrderBy({"time" = "ASC"})
      */
     private $meets;
 

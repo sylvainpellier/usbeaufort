@@ -223,7 +223,8 @@ function findTeamByRang($teams,$rang)
 
         $phase = $phaseRepository->find($idPhase);
         $phase = $phase->getPhaseSuivante() ?  $phase->getPhaseSuivante() : $phase;
-
+        $phase->getCategory()->setPhaseEnCours($phase);
+        $entityManager->persist($phase);
 
         if($phase->getType()->getFormat() === "principal-consolante" || $phase->getType()->getFormat()=== "demifinalesfinales")
         {
@@ -434,7 +435,8 @@ function findTeamByRang($teams,$rang)
         $category = $categoryRepository->find($idCategory);
         $phases = $category->getPhases();
         $teams = $teamRepository->findBy(["Category"=>$category], ["GroupeInitial"=>"ASC","Rang"=>"ASC"]);
-
+        $category->setPhaseEnCours(null);
+        $entityManager->persist($category);
 
         foreach ($phases as $phase)
         {

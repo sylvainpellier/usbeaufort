@@ -5,10 +5,12 @@
 
 {% block body %}
 
+    {% for category in categories %}
 
-    <div class="col-4"><table class="table table-bordered table-striped  text-center" id="U11"><tr><th>U11</th></tr></table></div>
-    <div class="col-4"><table class="table table-bordered table-striped text-center" id="U13"><tr><th>U13</th></tr></table></div>
-    <div class="col-4">  <table class="table table-bordered table-striped text-center" id="U13F"><tr><th>U13F</th></tr></table></div>
+        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center" id="{{ category.Name }}"><tr><th>{{ category.Name }}</th></tr></table></div>
+    {% endfor %}
+
+
 
     <style>
         .table > :not(:first-child) { border:0px!important; }

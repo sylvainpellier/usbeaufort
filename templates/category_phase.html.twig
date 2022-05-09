@@ -7,7 +7,7 @@
 {% if category.phases|length > 1 %}
     <div class="row mb-4">
         {% for phase in category.phases %}
-            <div class="col-4"><a class="btn btn-primary w-100 text-center" href="{{ path("category_display_phase",{id:category.id,phase:phase.id}) }}">{{ phase.Name }}</a></div>
+            <div class="col-12 col-md-4"><a class="btn btn-primary w-100 text-center" href="{{ path("category_display_phase",{id:category.id,phase:phase.id}) }}">{{ phase.Name }}</a></div>
         {% endfor %}
 
 
