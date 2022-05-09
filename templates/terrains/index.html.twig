@@ -86,8 +86,14 @@
 
 var url =url_base+"/api/fields";
 
+var load = document.createElement("h3");
+load.setAttribute("id", "load");
+load.innerText= "Chargement en cour";
+document.getElementById("container").appendChild(load);
+
 fetch(url).then(function(resultas){
     console.log(resultas);
+    document.getElementById("load").style.display= "none";
 
     resultas.json().then(function(object){
         //console.log(object);
@@ -123,7 +129,7 @@ fetch(url).then(function(resultas){
     });
 });
 
-//setInterval(() => {
-//    location.reload();
-//}, 30000);
+setInterval(() => {
+    location.reload();
+}, 30000);
 {% endblock %}

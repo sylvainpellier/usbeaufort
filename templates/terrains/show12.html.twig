@@ -91,15 +91,19 @@
 
 var url =url_base+"/api/matchs?orderTime=1"
 
+var load = document.createElement("h3");
+load.setAttribute("id", "load");
+load.innerText= "Chargement en cour";
+document.getElementById("container").appendChild(load);
+
 createTable("matchs1");
 createTable("matchs2")
 
 fetch(url).then(function(resultas){
+    document.getElementById("load").style.display="none";
     resultas.json().then(function(object){
         jsondata = object.data;
-
-
-
+        
         jsondata.forEach(function(match){
         console.log(match);
             if(match.Field && (match.Field.Name === "{{ terrain1.Name }}" || match.Field.Name === "{{ terrain2.Name }}"))
@@ -181,5 +185,7 @@ var div = document.createElement("div");
         thead.appendChild(th);
 
 }
-
+setInterval(function(){
+    location.reload();
+}30000);
 {% endblock %}

@@ -7,7 +7,7 @@
 
     {% for category in categories %}
 
-        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center" id="{{ category.Name }}"><tr><th>{{ category.Name }}</th></tr></table></div>
+        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="{{ category.Name }}"><tr><th>{{ category.Name }}</th></tr></table></div>
     {% endfor %}
 
 
@@ -23,13 +23,22 @@
 {{ parent() }}
 
     var url = url_base+"/api/teams";
+
+    var DivU11 = document.getElementById("U11");
+    var DivU13 = document.getElementById("U13");
+    var DivU13F = document.getElementById("U13F")
+
+    var load = document.createElement("h3");
+    load.setAttribute("id", "load");
+    load.innerText= "Chargement en cour";
+    DivU11.appendChild(load);
+    
+
     fetch(url).then(function(resultas){
+        document.getElementById("load").style.display= "none";
         console.log(resultas);
         resultas.json().then(function(resultasJson){
             console.log(resultasJson);
-            var DivU11 = document.getElementById("U11");
-            var DivU13 = document.getElementById("U13");
-            var DivU13F = document.getElementById("U13F");
 
             equipe = resultasJson.data;
             console.log(equipe);
@@ -85,6 +94,10 @@
             });
         });
     });
+
+setInterval(function(){
+    location.reload();
+}30000);
 
 {% endblock %}
 

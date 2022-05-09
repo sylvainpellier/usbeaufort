@@ -91,8 +91,14 @@
 {{ parent() }}
 
 var url =url_base+"/api/matchs?orderTime=1"
+var load = document.createElement("h3");
+load.setAttribute("id", "load");
+load.innerText= "Chargement en cour";
+document.getElementById("container").appendChild(load);
+
 
 fetch(url).then(function(resultas){
+    document.getElementById("load").style.display= "none";
     resultas.json().then(function(object){
         jsondata = object.data;
         var div = document.createElement("div");
@@ -167,5 +173,7 @@ fetch(url).then(function(resultas){
 
     });
 });
-
+setInterval(function(){
+    location.reload();
+}30000);
 {% endblock %}

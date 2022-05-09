@@ -6,8 +6,7 @@
 {% block body %}
 
 <div class="col-12 text-center" id="container">
-    <h2>{{ equipe.Name }}</h2>
-
+    <h2>{{ equipe.Name }}</h2> // pas reussi a faire le lien de retour
 </div>
 
 {% endblock %}
@@ -16,42 +15,100 @@
 {{ parent() }}
 
 var url = url_base+"/api/team/{{equipe.id}}/matchs"
+
+var load = document.createElement("h3");
+load.setAttribute("id", "load");
+load.innerText= "Chargement en cour";
+document.getElementById("container").appendChild(load);
+
 fetch(url).then(function(resultas){
-    console.log(resultas);
+    //console.log(resultas);
+
+    document.getElementById("load").style.display= "none";
+
     resultas.json().then(function(resultasJson){
-        console.log(resultasJson);
-        
+        //console.log(resultasJson);
+
         let match = resultasJson.data;
 
-        console.log(match)
+        //console.log(match)
         var div = document.getElementById("container");
+        var table = document.createElement("table");
+        table.classList.add("table", "table-bordered", "table-responsive", "table-striped");
+        div.appendChild(table);
+
+        var thead = document.createElement("thead");
+        table.appendChild(thead);
+
+        let tr = document.createElement("tr");
+        thead.appendChild(tr);
+
+        let th = document.createElement("th");
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Phase";
+        thead.appendChild(th);
+        
+        th = document.createElement("th");
+        th.innerText= "Equipe A";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Equipe B";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Score A";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Score B";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Tir au But A";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Tir au But B";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Horaire";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Arbitre";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
+        th.innerText= "Terrain";
+        thead.appendChild(th);
+
+        var tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+
         match.forEach(function(liste){
             let tr = document.createElement("tr");
-            div.appendChild(tr);
+            tbody.appendChild(tr);
+
+            let th = document.createElement("th");
+            tr.appendChild(th);
 
             let td = document.createElement("td");
             td.innerText= liste.Phase.Name;
             tr.appendChild(td);
 
             td = document.createElement("td");
-            td.innerText= "_";
-            tr.appendChild(td);
-
-            td = document.createElement("td");
             td.innerText= liste.TeamA.Name;
             tr.appendChild(td);
 
-            td = document.createElement("td");
-            td.innerText="/"
-            tr.appendChild(td);
 
             td = document.createElement("td");
             td.innerText= liste.TeamB.Name;
             tr.appendChild(td);
 
-            td = document.createElement("td");
-            td.innerText= "_";
-            tr.appendChild(td);
 
             if(!liste.ScoreA){
                 td = document.createElement("td");
@@ -63,9 +120,6 @@ fetch(url).then(function(resultas){
                 tr.appendChild(td);
             }
             
-            td = document.createElement("td");
-            td.innerText= "/";
-            tr.appendChild(td);
 
             if(!liste.ScoreB){
                 td = document.createElement("td");
@@ -76,9 +130,44 @@ fetch(url).then(function(resultas){
                 td.innerText= liste.ScoreB;
                 tr.appendChild(td);
             }
-        
+
+            if(!liste.PenaltyA){
+                td = document.createElement("td");
+                td.innerText="0";
+                tr.appendChild(td);
+            }else{
+                td = document.createElement("td");
+                td.innerText=liste.PenaltyA;
+                tr.appendChild(td);
+            }
+
+            if(!liste.PenaltyB){
+                td = document.createElement("td");
+                td.innerText="0";
+                tr.appendChild(td);
+            }else{
+                td = document.createElement("td");
+                td.innerText=liste.PenaltyB;
+                tr.appendChild(td);
+            }
+
+            td = document.createElement("td");
+            td.innerText=liste.time;  // a voir si on dois afficher les horraires.
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText=liste.arbitre;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText=liste.Field.Name;
+            tr.appendChild(td);
+
         });
     });
-})
+});
 
+setInterval(function(){
+    location.reload();
+}30000);
 {% endblock %}
