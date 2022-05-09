@@ -101,6 +101,7 @@ class ApiController extends OverrideApiController
                 foreach ($resultats as $match) {
 
                     $teams[$key]["poule"] = $match["poule_id"];
+                    $teams[$key]["pouleNameString"] = $match["name"];
 
                     if ($team["id"] === $match["team_a_id"]) {
                         $me = "score_a";
