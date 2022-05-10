@@ -27,7 +27,7 @@
 
     var load = document.createElement("h3");
     load.setAttribute("id", "load");
-    load.innerText= "Chargement en cour";
+    load.innerText= "Chargement en cours";
     document.getElementById("data").appendChild(load);
 
 fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((data)=>{
@@ -278,5 +278,5 @@ fetch(urlposition).then(function(resultas){
 
 setInterval(function(){
     location.reload();
-}30000);
+},30000);
 {% endblock %}

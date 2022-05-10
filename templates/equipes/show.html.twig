@@ -6,7 +6,10 @@
 {% block body %}
 
 <div class="col-12 text-center" id="container">
-    <h2>{{ equipe.Name }}</h2> // pas reussi a faire le lien de retour
+
+    <a href="{{ path("teams_index") }}" class="float-end btn btn-primary">retour à la liste des équipes</a>
+
+    <h2>{{ equipe.Name }}</h2>
 </div>
 
 {% endblock %}
@@ -18,13 +21,13 @@ var url = url_base+"/api/team/{{equipe.id}}/matchs"
 
 var load = document.createElement("h3");
 load.setAttribute("id", "load");
-load.innerText= "Chargement en cour";
+load.innerText= "Chargement en cours";
 document.getElementById("container").appendChild(load);
 
 fetch(url).then(function(resultas){
     //console.log(resultas);
 
-    document.getElementById("load").style.display= "none";
+   document.getElementById("load").style.display= "none";
 
     resultas.json().then(function(resultasJson){
         //console.log(resultasJson);
@@ -167,7 +170,5 @@ fetch(url).then(function(resultas){
     });
 });
 
-setInterval(function(){
-    location.reload();
-}30000);
+
 {% endblock %}

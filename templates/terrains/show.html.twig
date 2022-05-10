@@ -93,7 +93,7 @@
 var url =url_base+"/api/matchs?orderTime=1"
 var load = document.createElement("h3");
 load.setAttribute("id", "load");
-load.innerText= "Chargement en cour";
+load.innerText= "Chargement en cours";
 document.getElementById("container").appendChild(load);
 
 
@@ -175,5 +175,5 @@ fetch(url).then(function(resultas){
 });
 setInterval(function(){
     location.reload();
-}30000);
+},30000);
 {% endblock %}

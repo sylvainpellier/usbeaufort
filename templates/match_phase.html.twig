@@ -20,7 +20,7 @@
 var table, div, tbody;
 var load = document.createElement("h3");
 load.setAttribute("id", "load");
-load.innerText= "Chargement en cour";
+load.innerText= "Chargement en cours";
 document.getElementById("data").appendChild(load);
 
 fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ groupe }}").then((data)=>{
