@@ -78,6 +78,10 @@ fetch(url).then(function(resultas){
         thead.appendChild(th);
 
         th = document.createElement("th");
+        th.innerText= "Equipe forfaite";
+        thead.appendChild(th);
+
+        th = document.createElement("th");
         th.innerText= "Horaire";
         thead.appendChild(th);
 
@@ -151,6 +155,16 @@ fetch(url).then(function(resultas){
             }else{
                 td = document.createElement("td");
                 td.innerText=liste.PenaltyB;
+                tr.appendChild(td);
+            }
+
+            if(!liste.TeamForfait){
+                td = document.createElement("td");
+                td.innerText="Aucune";
+                tr.appendChild(td);
+            }else{
+                td = document.createElement("td");
+                td.innerText=liste.TeamForfait;
                 tr.appendChild(td);
             }
 

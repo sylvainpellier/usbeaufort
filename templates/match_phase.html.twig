@@ -69,7 +69,6 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
             thead.appendChild(tr);
 
             let th = document.createElement("th");
-            th.innerText= "#"
             tr.appendChild(th);
 
             th = document.createElement("th");
@@ -94,6 +93,10 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
 
             th = document.createElement("th");
             th.innerText= "Tir au but B"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText= "Equipe forfaite"
             tr.appendChild(th);
 
             th = document.createElement("th");
@@ -167,6 +170,16 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
             td = document.createElement("td");
             td.innerText = match.PenaltyB;
             tr.appendChild(td);
+        }
+
+        if(!match.TeamForfait){
+            td = document.createElement("td");
+            td.innerText= "aucune";
+            tr.appendChild(td);
+        }else{
+            td =document.createElement("td");
+            td.innerText= match.TeamForfait;
+            tr.appendChild(td); 
         }
 
        if(match.time){
