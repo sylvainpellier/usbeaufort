@@ -174,11 +174,11 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
 
         if(!match.TeamForfait){
             td = document.createElement("td");
-            td.innerText= "aucune";
+            td.innerText= "x";
             tr.appendChild(td);
         }else{
             td =document.createElement("td");
-            td.innerText= match.TeamForfait;
+            td.innerText= match.TeamForfait.Name;
             tr.appendChild(td); 
         }
 
