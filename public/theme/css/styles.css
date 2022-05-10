@@ -11628,5 +11628,5 @@ footer a:hover, footer a:active, footer a:focus {
 nav img { height: 50px;
   margin-right: 20px; }
 
-#load { margin-top:100px!important; margin-bottom:100px!important; padding-top:150px!important;  background-position: center; background-image: url("/img/loader.gif"); background-repeat: no-repeat;
+#load {  text-align:center; margin-top:100px!important; margin-bottom:100px!important; padding-top:150px!important;  background-position: center; background-image: url("/img/loader.gif"); background-repeat: no-repeat;
   text-transform: uppercase; }
