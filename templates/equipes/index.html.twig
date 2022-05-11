@@ -5,8 +5,9 @@
 
 {% block body %}
 
-    {% for category in categories %}
+<div id="container"></div>
 
+    {% for category in categories %}
         <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="{{ category.Name }}"><tr><th>{{ category.Name }}</th></tr></table></div>
     {% endfor %}
 
@@ -31,7 +32,7 @@
     var load = document.createElement("h3");
     load.setAttribute("id", "load");
     load.innerText= "Chargement en cours";
-    DivU11.appendChild(load);
+    document.getElementById("container").appendChild(load);
     
 
     fetch(url).then(function(resultas){
