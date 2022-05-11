@@ -54,19 +54,7 @@ fetch(url).then(function(resultas){
         thead.appendChild(th);
         
         th = document.createElement("th");
-        th.innerText= "Equipe A";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Equipe B";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Score A";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Score B";
+        th.innerText= "Resultas";
         thead.appendChild(th);
 
         th = document.createElement("th");
@@ -97,6 +85,7 @@ fetch(url).then(function(resultas){
         table.appendChild(tbody);
 
         match.forEach(function(liste){
+            console.log(liste);
             let tr = document.createElement("tr");
             tbody.appendChild(tr);
 
@@ -106,37 +95,17 @@ fetch(url).then(function(resultas){
             let td = document.createElement("td");
             td.innerText= liste.Phase.Name;
             tr.appendChild(td);
-
-            td = document.createElement("td");
-            td.innerText= liste.TeamA.Name;
-            tr.appendChild(td);
-
-
-            td = document.createElement("td");
-            td.innerText= liste.TeamB.Name;
-            tr.appendChild(td);
-
-
-            if(!liste.ScoreA){
-                td = document.createElement("td");
-                td.innerText="0";
-                tr.appendChild(td);
-            }else{
-                td = document.createElement("td");
-                td.innerText= liste.ScoreA;
-                tr.appendChild(td);
-            }
             
-
-            if(!liste.ScoreB){
+            if(liste.ScoreA && liste.ScoreB){
                 td = document.createElement("td");
-                td.innerText="0";
+                td.innerText= liste.TeamA.Name + " "+ liste.ScoreA + "-" + liste.ScoreB + " " + liste.TeamB.Name;
                 tr.appendChild(td);
             }else{
                 td = document.createElement("td");
-                td.innerText= liste.ScoreB;
+                td.innerText= liste.TeamA.Name + " _" + "-" + "_ " + liste.TeamB.Name;
                 tr.appendChild(td);
             }
+
 
             if(!liste.PenaltyA){
                 td = document.createElement("td");
