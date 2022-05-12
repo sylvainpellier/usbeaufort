@@ -9,7 +9,7 @@
         <h3 class=""><a href="{{ path("app_admin_category",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : {{ phase.Name }}</h3>
 
 
-
+{% set nbEgalite = 0 %}
 
 {% for poule in phase.poules %}
 
@@ -24,6 +24,7 @@
             <th>#</th>
             <th>Équipe</th>
             <th>Points</th>
+            <th>Diff</th>
             <th>Pour</th>
             <th>Contre</th>
             <th>Victoire</th>
@@ -31,12 +32,30 @@
             <th>Nul</th>
 
         </tr>
-        {% for team in classement[poule.Id] %}
+        {% for key, team in classement[poule.Id] %}
 
             <tr>
-                <td>{{ team.rang }}</td>
+
+                <td>
+
+                    {% if team.egalite is defined %}
+                        {% if classement[poule.Id][key-1] is defined and team.bonus1 == classement[poule.Id][key-1].bonus1 and ( (classement[poule.Id][key-1].but_pour - classement[poule.Id][key-1].but_contre ) == (team.but_pour - team.but_contre )) %}
+                            <span class="badge bg-danger rounded">égalité</span>
+                            {% set nbEgalite = nbEgalite + 1 %}
+
+                        {% elseif classement[poule.Id][key+1] is defined and team.bonus1 == classement[poule.Id][key+1].bonus1 and ( (classement[poule.Id][key+1].but_pour - classement[poule.Id][key+1].but_contre ) == (team.but_pour - team.but_contre )) %}
+                            {% set nbEgalite = nbEgalite+ 1 %}
+                            <span class="badge bg-danger rounded">égalité</span>{% else %}{{ team.rang }}
+                        {% endif %}
+                        {% else %} {{ team.rang }}
+                    {% endif %}
+
+
+
+                </td>
                 <td>{{ team.Name }}</td>
                 <td>{{ team.pts }}</td>
+                <td>{{ team.but_pour - team.but_contre }}</td>
                 <td>{{ team.but_pour }}</td>
                 <td>{{ team.but_contre }}</td>
                 <td>{{ team.victoire }}</td>
@@ -86,10 +105,20 @@
 
         <div class="row mt-5">
 
-            <div class="col-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs de la phase suivante</a></div>
-            <div class="col-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>
-            <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_update_phase",{idCategory:category.id, id:phase.id}) }}">Modifier la phase</a></div>
-            <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_simulate_match",{idCategory:category.id, idPhase:phase.id}) }}">Simuler tous les matchs</a></div>
+            {% if is_granted("ROLE_ADMIN") %}
+                <div class="col-4">
+                    {% if not phase.finished() %}
+                       <p class="alert alert-danger">impossible de générer les matchs de la poule, tous les matchs ne sont pas terminés</p>
+                    {% elseif nbEgalite > 0 %}
+                        <p class="alert alert-danger">impossible de générer les matchs de la poule des égalités existent</p>
+
+                    {% else  %}
+                    <a class="btn btn-secondary w-100 m-2"  href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs de la phase suivante</a>
+                {% endif %}</div>
+                {#<div class="col-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>#}
+                <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_update_phase",{idCategory:category.id, id:phase.id}) }}">Modifier la phase</a></div>
+                <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_simulate_match",{idCategory:category.id, idPhase:phase.id}) }}">Simuler tous les matchs</a></div>
+            {% endif %}
 
 
         </div>

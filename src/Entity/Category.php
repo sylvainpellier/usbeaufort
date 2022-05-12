@@ -136,6 +136,17 @@ class Category
         return $this;
     }
 
+    public function matchPlayed()
+    {
+        $count = 0;
+        foreach($this->getPhases() as $phase)
+        {
+            $count += $phase->matchPlayed();
+        }
+
+        return $count;
+    }
+
     public function removePhase(Phase $phase): self
     {
         if ($this->Phases->removeElement($phase)) {

@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\PhaseRepository;
+use function array_filter;
+use function array_merge;
+use function array_splice;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -114,6 +117,59 @@ class Phase
     public function getMeets(): Collection
     {
         return $this->meets;
+    }
+
+    function finished(): bool
+    {
+        return count(array_filter($this->meets->toArray(),function($m) {return $m->getScoreA() === null && $m->getScoreB() === null && $m->getPenaltyA() === null && $m->getPenaltyB() === null;  } )) === 0;
+
+    }
+
+    function matchPlayed()
+    {
+        return count(array_filter($this->meets->toArray(),function($m) {return $m->getScoreA() != null || $m->getScoreB() != null || $m->getPenaltyA() != null || $m->getPenaltyB() != null; } ));
+
+    }
+
+    function checkMeets($idA, $idB)
+    {
+        foreach($this->meets as $meet)
+        {
+            if( ($meet->getTeamA() && $meet->getTeamB()) )
+            {
+                if(( $meet->getTeamA()->getId() == $idA && $meet->getTeamB()->getId() == $idB))
+                {
+                if($meet->getScoreA() > $meet->getScoreB()) { return $idA;}
+                else if($meet->getScoreA() < $meet->getScoreB()) { return $idB; }
+                else
+                {
+                    if($meet->getPenaltyA() > $meet->getPenaltyB()) { return $idA; }
+                    else if($meet->getPenaltyA() < $meet->getPenaltyB()) { return $idB; }
+                }
+            } else if(( $meet->getTeamA()->getId() == $idB && $meet->getTeamB()->getId() == $idA))
+                {
+                    if($meet->getScoreA() > $meet->getScoreB()) { return $idB;}
+                    else if($meet->getScoreA() < $meet->getScoreB()) { return $idA; }
+                    else
+                    {
+                        if($meet->getPenaltyA() > $meet->getPenaltyB()) { return $idB; }
+                        else if($meet->getPenaltyA() < $meet->getPenaltyB()) { return $idA; }
+                    }
+                }
+        }
+    }}
+
+    /**
+     * @return Collection<int, Meet>
+     */
+    public function getMeetsForTableau(): Collection
+    {
+        $meetsPrev = array_filter($this->meets->toArray(),function($m) {return $m->getScoreA() != null || $m->getScoreB() != null || $m->getPenaltyA() != null || $m->getPenaltyB() != null; } );
+        $meetsNext = array_filter($this->meets->toArray(),function($m) {return $m->getScoreA() === null && $m->getScoreB() === null && $m->getPenaltyA() === null && $m->getPenaltyB() === null;  } );
+
+        $meetsPrev = array_splice($meetsPrev,count($meetsPrev) - 10,count($meetsPrev));
+        array_merge($meetsPrev,$meetsNext);
+        return new ArrayCollection(array_merge($meetsPrev,$meetsNext));
     }
 
     public function addMeet(Meet $meet): self

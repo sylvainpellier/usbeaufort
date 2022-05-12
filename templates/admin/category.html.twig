@@ -6,7 +6,7 @@
 
 <div class="example-wrapper">
 
-    <h3 class="">Catégorie {{ category.Name }} </h3>
+    <h3 class="">Catégorie {{ category.Name }} - {{  category.matchPlayed() }} matchs joués </h3>
 
     <hr class="mt-5">
 
@@ -32,15 +32,21 @@
 
     <div class="row mt-5">
 
+        {% if is_granted("ROLE_ADMIN") %}
+
         <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path('app_add_team', {idCategory:category.id}) }}">Ajouter une équipe</a></div>
-
-
 
         <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_add_phase", {idCategory: category.id}) }}">Ajouter une phase</a></div>
 
 
-        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_generate", { idCategory:category.id }) }}">Générer les matchs des différentes phases</a></div>
+        <div class="col">
+            {% if category.matchPlayed() > 0 %}
+            {% else %}
+            <a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_category_generate", { idCategory:category.id }) }}">Générer les matchs des différentes phases</a>
+            {% endif %}
+        </div>
 
+        {% endif %}
     </div>
 
 

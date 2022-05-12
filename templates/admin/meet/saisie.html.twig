@@ -13,7 +13,7 @@
         <hr class="">
 
         <table class="table table-striped table-bordered">
-
+            <tr><th>Équipe</th><th>Score</th>{% if meet.phase.type.format == "demifinalesfinales" %}<th>TAB</th>{% endif %}<th>Forfait</th><th>Horaire</th><th colspan="3">Terrain</th></tr>
         {% include "admin/block/displayMatch.html.twig" %}
 
         </table>

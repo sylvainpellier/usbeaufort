@@ -4,13 +4,17 @@ namespace App\Controller;
 
 use App\Entity\Meet;
 use App\Repository\CategoryRepository;
+use App\Repository\FieldRepository;
 use App\Repository\MeetRepository;
 use App\Repository\PhaseRepository;
+use App\Repository\PouleRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use function json_encode;
+use function strtotime;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -28,7 +32,7 @@ class MeetController extends OverrideApiController
     /**
      * @Route("/admin/match/update/{id}", name="admin_update_match")
      */
-    public function admin_update_match(string $id, Request $request, TeamRepository $teamRepository, MeetRepository $meetRepository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    public function admin_update_match(string $id, FieldRepository $fieldRepository, Request $request, TeamRepository $teamRepository, MeetRepository $meetRepository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $meet = $meetRepository->find($id);
         $meet->setScoreA($request->get("scoreA") > 0 ? (int)$request->get("scoreA") : null );
@@ -36,6 +40,11 @@ class MeetController extends OverrideApiController
         $meet->setPenaltyA($request->get("penaltyA") > 0 ? (int)$request->get("penaltyA") : null);
         $meet->setPenaltyB($request->get("penaltyB") > 0 ? (int)$request->get("penaltyB") : null);
         $meet->setArbitre($request->get("arbitre") );
+        if( $request->get("field")) {
+            $meet->setField( $fieldRepository->find($request->get("field")) ) ;
+        }
+
+        $meet->setTime(strtotime($request->get("date"). " ".$request->get("time").":00"));
 
         $forfait = $request->get("forfait");
         if($forfait)
@@ -43,11 +52,17 @@ class MeetController extends OverrideApiController
             $meet->setTeamForfait($teamRepository->find($forfait));
         }
 
+        $session = $request->getSession();
+        $session->start();
 
         $entityManager->persist($meet);
         $entityManager->flush();
         $this->addFlash("success","Match mis à jour");
 
+        if(  $session->get('back') )
+        {
+            return $this->redirect($session->get('back'));
+        }
         $referer = $request->headers->get('referer');
         return $this->redirect($referer."#meet_".$meet->getId());
     }
@@ -55,10 +70,11 @@ class MeetController extends OverrideApiController
     /**
      * @Route("/matchs/{id}/phase/{phase}/groupe/{groupe}", name="display_matchs")
      */
-    public function display_phase(string $id, string $phase, string $groupe, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    public function display_phase(string $id, string $phase, string $groupe, PouleRepository $pouleRepository, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {
         $phase = $phaseRepository->find($phase);
-        return $this->render("match_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase, "groupe" => $groupe]);
+        $poule = $pouleRepository->find($groupe);
+        return $this->render("match_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase, "poule" => $poule, "groupe" => $groupe]);
     }
 
     /**

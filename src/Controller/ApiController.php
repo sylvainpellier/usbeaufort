@@ -52,6 +52,7 @@ class ApiController extends OverrideApiController
             $teams[$key]["victoire"] = 0;
             $teams[$key]["defaite"] = 0;
             $teams[$key]["nul"] = 0;
+            $teams[$key]["bonus1"] = 0;
 
             $sql = '
             SELECT * FROM  usb_meets matchs, usb_poules poules
@@ -87,6 +88,7 @@ class ApiController extends OverrideApiController
                         $t["victoire"] = 0;
                         $t["defaite"] = 0;
                         $t["nul"] = 0;
+                        $t["bonus1"] = 0;
                         $t["poule"] = $position->getPouleTo() ? $position->getPouleTo()->getId() : null;
                         $t["pouleNameString"] = $position->getPouleTo() ? $position->getPouleTo()->getName() : null;
                         $t["Name"] = $position->getRang() . ($position->getRang() > 1 ? "ème" : "er") . " de la poule " . $position->getPouleFrom()->getName();
@@ -173,23 +175,79 @@ class ApiController extends OverrideApiController
         foreach ($poules as $key => $poule)
         {
             usort($poules[$key], array($this,'triClassement'));
+
+        }
+
+        $egalites = [];
+        //CLASSEMENT FINAL
+        $egalite_id = 1;
+        foreach ($poules as $keyPoule => $poule)
+        {
+            $i = 0;
+            $lastPoint = null;
+
+            foreach($poule as $keyTeam => $team)
+            {
+                if($team["poule"] == $keyPoule)
+                {
+                    $i++;
+                    $poules[$keyPoule][$keyTeam]["rang"] = $i;
+                    $team["rang"] = $i;
+
+                    if($lastPoint)
+                    {
+                        if($lastPoint === $team["pts"])
+                        {
+                            $poules[$keyPoule][$keyTeam]["egalite"] = true;
+                            $poules[$keyPoule][$keyTeam-1]["egalite"] = true;
+
+                            $poules[$keyPoule][$keyTeam]["egalite_id"] = $egalite_id;
+                            $poules[$keyPoule][$keyTeam-1]["egalite_id"] = $egalite_id;
+
+                            if(!isset($egalites[$egalite_id]) ) $egalites[$egalite_id] = [];
+                            $egalites[$egalite_id][$poules[$keyPoule][$keyTeam]["id"]] = $poules[$keyPoule][$keyTeam];
+                            $egalites[$egalite_id][$poules[$keyPoule][$keyTeam-1]["id"]] = $poules[$keyPoule][$keyTeam-1];
+
+
+                        } else {
+                            $egalite_id ++;
+                        }
+                    }
+                    $lastPoint = $team["pts"];
+
+                }
+            }
+
+        }
+
+        foreach($egalites as $keyEgalite => $egalitesArray)
+        {
+            foreach($egalitesArray as $teamAkey => $teamA)
+            {
+                foreach($egalitesArray as $teamBkey => $teamB) {
+
+                    $idWinner = $phase->checkMeets($teamA["id"],$teamB["id"]);
+                    if($idWinner) {
+
+                        foreach ($poules as $key1 => $poule) {
+                            foreach($poule as $key2 => $team) {
+
+                                if ($team["id"] == $idWinner) {
+
+                                    $poules[$key1][$key2]["bonus1"] += 1;
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         //CLASSEMENT FINAL
         foreach ($poules as $key => $poule)
         {
-            $i = 0;
-
-            foreach($poule as $keyTeam => $team)
-            {
-                if($team["poule"] == $key)
-                {
-                    $i++;
-                    $poules[$key][$keyTeam]["rang"] = $i;
-                    $team["rang"] = $i;
-
-                }
-            }
+            usort($poules[$key], array($this,'triClassementBonus'));
 
         }
 

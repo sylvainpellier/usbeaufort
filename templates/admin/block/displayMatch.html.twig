@@ -15,16 +15,35 @@
 
             {% endif %}</td>
 
+        {% if meet.phase.type.format == "demifinalesfinales" %}
         <td>{% if meet.teamB  and meet.teamA %}
 
               <input type="text" meet="{{ meet.id }}" class="match_input  p-0" name="penaltyA" value="{{ meet.penaltyA }}" />
 
             {% endif %}</td>
+        {% endif %}
 
 
         <td>{% if meet.teamB  and meet.teamA %}<input type="radio" {% if meet.TeamForfait == meet.teamA %} checked {% endif %} meet="{{ meet.id }}" name="forfait" meet="{{ meet.id }}" value="{{ meet.teamA.id }}">{% endif %}</td>
-        <td rowspan="2">{% if meet.time is not null and meet.time %}{{ meet.time|date("H:i:s") }}{% endif %}</td>
-        <td rowspan="2">{{ meet.field }}</td>
+
+
+        <td rowspan="2">{% if is_granted("ROLE_ADMIN") %}
+                <input type="date" name="date" value="{{ meet.time|date("Y-m-d") }}" /><br />
+            <input type="time" name="time" value="{{ meet.time|date("H:i") }}" />
+            {% else %}
+            {% if meet.time is not null and meet.time %}{{ meet.time|date("H:i:s") }}{% endif %}
+            {% endif %}
+        </td>
+        <td rowspan="2">
+            {% if is_granted("ROLE_ADMIN") %}
+                <select name="field"><option></option>
+                {% for field in fields %}
+                    <option {% if meet.field.id == field.id %} selected {% endif %}  value="{{ field.id }}">{{ field.Name }}</option>
+                {% endfor %}</select>
+            {% else %}
+                {{ meet.field }}
+            {% endif %}
+            </td>
 </tr>
 
 <tr>
@@ -40,11 +59,13 @@
 
         {% endif %}</td>
 
+    {% if meet.phase.type.format == "demifinalesfinales" %}
     <td>{% if meet.teamB  and meet.teamA %}
 
             <input type="text" meet="{{ meet.id }}" class="match_input p-0" name="penaltyB" value="{{ meet.penaltyB }}" />
 
         {% endif %}</td>
+    {% endif %}
 
     <td>{% if meet.teamB  and meet.teamA %}<input meet="{{ meet.id }}"  {% if meet.TeamForfait == meet.teamB %} checked {% endif %} name="forfait" type="radio"  value="{{ meet.teamB.id }}">{% endif %}</td>
 
@@ -53,7 +74,7 @@
 
 <tr style="border-bottom:4px solid black;">
     <td>Arbitres : </td>
-    <td colspan="3"><small><input type="text" class="w-100" name="arbitre" value="{{ meet.arbitre }}" /></small></td>
+    <td colspan="{% if meet.phase.type.format == "demifinalesfinales" %}3{% else %}2{% endif %}"><small><input type="text" class="w-100" name="arbitre" value="{{ meet.arbitre }}" /></small></td>
     <td>Pas de forfait : <input meet="{{ meet.id }}" name="forfait" type="radio"  value=""></td>
     <td><input type="submit" name="submit" value="Enregistrer" class="btn w-100 btn-sm btn-primary" /></td>
 
