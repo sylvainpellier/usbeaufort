@@ -22,7 +22,7 @@ class OverrideApiController extends AbstractController
         $this->em = $em;
     }
 
-    public static function triClassement($a,$b)
+    public static function triClassement(&$a,&$b)
     {
 
             //PRENDRE EN COMPTE LES ÉGALITÉS
@@ -30,20 +30,46 @@ class OverrideApiController extends AbstractController
             //TODO : classement
             if($a['pts'] === $b['pts'])
             {
-                //TODO : égalité confrontation direct ???
+                return true;
 
-                //égalité confrontation directe
-                if ((((int)$a["but_pour"]-(int)$a["but_contre"]))  === (((int)$b["but_pour"]-(int)$b["but_contre"])))
+            } else
+            {
+                return $a['pts']<$b['pts'];
+            }
+
+
+
+    }
+
+    public static function triClassementBonus(&$a,&$b)
+    {
+
+        //PRENDRE EN COMPTE LES ÉGALITÉS
+        //DIVERSES VOIR LE RELGEMENT
+        //TODO : classement
+        if($a['pts'] === $b['pts'])
+        {
+
+
+            if($a['bonus1'] == $b['bonus1'])
+            {
+                if ((((int)$a["but_pour"]-(int)$a["but_contre"]))  == (((int)$b["but_pour"]-(int)$b["but_contre"])))
                 {
-                    //TODO : pénalties ?
+
                 } else
                 {
                     return (((int)$a["but_pour"]-(int)$a["but_contre"])) < (((int)$b["but_pour"]-(int)$b["but_contre"]));
                 }
             } else
             {
-                return $a['pts']<$b['pts'];
+                return $a['bonus1']<$b['bonus1'];
             }
+
+
+        } else
+        {
+            return $a['pts']<$b['pts'];
+        }
 
 
 

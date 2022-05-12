@@ -9,6 +9,7 @@ use App\Entity\Poule;
 use App\Entity\Team;
 use App\Form\PhaseType;
 use App\Repository\CategoryRepository;
+use App\Repository\FieldRepository;
 use App\Repository\MeetRepository;
 use App\Repository\PhaseRepository;
 use App\Repository\PositionRepository;
@@ -28,6 +29,7 @@ use function str_replace;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use function usort;
 use function var_dump;
@@ -56,11 +58,19 @@ class AdminController extends OverrideApiController
     /**
      * @Route("/admin/saisie/{id}", name="app_admin_saisie")
      */
-    public function app_admin_saisie( string $id, Request $request, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function app_admin_saisie( string $id, Request $request, FieldRepository $fieldRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
+        $session = $request->getSession();
+        $session->start();
+
+        if(  $request->get('back') )
+        {
+            $session->set("back",$request->get('back'));
+        }
 
         return $this->render('admin/meet/saisie.html.twig', [
             'meet' => $meetRepository->find($id),
+            'fields' => $fieldRepository->findAll(),
             'categories' => $categoryRepository->findAll(),
         ]);
     }
@@ -120,10 +130,11 @@ class AdminController extends OverrideApiController
     /**
      * @Route("/admin/category/{id}", name="app_admin_category")
      */
-    public function category(string $id, CategoryRepository $categoryRepository): Response
+    public function category(string $id, FieldRepository $fieldRepository, CategoryRepository $categoryRepository): Response
     {
         return $this->render('admin/category.html.twig', [
             'category' => $categoryRepository->find($id),
+            'fields' => $fieldRepository->findAll(),
             'categories' => $categoryRepository->findAll(),
         ]);
     }
@@ -131,7 +142,7 @@ class AdminController extends OverrideApiController
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}", name="app_admin_category_phase")
      */
-    public function categoryphase(string $idCategory, string $idPhase, PositionRepository $positionRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function categoryphase(string $idCategory, FieldRepository $fieldRepository, string $idPhase, PositionRepository $positionRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $c = new ApiController($entityManager);
@@ -149,6 +160,7 @@ class AdminController extends OverrideApiController
             'category' => $categoryRepository->find($idCategory),
             'positions' => $positions,
             'phase' => $phase,
+            'fields' => $fieldRepository->findAll(),
             'groupes' => $meetRepository->findGroupes($idCategory,$idPhase),
             'categories' => $categoryRepository->findAll(),
             'classement' =>$c->data($idCategory,$phase, $conn = $entityManager->getConnection(),false)
@@ -195,16 +207,16 @@ function findTeamByRang($teams,$rang)
     public function app_admin_simulate_match(string $idCategory, PouleRepository $pouleRepository, PositionRepository $positionRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
         $conn = $entityManager->getConnection();
-        $sql = " UPDATE usb_meets SET score_a = FLOOR( 1 + RAND( ) *3 ) , score_b = FLOOR( 1 + RAND( ) *3 ) WHERE phase_id = :phase ";
+        $sql = " UPDATE usb_meets SET penalty_a = null, penalty_B = null, score_a = FLOOR( 1 + RAND( ) *3 ) , score_b = FLOOR( 1 + RAND( ) *3 ) WHERE phase_id = :phase ";
         $stmt = $conn->prepare($sql);
         $parameters = ["phase"=>$idPhase];
         $stmt->executeQuery($parameters);
 
-        $conn = $entityManager->getConnection();
-        $sql = " UPDATE usb_meets SET penalty_a = FLOOR( 1 + RAND( ) *5 ) , penalty_b = FLOOR( 1 + RAND( ) *5 ) WHERE score_a = score_b AND phase_id = :phase";
-        $stmt = $conn->prepare($sql);
-        $parameters = ["phase"=>$idPhase];
-        $stmt->executeQuery($parameters);
+//        $conn = $entityManager->getConnection();
+//        $sql = " UPDATE usb_meets SET penalty_a = FLOOR( 1 + RAND( ) *5 ) , penalty_b = FLOOR( 1 + RAND( ) *5 ) WHERE score_a = score_b AND phase_id = :phase";
+//        $stmt = $conn->prepare($sql);
+//        $parameters = ["phase"=>$idPhase];
+//        $stmt->executeQuery($parameters);
 
         $this->addFlash("success","Score simulé avec succès");
 
@@ -410,7 +422,7 @@ function findTeamByRang($teams,$rang)
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}/groupe/{groupe}", name="app_admin_category_phase_groupe")
      */
-    public function categoryphasgroupe(string $idCategory, PouleRepository $pouleRepository, string $idPhase, string $groupe, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function categoryphasgroupe(string $idCategory, FieldRepository $fieldRepository, PouleRepository $pouleRepository, string $idPhase, string $groupe, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $c = new ApiController($entityManager);
@@ -419,6 +431,7 @@ function findTeamByRang($teams,$rang)
             'category' => $categoryRepository->find($idCategory),
             'phase' => $phase,
             'groupe' => $groupe,
+            'fields' => $fieldRepository->findAll(),
             'poule' => $pouleRepository->find($groupe),
             'categories' => $categoryRepository->findAll(),
             'classement' =>$c->data($idCategory,$phase, $conn = $entityManager->getConnection(), $groupe)

@@ -256,10 +256,10 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
 
 
                 });
-let btn = document.createElement("a");
+                    let btn = document.createElement("a");
                     div.append(btn);
                     btn.innerText = "voir tous les matchs";
-                    btn.setAttribute("href","//localhost:8000/matchs/1/phase/{{ phase.id }}/groupe/"+namePoule);
+                    btn.setAttribute("href","/matchs/1/phase/{{ phase.id }}/groupe/"+namePoule);
                     btn.classList.add("btn","btn-secondary","float-end","btn-sm");
         };
         }

@@ -21,7 +21,8 @@
 
         <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("time_index") }}">Voir les horaires</a></div>
 
-        <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_generate_time") }}">Générer les horaires</a></div>
+        {% if is_granted("ROLE_ADMIN") %}<div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_generate_time") }}">Générer les horaires</a></div>{% endif %}
+
         <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_partenaires") }}">Générer les partenaires</a></div>
 
         <div class="col-12 col-md-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_logout") }}">Se deconnecter</a></div>

@@ -21,19 +21,30 @@
 
         <div class="col-12 col-md-4 small"><table class="table table-striped table-responsive"><figure class="text-center mt-3" top><h3>{{ category.Name }}</h3></figure>
 
-            <thead><tr><th class="text-right">Match</th><th>Heure</th><th>Terrain</th></tr></thead>
+            <thead><tr>
+
+
+                <th class="text-right">Match</th><th>Heure</th><th>Terrain</th>
+                {% if is_granted("ROLE_ADMIN") %}
+                    <td>edit
+                    </td>
+                {% endif %}
+            </tr></thead>
 
             <tbody>
             {% if category.phaseEnCours %}
                 {% for phase in category.phases %}
 
-                  {% if phase.meets|length > 0 %}  <th class="text-center" colspan="3"><h4>{{ phase.Name }}</h4></th> {% endif %}
 
-                {% for match in phase.meets %}
+                  {% if phase.meets|length > 0 %}  <th class="text-center" colspan="4"><h4>{{ phase.Name }}</h4></th> {% endif %}
 
-                    {% if match.ScoreA is null and match.ScoreB is null and match.PenaltyA is null and match.PenaltyB is null %}
+                {% for match in phase.getMeetsForTableau %}
+
+
             <tr>
-                {% if match.TeamA and match.TeamB %}<td class="text-right">{{ match.TeamA }} - {{ match.TeamB }}</td>
+
+
+                {% if match.TeamA and match.TeamB %}<td class="text-right">{{ match.TeamA }} {% if match.ScoreA %}<b>{{ match.ScoreA }}</b>{% endif %} - {% if match.ScoreB %}<b>{{ match.ScoreB }}</b>{% endif %} {{ match.TeamB }}</td>
                 {% elseif match.positionA and match.positionB %}<td class="text-right">{{ match.positionA.Rang }}{% if match.positionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.positionA.pouleFrom }} - {{ match.positionB.Rang }}{% if match.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.positionB.pouleFrom }}</td>
                     {% else %}<td class="text-right">{{ match.Name }}</td>
 
@@ -41,13 +52,15 @@
 
                 <td>{{ match.time|date("H:i") }}</td>
                 <td>{{ match.field }}</td>
+                {% if is_granted("ROLE_ADMIN") %}
+                    <td><a href="{{ path("app_admin_saisie", {id:match.id,back:path("app_tableau") }) }}" class="btn btn-sm p-0 px-1 btn-primary">x</a></td>
+                {% endif %}
             </tr>
-        {% endif %}
         {% endfor %}
         {% endfor %}
-
 
             {% endif %}
+
             </tbody>
 
             </table></div>
@@ -62,6 +75,6 @@
             setInterval(function()
             {
                 location.reload();
-            },3000);
+            },30000);
 
 {% endblock %}
