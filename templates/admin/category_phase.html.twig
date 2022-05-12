@@ -13,7 +13,7 @@
 
 {% for poule in phase.poules %}
 
-    <h5 class="mt-4">Poule {{ poule.Name }} <a href="{{ path("app_admin_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de la poule {{ poule.Name }}</a></h5>
+    <h5 class="mt-4">Poule <form class="d-inline" method="post" action="{{ path("app_admin_phase_groupe_update", {idPoule:poule.id}) }}"><input type="hidden" name="id" value="{{ poule.id }}" /><input type="text" name="pouleName" value="{{ poule.Name }}" /><input type="submit" value="modifier" /></form> <a href="{{ path("app_admin_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de la poule {{ poule.Name }}</a></h5>
     <hr >
 
 
@@ -115,9 +115,13 @@
                     {% else  %}
                     <a class="btn btn-secondary w-100 m-2"  href="{{ path("app_admin_category_phase_generate",{idCategory:category.id, idPhase:phase.id}) }}">Générer les matchs de la phase suivante</a>
                 {% endif %}</div>
-                {#<div class="col-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>#}
-                <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_update_phase",{idCategory:category.id, id:phase.id}) }}">Modifier la phase</a></div>
-                <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_simulate_match",{idCategory:category.id, idPhase:phase.id}) }}">Simuler tous les matchs</a></div>
+
+            {% if params["tournoi_en_cours"] != "oui" %}
+                <div class="col-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_category_phase_delete",{idCategory:category.id, idPhase:phase.id}) }}">Supprimer tous les matchs de la phase</a></div>
+            {% endif %}
+
+                {% if params["tournoi_en_cours"] != "oui" %} <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_update_phase",{idCategory:category.id, id:phase.id}) }}">Modifier la phase</a></div>
+                <div class="col-4"><a class="btn btn-primary w-100 m-2" href="{{ path("app_admin_simulate_match",{idCategory:category.id, idPhase:phase.id}) }}">Simuler tous les matchs</a></div>{% endif %}
             {% endif %}
 
 

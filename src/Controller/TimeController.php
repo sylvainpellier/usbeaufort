@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\CategoryRepository;
 use App\Repository\FieldRepository;
 use App\Repository\MeetRepository;
+use App\Repository\ParamRepository;
 use App\Repository\PhaseRepository;
 use App\Repository\TeamRepository;
 use function array_filter;
@@ -25,7 +26,7 @@ class TimeController extends AbstractController
     /**
      * @Route("/generate/time", name="app_generate_time")
      */
-    public function index(MeetRepository $meetRepository, PhaseRepository $phaseRepository, FieldRepository $fieldRepository, EntityManagerInterface $entityManager): Response
+    public function index(MeetRepository $meetRepository, ParamRepository $paramRepository, PhaseRepository $phaseRepository, FieldRepository $fieldRepository, EntityManagerInterface $entityManager): Response
     {
         //supprime les anciens horaires
         foreach($meetRepository->findAll() as $match)
@@ -37,10 +38,10 @@ class TimeController extends AbstractController
         $entityManager->flush();
         $timeZone = new DateTimeZone('Europe/Paris');
 
-        $debut_tournoi = new DateTime("2022-05-27 09:30:00");
+        $debut_tournoi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." ".$paramRepository->findOneBy(["Name"=>"time_debut"])->getValue().":00");
         $time = $debut_tournoi;
-        $tpsMatch = 12;
-        $tpsPause = 4;
+        $tpsMatch = (int)($paramRepository->findOneBy(["Name"=>"tps_match"])->getValue() ?? 12);
+        $tpsPause = (int)($paramRepository->findOneBy(["Name"=>"tps_pause"])->getValue() ?? 12);
         $entreMatch = $tpsMatch + $tpsPause;
         $fields = $fieldRepository->findAll();
 

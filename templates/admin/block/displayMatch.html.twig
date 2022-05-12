@@ -38,7 +38,7 @@
             {% if is_granted("ROLE_ADMIN") %}
                 <select name="field"><option></option>
                 {% for field in fields %}
-                    <option {% if meet.field.id == field.id %} selected {% endif %}  value="{{ field.id }}">{{ field.Name }}</option>
+                   <option {% if meet.field and meet.field.id == field.id %} selected {% endif %}  value="{{ field.id }}">{{ field.Name }}</option>
                 {% endfor %}</select>
             {% else %}
                 {{ meet.field }}

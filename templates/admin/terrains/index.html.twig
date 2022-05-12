@@ -15,7 +15,7 @@
                 <td>{{ terrain.id }}</td>
                <td>{{ terrain.Name }} </td>
                <td>             <a href="{{ path("time_index",{filterField:terrain.id}) }}" class="btn btn-sm btn-info">voir les matchs</a>
-                - <a href="{{ path('app_admin_update_terrain', {id:terrain.id}) }}" class="btn btn-primary btn-sm">modifier</a> - <a href="{{ path('admin_terrain_delete', {id:terrain.id}) }}" class="btn btn-danger btn-sm">supprimer</a></td>
+                - <a href="{{ path('app_admin_update_terrain', {id:terrain.id}) }}" class="btn btn-primary btn-sm">modifier</a> {% if params["tournoi_en_cours"] != "oui" %} - <a href="{{ path('admin_terrain_delete', {id:terrain.id}) }}" class="btn btn-danger btn-sm">supprimer</a>{% endif %}</td>
 
            </tr>
        {% endfor %}

@@ -34,9 +34,10 @@
 
         {% if is_granted("ROLE_ADMIN") %}
 
+        {% if params["tournoi_en_cours"] != "oui" %}
         <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path('app_add_team', {idCategory:category.id}) }}">Ajouter une équipe</a></div>
 
-        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_add_phase", {idCategory: category.id}) }}">Ajouter une phase</a></div>
+        <div class="col"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_add_phase", {idCategory: category.id}) }}">Ajouter une phase</a></div>{% endif %}
 
 
         <div class="col">

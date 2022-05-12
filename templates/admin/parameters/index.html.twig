@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paramètres - {% endblock %}
+
+{% block body %}
+
+    <div class="example-wrapper">
+
+
+
+        <h4>Gestion des paramètres</h4>
+
+        <table class="table table-striped table-bordered">
+            <tr><th>Nom</th><th>Valeur</th><th>Actions</th></tr>
+
+            {% for param in paramaters %}
+                <tr><form action="{{ path("app_admin_parameters_update") }}"><td>{{ param.Name }}</td>
+
+                <td><input type="hidden" name="id" value="{{ param.id }}" /><input type="text" class="form-check-inline" name="value" value="{{ param.Value }}" /></td>
+
+                    <td>
+                        <input class="input-group" type="submit" value="modifier">
+
+                        <a href="{{ path("app_admin_parameters_delete", {id:param.id}) }}" class="btn w-100 mt-3 btn-danger btn-sm ml-3">supprimer</a>
+                    </form></td>
+                </tr>
+            {% endfor %}
+
+        </table>
+
+        <hr class="mt-5 mb-5" />
+
+        <h3>Ajouter un paramètre</h3>
+
+        {{ form(form) }}
+
+
+
+        <div class="row mt-5">
+
+            {#<div class="col"><a class="btn btn-secondary w-100 m-2" href="">Ajouter une équipe</a></div>#}
+
+        </div>
+
+
+    </div>
+{% endblock %}
+
+{% block secondNav %}
+    {% include "admin/adminMenu.html.twig" %}
+{% endblock %}

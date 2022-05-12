@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\Param;
 use App\Repository\CategoryRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManager;
@@ -26,6 +27,13 @@ class OverrideController extends AbstractController
     }
     public function render(string $view, array $parameters = [], Response $response = null): Response
     {
+        $params = $this->em->getRepository(Param::class)->findAll();
+        $parameters["params"] = [];
+
+        foreach($params as $p)
+        {
+            $parameters["params"][$p->getName()] = $p->getValue();
+        }
 
         $parameters["categories"] = $this->em->getRepository(Category::class)->findAll();
 
