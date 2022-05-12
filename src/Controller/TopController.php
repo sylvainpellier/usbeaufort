@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class TopController extends AbstractController
+class TopController extends OverrideController
 {
     /**
      * @Route("/top", name="app_top")
