@@ -133,6 +133,11 @@ class Meet
      */
     private $format;
 
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $param;
+
 
 
 
@@ -360,6 +365,18 @@ class Meet
     public function setFormat(?string $format): self
     {
         $this->format = $format;
+
+        return $this;
+    }
+
+    public function getParam(): ?string
+    {
+        return $this->param;
+    }
+
+    public function setParam(?string $param): self
+    {
+        $this->param = $param;
 
         return $this;
     }

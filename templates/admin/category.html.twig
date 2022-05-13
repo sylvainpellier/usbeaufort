@@ -6,7 +6,7 @@
 
 <div class="example-wrapper">
 
-    <h3 class="">Catégorie {{ category.Name }} - {{  category.matchPlayed() }} matchs joués </h3>
+    <h3 class="">Catégorie {{ category.Name }} - {{  category.matchPlayed() }}  / {{ category.matchs|length }} matchs joués </h3>
 
     <hr class="mt-5">
 
@@ -22,7 +22,7 @@
 
     {% for team in category.teams  %}
     <div class="btn btn-primary btn-lg ml-4 mb-3">
-        <a class="text-white text-decoration-none" href="{{ path("app_admin_update_team",{id:team.id}) }}">{{ team.Name }} {% if team.rang %}<span class="small">({{ team.rang }}</span>){% endif %}</a>
+        <a class="text-white text-decoration-none" href="{{ path("app_admin_update_team",{id:team.id}) }}">{{ team.Name }}</a>
         <a href="{{ path("admin_team_delete",{id:team.id}) }}" class="bg-danger px-1 py-0 text-decoration-none ml-3 small text-white rounded-1">x</a>
     </div>
 

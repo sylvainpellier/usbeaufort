@@ -57,8 +57,7 @@ class PositionRepository extends ServiceEntityRepository
                 ->setParameter("rang", $rang);
         }
 
-        return $q  ->getQuery()
-            ->getResult();
+        return count($q->getQuery()->getResult());
     }
 
         public function findPerfectOne($poule, $rang)

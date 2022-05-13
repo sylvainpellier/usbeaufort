@@ -11,31 +11,40 @@
 
 <div class="example-wrapper mt-1">
 
-<h2>Gestion des données</h2>
-
-
-    <div class="row mt-5">
-
-        <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("admin_terrain") }}">Gestion des terrains</a></div>
-        <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("teams_index_admin") }}">Gestion des équipes</a></div>
+    <div class="row">
 
         <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("time_index") }}">Voir les horaires</a></div>
 
         {% if is_granted("ROLE_ADMIN") %}
 
-        {% if params["tournoi_en_cours"] != "oui" %}<div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_generate_time") }}">Générer les horaires</a></div>{% endif %}
+
+
+
+            <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("teams_index_admin") }}">Gestion des équipes</a></div>
+
+            <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("teams_index_admin") }}">Vérifications</a></div>
+
+            <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("admin_terrain") }}">Terrains</a></div>
 
             <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_parameters") }}">Paramètres</a></div>
+            <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_partenaires") }}">Partenaires</a></div>
+
+
+
+            {% if params["tournoi_en_cours"] != "oui" %}
+
+
+                <div class="col-12 col-md-6 mt-5"><a class="btn btn-info w-100 m-2" href="{{ path("app_generate_time") }}">Générer les horaires</a></div>
+
+                <div class="col-12 col-md-6 mt-5"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_delete") }}">Supprimer tous les matchs du tournoi</a></div>
+
+
+            {% endif %}
 
         {% endif %}
 
-        {% if params["tournoi_en_cours"] != "oui" %}
-            <div class="col-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_admin_delete") }}">Supprimer tous les matchs du tournoi</a></div>
-        {% endif %}
 
-        <div class="col-12 col-md-4"><a class="btn btn-secondary w-100 m-2" href="{{ path("app_admin_partenaires") }}">Partenaires</a></div>
 
-        <div class="col-12 col-md-4"><a class="btn btn-danger w-100 m-2" href="{{ path("app_logout") }}">Se deconnecter</a></div>
 
 
     </div>

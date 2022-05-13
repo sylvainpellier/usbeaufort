@@ -13,7 +13,7 @@
 
 {% for poule in phase.poules %}
 
-    <h5 class="mt-4">Poule <form class="d-inline" method="post" action="{{ path("app_admin_phase_groupe_update", {idPoule:poule.id}) }}"><input type="hidden" name="id" value="{{ poule.id }}" /><input type="text" name="pouleName" value="{{ poule.Name }}" /><input type="submit" value="modifier" /></form> <a href="{{ path("app_admin_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de la poule {{ poule.Name }}</a></h5>
+    <h5 class="mt-4"><form class="d-inline" method="post" action="{{ path("app_admin_phase_groupe_update", {idPoule:poule.id}) }}"><input type="hidden" name="id" value="{{ poule.id }}" /><input type="text" name="pouleName" value="{{ poule.Name }}" /><input type="submit" value="modifier" /></form> <a href="{{ path("app_admin_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de {{ poule.Name }}</a></h5>
     <hr >
 
 
@@ -85,20 +85,20 @@
 
 
 
-        <hr>
-        <h4>Matchs</h4>
-<hr >
+        {#<hr>#}
+        {#<h4>Matchs</h4>#}
+{#<hr >#}
 
-        {% for groupe_array in groupes %}
+        {#{% for groupe_array in groupes %}#}
 
-                    {% set groupe = groupe_array["poule"] %}
+                    {#{% set groupe = groupe_array["poule"] %}#}
 
-            <h5>Matchs de la poule {{ groupe }}</h5>
-            <hr />
+            {#<h5>Matchs de {{ groupe }}</h5>#}
+            {#<hr />#}
 
-                {% include "admin/block/matchs.html.twig" %}
-            <hr  class="mt-5" />
-            {% endfor %}
+                {#{% include "admin/block/matchs.html.twig" %}#}
+            {#<hr  class="mt-5" />#}
+            {#{% endfor %}#}
 
 
 

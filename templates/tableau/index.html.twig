@@ -45,14 +45,15 @@
 
 
                 {% if match.TeamA and match.TeamB %}<td class="text-right">{{ match.TeamA }} {% if match.ScoreA %}<b>{{ match.ScoreA }}</b>{% endif %} - {% if match.ScoreB %}<b>{{ match.ScoreB }}</b>{% endif %} {{ match.TeamB }}</td>
+                {% elseif match.Name %}<td class="text-right">{{ match.Name }}</td>
                 {% elseif match.positionA and match.positionB %}<td class="text-right">{{ match.positionA.Rang }}{% if match.positionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.positionA.pouleFrom }} - {{ match.positionB.Rang }}{% if match.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.positionB.pouleFrom }}</td>
-                    {% else %}<td class="text-right">{{ match.Name }}</td>
+
 
                     {% endif %}
 
                 <td>{{ match.time|date("H:i") }}</td>
                 <td>{{ match.field }}</td>
-                {% if is_granted("ROLE_ADMIN") %}
+                {% if is_granted("ROLE_ADMIN") or (match.field is not null and is_granted("ROLE_"~match.field.id|trans) ) %}
                     <td><a href="{{ path("app_admin_saisie", {id:match.id,back:path("app_tableau") }) }}" class="btn btn-sm p-0 px-1 btn-primary">x</a></td>
                 {% endif %}
             </tr>

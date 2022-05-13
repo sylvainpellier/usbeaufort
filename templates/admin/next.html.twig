@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle tentative - {% endblock %}
+
+{% block secondNav %}
+    {% include "admin/adminMenu.html.twig" %}
+{% endblock %}
+
+{% block body %}
+
+    <div class="row mt-5">
+        <p>Phase terminée, quelques secondes de respiration et on prépare la suivante ;)</p>
+        <a class="btn w-100 btn-primary" href="{{ path("app_admin_category_generate_matchs",{idCategory:idCategory, idPhase: idPhase}) }}">Phase Suivante</a>
+    </div>
+{% endblock %}

@@ -147,6 +147,18 @@ class Category
         return $count;
     }
 
+    public function matchs()
+    {
+       $matchs = [];
+        foreach($this->getPhases() as $phase)
+        {
+            foreach($phase->getMeets() as $meet)
+            $matchs[] = $meet;
+        }
+
+        return $matchs;
+    }
+
     public function removePhase(Phase $phase): self
     {
         if ($this->Phases->removeElement($phase)) {

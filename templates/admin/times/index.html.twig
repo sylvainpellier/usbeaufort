@@ -19,7 +19,9 @@
 
            <div class="col">Terrain : <select class="form-select" name="filterField"><option></option>
                    {% for field in fields %}
+                       {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_"~field.id|trans)  %}
                        <option {% if field.id == filterField %} selected {% endif %} value="{{ field.id }}">{{ field }}</option>
+                       {% endif %}
                    {% endfor %}
                </select></div>
 
@@ -37,7 +39,7 @@
 <tr>
         <th>Equipe A</th><th>-</th><th>Equipe B</th><th>Phase</th><th>Tour</th><th>Terrain</th><th>Horaire</th><th>Arbitre</th><th>Saisie</th></tr>
   {%  for meet in times %}
-
+{% if is_granted("ROLE_ADMIN") or (meet.field is not null and is_granted("ROLE_"~meet.field.id|trans) ) %}
         <tr>
 
                 <td>{% if meet.teamA %}
@@ -55,7 +57,7 @@
                 <td><small>{{ meet.arbitre }}</small></td>
             <td>{% if meet.scoreA is null and meet.scoreB is null %}<a class="btn btn-sm btn-primary" href="{{ path("app_admin_saisie",{id:meet.id,back:app.request.requesturi}) }}">saisir</a>{% endif %}</td>
         </tr>
-
+{% endif %}
     {% endfor %}
 
 </table>
