@@ -131,7 +131,7 @@ class TimeController extends AbstractController
         $filterCategorie = $request->get("filterCategorie");
         if($filterCategorie)
         {
-            $data = array_filter($data,function($m) use($filterCategorie){  return ($m->getTeamA() && $m->getTeamA()->getCategory()->getId() == $filterCategorie) || ($m->getTeamB() && $m->getTeamB()->getCategory()->getId() == $filterCategorie)  ;});
+            $data = array_filter($data,function($m) use($filterCategorie){  return ($m->getPhase()->getCategory()->getId() == $filterCategorie)  ;});
 
         }
 
