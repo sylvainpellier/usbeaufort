@@ -499,10 +499,10 @@ function findTeamByRang($teams,$rang)
 
             if($phase->getType()->getFormat() === "normal")
             {
-                for($i = 0; $i <= (count($teams) / $nbTeamByPoule) - 1 ; $i++)
+                for($i = 1; $i <= (count($teams) / $nbTeamByPoule)  ; $i++)
                 {
                     $poule = new Poule();
-                    $poule->setName($alphas[$i]);
+                    $poule->setName("Groupe ".$i);
                     $poule->setPhase($phase);
                     $entityManager->persist($poule);
                     $poules[] = $poule;
@@ -586,7 +586,7 @@ function findTeamByRang($teams,$rang)
             }
             else if($phase->getType()->getFormat() === "principal-consolante") {
 
-                for($i = 0; $i <= (count($teams) / $nbTeamByPoule) - 1 ; $i++)
+                for($i = 1; $i <= (count($teams) / $nbTeamByPoule)  ; $i++)
                 {
 
                     $poule = new Poule();
@@ -596,12 +596,12 @@ function findTeamByRang($teams,$rang)
                     if( ($phase->getParam() == 32 && $i< (count($teams) / $nbTeamByPoule) / 2) || ($phase->getParam() == 24 && $i < 4))
                     {
                         $poule->setPrincipal(true);
-                        $poule->setName($alphas[$i]. " - Principale");
+                        $poule->setName("Principale poule ".$i);
 
                     } else
                     {
                         $poule->setPrincipal(false);
-                        $poule->setName($alphas[$i]." - Consolante");
+                        $poule->setName("Consolante poule ".$i);
                     }
 
 
