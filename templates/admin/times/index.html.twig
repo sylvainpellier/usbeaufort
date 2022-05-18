@@ -37,7 +37,7 @@
 
 <table class="table mt-3 table-responsive table-bordered table-striped">
 <tr>
-        <th>Equipe A</th><th>-</th><th>Equipe B</th><th>Phase</th><th>Tour</th><th>Terrain</th><th>Horaire</th><th>Arbitre</th><th>Saisie</th></tr>
+        <th>Equipes</th><th>Phase</th><th>Tour</th><th>Terrain</th><th>Horaire</th><th>Arbitre</th><th>Saisie</th></tr>
   {%  for meet in times %}
 {% if is_granted("ROLE_ADMIN") or (meet.field is not null and is_granted("ROLE_"~meet.field.id|trans) ) %}
         <tr>
@@ -45,9 +45,9 @@
                 <td>{% if meet.teamA %}
                         {{ meet.teamA.Name }} ({{ meet.scoreA }})
                     {% elseif meet.positionA %}{{ meet.positionA.Rang }}{% if meet.positionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionA.pouleFrom }}
-                    {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
-                <td>-</td>
-                <td>{% if meet.teamB %}{{ meet.teamB.Name }} ({{ meet.ScoreB }})
+                    {% elseif meet.Name %}{{ meet.Name }}{% endif %}
+               -
+               {% if meet.teamB %}({{ meet.ScoreB }}) {{ meet.teamB.Name }}
                     {% elseif meet.positionB %}{{ meet.positionB.Rang }}{% if meet.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionB.pouleFrom }}
                     {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
         <td>{{ meet.phase.Name }}</td>

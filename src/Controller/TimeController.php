@@ -49,11 +49,12 @@ class TimeController extends AbstractController
 
         $tourEchiquier = [];
 
-        foreach ($phasesEchiquier as $pe)
+        foreach ($phasesEchiquier as $key => $pe)
         {
             $tourEchiquier[$pe->getId()] = 1;
         }
         $lastTour = false;
+        $matchEntreEchiqiuer = 0;
 
             $ordres = [1, 2, 3];
             foreach ($ordres as $ordre) {
@@ -61,7 +62,7 @@ class TimeController extends AbstractController
 
                 while (count($matchs) > 0) {
 
-                    if(!$lastTour || (isset($matchs[0]) && $matchs[0]->getPhase()->getType()->getFormat() !== "echiquier" &&  $lastTour !== $matchs[0]->getTour()))
+                    if(!$lastTour || ($matchEntreEchiqiuer > 30 && $matchs[0]->getPhase()->getType()->getFormat() === "demifinalesfinales" ) || (isset($matchs[0]) && $matchs[0]->getPhase()->getType()->getFormat() !== "echiquier" &&  $lastTour !== $matchs[0]->getTour()))
                     {
 
                             foreach ($phasesEchiquier as $pe) {
@@ -69,6 +70,7 @@ class TimeController extends AbstractController
                                 $matchs_echiquier = $meetRepository->findBy(["Phase" => $pe->getId(), "Tour" => $tourEchiquier[$pe->getId()]]);
                                 $tourEchiquier[$pe->getId()]++;
                                 $matchs = array_merge($matchs_echiquier, $matchs);
+                                $matchEntreEchiqiuer = 0;
                             }
 
 
@@ -82,6 +84,7 @@ class TimeController extends AbstractController
                             $matchs[0]->setField($field);
                             $entityManager->persist($matchs[0]);
                             array_splice($matchs, 0, 1);
+                            $matchEntreEchiqiuer++;
                         }
 
                     }
@@ -92,7 +95,6 @@ class TimeController extends AbstractController
                 }
                 $entityManager->flush();
             }
-
 
 
 
