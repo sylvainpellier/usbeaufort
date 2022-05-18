@@ -98,11 +98,11 @@ fetch(url).then(function(resultas){
             
             if(liste.ScoreA && liste.ScoreB){
                 td = document.createElement("td");
-                td.innerText= liste.TeamA.Name + " "+ liste.ScoreA + "-" + liste.ScoreB + " " + liste.TeamB.Name;
+                td.innerText= liste.TeamA.Name + " ("+ liste.ScoreA + ") - (" + liste.ScoreB + ") " + liste.TeamB.Name;
                 tr.appendChild(td);
             }else{
                 td = document.createElement("td");
-                td.innerText= liste.TeamA.Name + " _" + "-" + "_ " + liste.TeamB.Name;
+                td.innerText= liste.TeamA.Name + " - " + liste.TeamB.Name;
                 tr.appendChild(td);
             }
 
@@ -138,7 +138,9 @@ fetch(url).then(function(resultas){
             }
 
             td = document.createElement("td");
-            td.innerText=liste.time;  // a voir si on dois afficher les horraires.
+
+             var date = new Date(((liste.time-7200)*1000))
+            td.innerText = liste.time ? (date.getHours() < 10 ? "0" : "") + date.getHours()+"h"+ (date.getMinutes() < 10 ? "0" : "") + date.getMinutes() : "à définir";
             tr.appendChild(td);
 
             td = document.createElement("td");

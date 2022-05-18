@@ -228,6 +228,16 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     p.setAttribute("id", "PhaseSuiv"+IdListe);
                     div.appendChild(p);
 
+                    //on fait une requête par poule
+                    fetch("/api/poule/"+namePoule+"/positions").then(function(resultat){
+                        console.log(resultat);
+
+                        resultat.json().then(function(resultatJson){
+                            console.log(resultatJson.data.from)
+                             console.log(resultatJson.data.to)
+                        })
+                    })
+
                     ul = document.createElement("ul");
                     ul.setAttribute("id", "listePhaseSuiv"+IdListe);
                     document.getElementById("PhaseSuiv"+IdListe).appendChild(ul);
@@ -285,7 +295,7 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     let btn = document.createElement("a");
                     div.append(btn);
                     btn.innerText = "voir tous les matchs";
-                    btn.setAttribute("href","/matchs/1/phase/{{ phase.id }}/groupe/"+namePoule);
+                    btn.setAttribute("href","/matchs/1/phase/{{ phase.id }}/groupe  /"+namePoule);
                     btn.classList.add("btn","btn-secondary","float-end","btn-sm");
         };
         }
@@ -319,13 +329,7 @@ fetch("/api/data/phase?phase={{ phase.id+1 }}&category={{ category.id }}").then(
     });
 });
 
-fetch("http://localhost:8000/api/poule/5500/positions").then(function(resultat){
-    console.log(resultat);
 
-    resultat.json().then(function(resultatJson){
-        console.log(resultatJson)
-    })
-})
 //setInterval(function(){
 //    location.reload();
 //},30000);
