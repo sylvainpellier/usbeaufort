@@ -5,7 +5,7 @@
 
 {% block body %}
 
-    <div>
+    <div id="container">
 
         <p>//affichage de l'équipe (ou des équipes si égalité) qui a marqué le plus de buts</p>
 
@@ -20,7 +20,108 @@
 
 {% endblock %}
 
+
 {% block javascript %}
+    var url =  "http://localhost:8000/api/matchs"
 
+    //faire function comme la boucle des additions buts  qui permet de faire touts les top en changent juste les variables
 
+    fetch(url).then(function(resultat){
+        console.log(resultat);
+        resultat.json().then(function(resultatJson){
+            //console.log(resultatJson);
+
+            var data = resultatJson.data;
+            console.log(data);
+            var equipe = data[0].TeamA.Name
+            if(!data[0].ScoreA){
+                var totalBut = 0;
+            }else{
+                var totalBut = data[0].ScoreA;
+            }
+            var but = [];
+            var equipeName = [];
+            console.log("init but "+ but);
+
+            //boucle qui additione les but dans un tableau.
+            for(a=1; a<=data.length-1; a++){
+                //console.log(equipe + a);
+
+                if(data[a].TeamA || data[a].TeamB){
+                    if(equipe === data[a].TeamA.Name){
+                        if(!data[a].ScoreA){
+                            totalBut = totalBut+0;
+                            
+                            //console.log("total but = "+totalBut);
+
+                        }else{
+                            totalBut = totalBut + data[a].ScoreA;
+                            //console.log("total but = "+totalBut);
+                        };
+
+                    }else if(equipe === data[a].TeamB.Name){
+
+                        if(!data[a].ScoreB){
+                            totalBut = totalBut + 0;
+                           
+                            //console.log("total but = "+totalBut);
+
+                        }else{
+                            totalBut = totalBut + data[a].ScoreB;
+                            
+                            //console.log("total but = "+totalBut);
+                        };
+
+                    }else{
+                        but.push(totalBut);
+                        //console.log(but);
+                        equipeName.push(equipe);
+                        //console.log(equipeName);
+
+                        totalBut = 0;
+
+                        equipe = data[a].TeamA.Name;
+                        if(data[a].ScoreA){
+                            totalBut = data[a].ScoreA;
+                        }else{
+                            totalBut = 0;
+                        }
+                        
+                    };
+                };                
+            };
+
+            console.log(but);
+            console.log(equipeName);
+
+            var max = but[0];
+            //console.log(max);
+
+            var EquipePlusDeBut = equipeName[0];
+            //console.log(EquipePlusDeBut);
+
+            for(a=0; a<=but.length-1; a++){
+                
+                if(max < but[a]){
+                    max = but[a];
+                    console.log("changement de max "+max);
+
+                    EquipePlusDeBut = equipeName[a];
+                    console.log(EquipePlusDeBut);
+                }else{
+                    max = max;
+                    console.log("pas de changement de max "+max)
+                }   
+            }
+
+            let h2 = document.createElement("h2");
+            h2.innerText= "Equipe qui a marqué le plus de but :";
+            document.getElementById("container").appendChild(h2);
+
+            let h3 = document.createElement("h3");
+            h3.innerText= EquipePlusDeBut + " " + max + " buts";
+            h2.appendChild(h3);
+        });
+
+    });
 {% endblock %}

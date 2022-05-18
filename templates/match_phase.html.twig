@@ -72,19 +72,7 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
             tr.appendChild(th);
 
             th = document.createElement("th");
-            th.innerText= "Equipe A"
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Equipe B"
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Score A"
-            tr.appendChild(th);
-
-            th = document.createElement("th");
-            th.innerText= "Score B"
+            th.innerText= "Resultas"
             tr.appendChild(th);
 
             th = document.createElement("th");
@@ -122,35 +110,16 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
         tr.appendChild(th);
 
 
-        let td = document.createElement("td");
-        td.innerText= match.TeamA ? match.TeamA.Name : "à définir";
-        tr.appendChild(td);
-
-
-        td = document.createElement("td");
-        td.innerText= match.TeamB ? match.TeamB.Name : "à définir";
-        tr.appendChild(td);
-
-        if(!match.ScoreA){
+        if(match.ScoreA && match.ScoreB && match.TeamA.Name && match.TeamB.Name){
             td = document.createElement("td");
-            td.innerText = "0";
+            td.innerText= match.TeamA.Name + " "+ match.ScoreA + "-" + match.ScoreB + " " + match.TeamB.Name;
             tr.appendChild(td);
         }else{
             td = document.createElement("td");
-            td.innerText = match.ScoreA;
+            td.innerText= "A definir _ - _  A definir";
             tr.appendChild(td);
         }
 
-
-        if(!match.ScoreB){
-            td = document.createElement("td");
-            td.innerText = "0";
-            tr.appendChild(td);
-        }else{
-            td = document.createElement("td");
-            td.innerText = match.ScoreB;
-            tr.appendChild(td);
-        }
 
         if(!match.PenaltyA){
             td = document.createElement("td");

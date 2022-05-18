@@ -34,30 +34,31 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
     //console.log(data);
     document.getElementById("load").style.display= "none";
     data.json().then((jsonData)=>{
-        console.log(jsonData);
+        //console.log(jsonData);
 
 
 
         let equipe = jsonData.data;
-
+        //console.log(equipe);
+        var IdListe = 1;
         for(const namePoule in equipe){
             //console.log(namePoule);
             let poule = equipe[namePoule];
-            console.log({poule});
+            //console.log({poule});
             namePouleString = poule[0]["pouleNameString"]
             //console.log(poule);
-                    let div = document.createElement("div");
+                    var div = document.createElement("div");
                     div.classList.add("mt-5","row","text-center");
                     div.setAttribute("id","poule_"+namePoule);
 
 
 
                     let h3 = document.createElement("h3");
-                                        h3.classList.add("mb-3");
-
-                    h3.innerHTML = "Poule " + namePouleString;
+                    h3.classList.add("mb-3");
+                    h3.innerHTML = "Groupe " + namePouleString;
                     document.getElementById('data').appendChild(div);
                     div.appendChild(h3);
+
 
 
                  if(jsonData.param.format === "demifinalesfinales")
@@ -105,15 +106,15 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
 
 
                             fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule="+namePoule).then((data)=>{
-                                console.log(data);
+                                //console.log(data);
                                     data.json().then((d)=>{
                                     x= 1
                                     for(const idMatch in d.data){
 
                                     var match = d.data[idMatch];
-                                    console.log(match);
+                                    //console.log(match);
                                         let divContenu = document.createElement("div");
-                                        console.log("#poule_"+namePoule +" .div1");
+                                        //console.log("#poule_"+namePoule +" .div1");
                                             if(x == 1  ) document.querySelector("#poule_"+namePoule +" .divDemiFinale1") .appendChild(divContenu);
                                             else if(x == 2  ) document.querySelector("#poule_"+namePoule +" .divDemiFinale2").appendChild(divContenu);
                                              else if(x == 3  ) document.querySelector("#poule_"+namePoule +" .divFinalePerdant").appendChild(divContenu);
@@ -213,6 +214,25 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     th.setAttribute("scope", "col");
                     thead.appendChild(th);
 
+                    let p = document.createElement("p");
+                    p.innerText= "Composition de la poule";
+                    p.setAttribute("id", "Compo"+IdListe);
+                    div.appendChild(p);
+
+                    let ul = document.createElement("ul");
+                    ul.setAttribute("id", "listeCompo"+IdListe);
+                    document.getElementById("Compo"+IdListe).appendChild(ul);
+
+                    p = document.createElement("p");
+                    p.innerText="Phase suivante";
+                    p.setAttribute("id", "PhaseSuiv"+IdListe);
+                    div.appendChild(p);
+
+                    ul = document.createElement("ul");
+                    ul.setAttribute("id", "listePhaseSuiv"+IdListe);
+                    document.getElementById("PhaseSuiv"+IdListe).appendChild(ul);
+
+
                 equipe[namePoule].forEach((team)=>{
                 if(team.Name != "Challenge"){
                     //console.log(team);
@@ -239,8 +259,7 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     td.innerHTML= team.but_pour;
                     tr.appendChild(td);
 
-                    
-
+                
                     td = document.createElement("td");
                     td.innerHTML = team.victoire;
                     tr.appendChild(td);
@@ -252,10 +271,17 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     td = document.createElement("td");
                     td.innerHTML = team.defaite;
                     tr.appendChild(td);
-                    }
+
+                    let li = document.createElement("li");
+                    li.innerText = team.Name;
+                    document.getElementById("listeCompo"+IdListe).appendChild(li);
+                    
+                }
+
 
 
                 });
+                IdListe++;
                     let btn = document.createElement("a");
                     div.append(btn);
                     btn.innerText = "voir tous les matchs";
@@ -266,17 +292,41 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
     });
 });
 
+fetch("/api/data/phase?phase={{ phase.id+1 }}&category={{ category.id }}").then(function(resultat){
+    //console.log(resultat);
+    resultat.json().then(function(resultatJson){
+        //console.log(resultatJson);
 
-var urlposition = "/api/poule/5486/positions";
-
-fetch(urlposition).then(function(resultas){
-    //console.log(resultas);
-    resultas.json().then(function(data){
+        data = resultatJson.data;
         //console.log(data);
-    })
+        var d = 1;
+
+        for(const namePoule in data){
+            let liste = data[namePoule];
+            //console.log(liste);
+
+            data[namePoule].forEach(function(e){
+                //console.log(e);
+
+                let li = document.createElement("li");
+                li.innerText= e.Name;
+                document.getElementById("PhaseSuiv"+d).appendChild(li);
+
+            });
+            d++;
+        };
+
+    });
 });
 
-setInterval(function(){
-    location.reload();
-},30000);
+fetch("http://localhost:8000/api/poule/5500/positions").then(function(resultat){
+    console.log(resultat);
+
+    resultat.json().then(function(resultatJson){
+        console.log(resultatJson)
+    })
+})
+//setInterval(function(){
+//    location.reload();
+//},30000);
 {% endblock %}

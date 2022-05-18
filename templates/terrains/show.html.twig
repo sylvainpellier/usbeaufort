@@ -13,9 +13,6 @@
 
 <div id="matchs"></div>
 
-
-
-
         <hr />
         <figure id="terrain">
             <svg class="img-fluid" viewBox="0 0 1224 547" width="1224" height="547" preserveAspectRatio="xMinYMin meet" >
@@ -94,7 +91,7 @@ var url =url_base+"/api/matchs?orderTime=1"
 var load = document.createElement("h3");
 load.setAttribute("id", "load");
 load.innerText= "Chargement en cours";
-document.getElementById("container").appendChild(load);
+document.getElementById("matchs").appendChild(load);
 
 
 fetch(url).then(function(resultas){
