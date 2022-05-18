@@ -75,13 +75,7 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
             th.innerText= "Resultas"
             tr.appendChild(th);
 
-            th = document.createElement("th");
-            th.innerText= "Tir au but A"
-            tr.appendChild(th);
 
-            th = document.createElement("th");
-            th.innerText= "Tir au but B"
-            tr.appendChild(th);
 
             th = document.createElement("th");
             th.innerText= "Equipe forfaite"
@@ -112,34 +106,21 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
 
         if(match.ScoreA && match.ScoreB && match.TeamA.Name && match.TeamB.Name){
             td = document.createElement("td");
-            td.innerText= match.TeamA.Name + " "+ match.ScoreA + "-" + match.ScoreB + " " + match.TeamB.Name;
+            td.innerText= match.TeamA.Name + " ("+ match.ScoreA + ") - (" + match.ScoreB + ") " + match.TeamB.Name;
             tr.appendChild(td);
-        }else{
+        }else if( match.TeamA.Name && match.TeamB.Name )
+        {
+         td = document.createElement("td");
+            td.innerText= match.TeamA.Name + " - " + match.TeamB.Name;
+            tr.appendChild(td);
+        } else
+        {
             td = document.createElement("td");
-            td.innerText= "A definir _ - _  A definir";
+            td.innerText= "À definir - À definir";
             tr.appendChild(td);
         }
 
 
-        if(!match.PenaltyA){
-            td = document.createElement("td");
-            td.innerText = "0";
-            tr.appendChild(td);
-        }else{
-            td = document.createElement("td");
-            td.innerText = match.PenaltyA;
-            tr.appendChild(td);
-        }
-
-        if(!match.PenaltyB){
-            td = document.createElement("td");
-            td.innerText = "0";
-            tr.appendChild(td);
-        }else{
-            td = document.createElement("td");
-            td.innerText = match.PenaltyB;
-            tr.appendChild(td);
-        }
 
         if(!match.TeamForfait){
             td = document.createElement("td");
