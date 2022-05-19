@@ -65,6 +65,11 @@ class Poule
      */
     private $positionsTo;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PouleTeam::class, mappedBy="Poule", orphanRemoval=true)
+     */
+    private $pouleTeams;
+
 
 
     public function __construct()
@@ -73,6 +78,7 @@ class Poule
         $this->meets = new ArrayCollection();
         $this->positionsFrom = new ArrayCollection();
         $this->positionsTo = new ArrayCollection();
+        $this->pouleTeams = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -114,8 +120,15 @@ class Poule
 
     public function addTeam(Team $team): self
     {
+
+
         if (!$this->Teams->contains($team)) {
             $this->Teams[] = $team;
+
+            $teamPoule = new PouleTeam();
+            $teamPoule->setPoule($this);
+            $teamPoule->setTeam($team);
+
         }
 
         return $this;
@@ -229,6 +242,36 @@ class Poule
             // set the owning side to null (unless already changed)
             if ($positionsTo->getPouleTo() === $this) {
                 $positionsTo->setPouleTo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PouleTeam>
+     */
+    public function getPouleTeams(): Collection
+    {
+        return $this->pouleTeams;
+    }
+
+    public function addPouleTeam(PouleTeam $pouleTeam): self
+    {
+        if (!$this->pouleTeams->contains($pouleTeam)) {
+            $this->pouleTeams[] = $pouleTeam;
+            $pouleTeam->setPoule($this);
+        }
+
+        return $this;
+    }
+
+    public function removePouleTeam(PouleTeam $pouleTeam): self
+    {
+        if ($this->pouleTeams->removeElement($pouleTeam)) {
+            // set the owning side to null (unless already changed)
+            if ($pouleTeam->getPoule() === $this) {
+                $pouleTeam->setPoule(null);
             }
         }
 

@@ -6,6 +6,7 @@ use App\Entity\Meet;
 use App\Entity\Phase;
 use App\Entity\Position;
 use App\Entity\Poule;
+use App\Entity\PouleTeam;
 use App\Entity\Team;
 use App\Form\PhaseType;
 use App\Repository\CategoryRepository;
@@ -14,6 +15,7 @@ use App\Repository\MeetRepository;
 use App\Repository\PhaseRepository;
 use App\Repository\PositionRepository;
 use App\Repository\PouleRepository;
+use App\Repository\PouleTeamRepository;
 use App\Repository\TeamRepository;
 use function array_key_exists;
 use function array_push;
@@ -36,6 +38,27 @@ use function var_dump;
 
 class AdminController extends OverrideController
 {
+    /**
+     * @Route("/admin/egalite", name="app_admin_egalite")
+     */
+    public function app_admin_egalite(Request $request, PouleTeamRepository $pouleTeamRepository, EntityManagerInterface $entityManager, TeamRepository $teamRepository, PouleRepository $pouleRepository)
+    {
+        $team = $teamRepository->find($request->get("team"));
+        $poule = $pouleRepository->find($request->get("poule"));
+
+        $tm = $pouleTeamRepository->findOneBy(["Team"=>$team, "Poule"=>$poule]) ?? new PouleTeam();
+
+        $tm->setTeam($team);
+        $tm->setPoule($poule);
+        $tm->setRang($request->get("rang"));
+
+        $entityManager->persist($tm);
+        $entityManager->flush();
+
+        return $this->redirectToRoute("app_admin_category_phase",["idCategory"=>$request->get("idCategory"),"idPhase"=>$request->get("idPhase") ]);
+    }
+
+
     /**
      * @Route("/admin/next/{idCategory}/{idPhase}", name="app_admin_next")
      */

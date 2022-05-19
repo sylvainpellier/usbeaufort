@@ -28,15 +28,25 @@ class OverrideApiController extends AbstractController
             //PRENDRE EN COMPTE LES ÉGALITÉS
             //DIVERSES VOIR LE RELGEMENT
             //TODO : classement
-            if($a['pts'] === $b['pts'])
+            if(isset($a["rangForce"]) && isset($b["rangForce"]))
             {
-                return true;
+                if ($a['rangForce'] === $b['rangForce']) {
+                    return true;
 
-            } else
-            {
-                return $a['pts']<$b['pts'];
+                } else {
+                    return $a['rangForce'] > $b['rangForce'];
+                }
+
+            } else {
+
+
+                if ($a['pts'] === $b['pts']) {
+                    return true;
+
+                } else {
+                    return $a['pts'] < $b['pts'];
+                }
             }
-
 
 
     }

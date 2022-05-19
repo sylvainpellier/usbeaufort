@@ -55,8 +55,10 @@ class ApiController extends OverrideApiController
             $teams[$key]["bonus1"] = 0;
 
             $sql = '
-            SELECT * FROM  usb_meets matchs, usb_poules poules
-            WHERE matchs.poule_id = poules.id AND ( matchs.team_a_id = :team_id OR matchs.team_b_id = :team_id ) AND matchs.phase_id = :phase ';
+            SELECT * FROM  usb_meets matchs, usb_poules poules 
+            WHERE matchs.poule_id = poules.id AND ( matchs.team_a_id = :team_id OR matchs.team_b_id = :team_id ) AND matchs.phase_id = :phase 
+             
+           ';
 
             if($groupe)
             {
@@ -74,6 +76,10 @@ class ApiController extends OverrideApiController
 
             $resultSet = $stmt->executeQuery($parameters);
             $resultats = $resultSet->fetchAll();
+
+
+
+
 
             if(count($resultats) === 0 && $phase->getPhasePrecedente()){
             $teams = [];
@@ -101,6 +107,9 @@ class ApiController extends OverrideApiController
 
 
                 foreach ($resultats as $match) {
+
+
+
 
                     $teams[$key]["poule"] = $match["poule_id"];
                     $teams[$key]["pouleNameString"] = $match["name"];
@@ -156,6 +165,19 @@ class ApiController extends OverrideApiController
         {
             if(isset($team["poule"]))
             {
+                $sql = 'SELECT * FROM  usb_poules_teams2   WHERE usb_poules_teams2.poule_id = :poule AND usb_poules_teams2.team_id = :team  ';
+                $stmt = $conn->prepare($sql);
+                $parameters = ['poule' => $team["poule"], 'team' => $team["id"]];
+
+                $resultSet = $stmt->executeQuery($parameters);
+                $resultatsEgalite = $resultSet->fetchAll();
+
+
+                if(count($resultatsEgalite)===1)
+                {
+                    $team["rangForce"]=$resultatsEgalite[0]["rang"];
+                }
+
                 $poule = $team["poule"];
                 if(!array_key_exists($poule,$poules)) {
                     $poules[$poule] = [];
@@ -166,7 +188,6 @@ class ApiController extends OverrideApiController
             }
 
         }
-
 
 
 

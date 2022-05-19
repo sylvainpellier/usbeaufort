@@ -37,18 +37,28 @@
             <tr>
 
                 <td>
-
+                    {% if team.rangForce is defined %}
+                    {{ team.rangForce }}
+                    {% else %}
                     {% if team.egalite is defined %}
                         {% if classement[poule.Id][key-1] is defined and team.bonus1 == classement[poule.Id][key-1].bonus1 and ( (classement[poule.Id][key-1].but_pour - classement[poule.Id][key-1].but_contre ) == (team.but_pour - team.but_contre )) %}
                             <span class="badge bg-danger rounded">égalité</span>
+                            <form class="d-inline" action="{{ path("app_admin_egalite") }}" method="post"><input type="hidden" name="idPhase" value="{{ phase.id }}"><input type="hidden" name="idCategory" value="{{ category.id }}"><input type="hidden" name="poule" value="{{ poule.Id }}"><input type="hidden" name="team" value="{{ team.id }}"><input type="text" style="width: 30px;" name="rang"><input type="submit" value="X" /></form>
                             {% set nbEgalite = nbEgalite + 1 %}
 
                         {% elseif classement[poule.Id][key+1] is defined and team.bonus1 == classement[poule.Id][key+1].bonus1 and ( (classement[poule.Id][key+1].but_pour - classement[poule.Id][key+1].but_contre ) == (team.but_pour - team.but_contre )) %}
                             {% set nbEgalite = nbEgalite+ 1 %}
-                            <span class="badge bg-danger rounded">égalité</span>{% else %}{{ team.rang }}
+                            <span class="badge bg-danger rounded">égalité</span>
+                            <form class="d-inline" action="{{ path("app_admin_egalite") }}" method="post"><input type="hidden" name="idPhase" value="{{ phase.id }}"><input type="hidden" name="idCategory" value="{{ category.id }}"><input type="hidden" name="poule" value="{{ poule.Id }}"><input type="hidden" name="team" value="{{ team.id }}"><input type="text" style="width: 30px;" name="rang"><input type="submit" value="X" /></form>
+
+                        {% else %}{{ team.rang }}
+
                         {% endif %}
                         {% else %} {{ team.rang }}
                     {% endif %}
+                        {% endif %}
+
+
 
 
 

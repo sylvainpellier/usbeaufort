@@ -67,12 +67,18 @@ class Team
      */
     private $GroupeInitial;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PouleTeam::class, mappedBy="Team", orphanRemoval=true)
+     */
+    private $pouleTeams;
+
 
 
     public function __construct()
     {
         $this->meets = new ArrayCollection();
         $this->poules = new ArrayCollection();
+        $this->pouleTeams = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -202,6 +208,36 @@ class Team
     public function setGroupeInitial(?int $GroupeInitial): self
     {
         $this->GroupeInitial = $GroupeInitial;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PouleTeam>
+     */
+    public function getPouleTeams(): Collection
+    {
+        return $this->pouleTeams;
+    }
+
+    public function addPouleTeam(PouleTeam $pouleTeam): self
+    {
+        if (!$this->pouleTeams->contains($pouleTeam)) {
+            $this->pouleTeams[] = $pouleTeam;
+            $pouleTeam->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removePouleTeam(PouleTeam $pouleTeam): self
+    {
+        if ($this->pouleTeams->removeElement($pouleTeam)) {
+            // set the owning side to null (unless already changed)
+            if ($pouleTeam->getTeam() === $this) {
+                $pouleTeam->setTeam(null);
+            }
+        }
 
         return $this;
     }
