@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups;
+use function usort;
 
 /**
  * @ORM\Entity(repositoryClass=FieldRepository::class)
@@ -31,6 +32,7 @@ class Field
 
     /**
      * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="Field")
+     * @ORM\OrderBy({"time" = "ASC"})
      */
     private $meets;
 

@@ -163,7 +163,7 @@ class ApiController extends OverrideApiController
 
         foreach ($teams as $key => $team)
         {
-            if(isset($team["poule"]))
+            if(isset($team["poule"]) and isset($team["id"]))
             {
                 $sql = 'SELECT * FROM  usb_poules_teams2   WHERE usb_poules_teams2.poule_id = :poule AND usb_poules_teams2.team_id = :team  ';
                 $stmt = $conn->prepare($sql);

@@ -4,7 +4,7 @@
 
 
 {% block body %}
-
+    {% set nbEgalite = 0 %}
     <h3 class=""><a href="{{ path("category_display",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : <a href="{{ path("category_display_phase",{id:category.id,phase:phase.id}) }}">{{ phase.Name }}</a> > {{ poule.Name }}</h3>
 
     <div  id="data">
@@ -72,8 +72,18 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
             tr.appendChild(th);
 
             th = document.createElement("th");
-            th.innerText= "Resultas"
+            th.innerText= "Équipe"
             tr.appendChild(th);
+
+             th = document.createElement("th");
+            th.innerText= "Score"
+            tr.appendChild(th);
+
+
+             th = document.createElement("th");
+            th.innerText= "Équipe"
+            tr.appendChild(th);
+
 
 
 
@@ -103,22 +113,52 @@ fetch("/api/data/meets?phase={{ phase.id }}&category={{ category.id }}&poule={{ 
         let th = document.createElement("th");
         tr.appendChild(th);
 
+        td = document.createElement("td");
+        tr.appendChild(td);
+        if(match.TeamA){
+            td.innerText= match.TeamA.Name;
 
-        if(match.ScoreA && match.ScoreB && match.TeamA.Name && match.TeamB.Name){
-            td = document.createElement("td");
-            td.innerText= match.TeamA.Name + " ("+ match.ScoreA + ") - (" + match.ScoreB + ") " + match.TeamB.Name;
-            tr.appendChild(td);
-        }else if( match.TeamA.Name && match.TeamB.Name )
+        } else if(match.positionA)
         {
-         td = document.createElement("td");
-            td.innerText= match.TeamA.Name + " - " + match.TeamB.Name;
-            tr.appendChild(td);
+                     if(afficheFrom.Rang === 1){
+                        td.innerText= match.positionA.Rang+"er  "+match.positionA.PouleFrom.Name;
+                    }else{
+                        td.innerText= match.positionA.Rang+"ème "+match.positionA.PouleFrom.Name;
+                    }
+        }
+        else
+        {
+            td.innerText= "À definir";
+        }
+
+
+        td = document.createElement("td");
+        tr.appendChild(td);
+        if(match.ScoreA && match.ScoreB){
+            td.innerText= ScoreA + " - " + match.ScoreB;
+
+        }
+
+
+
+
+td = document.createElement("td");
+        tr.appendChild(td);
+        if(match.TeamB){
+            td.innerText= match.TeamB.Name;
+
+        } else if(match.positionB)
+        {
+                     if(afficheFrom.Rang === 1){
+                        td.innerText= match.positionB.Rang+"er  "+match.positionB.PouleFrom.Name;
+                    }else{
+                        td.innerText= match.positionB.Rang+"ème "+match.positionB.PouleFrom.Name;
+                    }
         } else
         {
-            td = document.createElement("td");
-            td.innerText= "À definir - À definir";
-            tr.appendChild(td);
+            td.innerText= "À definir";
         }
+
 
 
 

@@ -1,6 +1,8 @@
 <div class="row small" id="poule_{{ poule.id }}">
     <div class="col">
         {% if poule.positionsTo %}
+
+            {% if false %}
             <h5>Composition de la poule : </h5>
             <ul>
                 {% if poule.positionsTo|length == 0 %}
@@ -16,13 +18,13 @@
                 {% endif %}
                      #{{ position.id }} -
 
-                    <form action="{{ path("app_position_echange") }}" class="d-inline"><input type="hidden" name="id" value="{{ poule.id }}"><input type="hidden" name="from" value="{{ position.id }}">échanger avec : <select name="to" class="small mr-2"><option></option>{% for position in positions %}<option>{{ position.id  }}</option>{% endfor %}</select><button class="btn btn-outline-primary ml-2 py-0 btn-sm" type="submit">ok</button></form>
-
+                    {% if positions is defined %}<form action="{{ path("app_position_echange") }}" class="d-inline"><input type="hidden" name="id" value="{{ poule.id }}"><input type="hidden" name="from" value="{{ position.id }}">échanger avec : <select name="to" class="small mr-2"><option></option>{% for position in positions %}<option>{{ position.id  }}</option>{% endfor %}</select><button class="btn btn-outline-primary ml-2 py-0 btn-sm" type="submit">ok</button></form>
+                        {% endif %}
                 </li>
             {% endfor %}
 
 
-            </ul>{% endif %}
+            </ul>{% endif %}{% endif %}
     </div>
 
     {% if poule.positionsFrom and poule.positionsFrom|length>0 %}

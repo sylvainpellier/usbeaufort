@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use function usort;
 
 
 /**
@@ -115,7 +116,11 @@ class Team
      */
     public function getMeets(): Collection
     {
-        return new ArrayCollection(array_merge($this->meetsA->toArray(),$this->meetsB->toArray()));
+        $matchs = array_merge($this->meetsA->toArray(),$this->meetsB->toArray());
+        usort($matchs, function($a,$b){
+            return $a->getTime() > $b->getTime();
+        });
+        return new ArrayCollection($matchs);
     }
 
     /**

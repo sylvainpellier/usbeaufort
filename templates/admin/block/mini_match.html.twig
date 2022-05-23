@@ -1,0 +1,25 @@
+<h4 class="mt-3">{{ match.Name }}</h4><br />
+
+<table class="table small"><tr><th>Équipe</th><th>Score</th><th>Équipe</th></tr>
+    <tr>
+
+        <td>
+            {% if match.TeamA %}
+                {{ match.TeamA  }}
+            {% elseif match.PositionA  %}
+                {{ match.PositionA.Rang }}{% if match.PositionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.PositionA.pouleFrom }}
+            {% endif %}
+        </td>
+
+        <td>{{ match.ScoreA  }} - {{ match.ScoreB  }}</td>
+
+        <td>
+            {% if match.TeamB %}
+                {{ match.TeamB  }}{% elseif match.PositionB  %}
+                {{ match.PositionB.Rang }}{% if match.PositionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.PositionB.pouleFrom }}
+
+            {% endif %}</td>
+    </tr></table>
+
+    <p>{% if match.field %}{{ match.field }}{% endif %} - {% if match.time %}{{ match.time|date("H:i")  }}{% endif %}</p>
+<p>{% if match.arbitre %}Arbitre : {{ match.arbitre }}{% endif %}</p>

@@ -8,7 +8,15 @@
 
         <h2 id="nomTerrain">{{ terrain.Name }}</h2>
 
+        <hr class="">
 
+        {% set removeField = true %}
+        {% include "admin/block/matchs2.html.twig" %}
+
+
+
+
+        <hr class="mt-5">
 
 
 <div id="matchs"></div>
@@ -82,95 +90,4 @@
         </figure>
     </div>
 
-{% endblock %}
-
-{% block javascript %}
-{{ parent() }}
-
-var url =url_base+"/api/matchs?orderTime=1"
-var load = document.createElement("h3");
-load.setAttribute("id", "load");
-load.innerText= "Chargement en cours";
-document.getElementById("matchs").appendChild(load);
-
-
-fetch(url).then(function(resultas){
-    document.getElementById("load").style.display= "none";
-    resultas.json().then(function(object){
-        jsondata = object.data;
-        var div = document.createElement("div");
-        document.getElementById("matchs").appendChild(div);
-
-         let table = document.createElement("table");
-        table.setAttribute("class", "table table-bordered");
-        div.appendChild(table);
-
-        let thead = document.createElement("thead");
-        table.appendChild(thead);
-
-        let tbody = document.createElement("tbody");
-        table.appendChild(tbody);
-
-        let th = document.createElement("th");
-        th.innerText= "Catégorie - Poule";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Heure";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Arbitre";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Joué ?";
-        thead.appendChild(th);
-
-
-
-        jsondata.forEach(function(match){
-        console.log(match);
-            if(match.Field && match.Field.Name === "{{ terrain.Name }}")
-            {
-
-            tr = document.createElement("tr");
-            tr.innerText =  match.Phase.Name;
-           tbody.appendChild(tr);
-
-            let td = document.createElement("td");
-            var date = new Date(((match.time-7200)*1000))
-            td.innerText = match.time ? (date.getHours() < 10 ? "0" : "") + date.getHours()+"h"+ (date.getMinutes() < 10 ? "0" : "") + date.getMinutes() : "à définir";
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            td.innerText = match.arbibre ? match.arbibre : "à définir";
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            if(match.ScoreA || match.ScoreB || match.PenaltyA || match.PenaltyB)
-            {
-              td.innerText = "oui";
-              td.classList.add("bg-success","text-white","px-1")
-            }
-            else
-            {
-            td.innerText = "non";
-            td.classList.add("bg-light","a","px-1")
-            }
-
-            tr.appendChild(td);
-
-
-
-
-            };
-
-   });
-
-    });
-});
-setInterval(function(){
-    location.reload();
-},30000);
 {% endblock %}

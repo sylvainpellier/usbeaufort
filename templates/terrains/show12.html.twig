@@ -10,8 +10,25 @@
 
 <div class="row">
         <div class="col" id="matchs1">        <h2 id="nomTerrain">{{ terrain1.Name }}</h2>
+
+
+            <hr class="">
+
+            {% set removeField = true %}
+
+            {% set matchs = terrain1.meets %}
+
+            {% include "admin/block/matchs2.html.twig" %}
+
         </div>
-        <div class="col" id="matchs2"> <h2 id="nomTerrain">{{ terrain2.Name }}</h2></div>
+        <div class="col" id="matchs2"> <h2 id="nomTerrain">{{ terrain2.Name }}</h2>
+
+            <hr class="">
+
+            {% set removeField = true %}
+            {% set matchs = terrain2.meets %}
+            {% include "admin/block/matchs2.html.twig" %}
+        </div>
 </div>
 
 
@@ -84,108 +101,4 @@
         </figure>
     </div>
 
-{% endblock %}
-
-{% block javascript %}
-{{ parent() }}
-
-var url =url_base+"/api/matchs?orderTime=1"
-
-var load = document.createElement("h3");
-load.setAttribute("id", "load");
-load.innerText= "Chargement en cours";
-document.getElementById("container").appendChild(load);
-
-createTable("matchs1");
-createTable("matchs2")
-
-fetch(url).then(function(resultas){
-    document.getElementById("load").style.display="none";
-    resultas.json().then(function(object){
-        jsondata = object.data;
-        
-        jsondata.forEach(function(match){
-        console.log(match);
-            if(match.Field && (match.Field.Name === "{{ terrain1.Name }}" || match.Field.Name === "{{ terrain2.Name }}"))
-            {
-
-            tr = document.createElement("tr");
-            tr.innerText =  match.Phase.Name;
-            if(match.Field.Name === "{{ terrain1.Name }}" )
-            {
-             document.querySelector("#matchs1 tbody").appendChild(tr);
-            } else
-            {
-             document.querySelector("#matchs2 tbody").appendChild(tr);
-            }
-
-
-            let td = document.createElement("td");
-            var date = new Date(((match.time-7200)*1000))
-            td.innerText = match.time ? (date.getHours() < 10 ? "0" : "") + date.getHours()+"h"+ (date.getMinutes() < 10 ? "0" : "") + date.getMinutes() : "à définir";
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            td.innerText = match.arbibre ? match.arbibre : "à définir";
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            if(match.ScoreA || match.ScoreB || match.PenaltyA || match.PenaltyB)
-            {
-              td.innerText = "oui";
-              td.classList.add("bg-success","text-white","px-1")
-            }
-            else
-            {
-            td.innerText = "non";
-            td.classList.add("bg-light","a","px-1")
-            }
-
-            tr.appendChild(td);
-
-
-
-
-            };
-
-   });
-
-    });
-});
-
-function createTable(name)
-{
-var div = document.createElement("div");
-        document.getElementById(name).appendChild(div);
-
-         let table = document.createElement("table");
-        table.setAttribute("class", "table table-bordered");
-        div.appendChild(table);
-
-        let thead = document.createElement("thead");
-        table.appendChild(thead);
-
-        let tbody = document.createElement("tbody");
-        table.appendChild(tbody);
-
-        let th = document.createElement("th");
-        th.innerText= "Catégorie - Poule";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Heure";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Arbitre";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Joué ?";
-        thead.appendChild(th);
-
-}
-setInterval(function(){
-    location.reload();
-},30000);
 {% endblock %}

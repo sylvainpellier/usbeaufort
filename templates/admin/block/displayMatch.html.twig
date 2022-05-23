@@ -8,45 +8,55 @@
 
     <form action="{{ path("admin_update_match",{id:meet.id}) }}" method="post">
         <input type="hidden" name="meet" value="{{ meet.id }}">
-        <td>{% if meet.teamA %}
-                {{ meet.teamA.Name }} {% if meet.scoreA %}({{ meet.scoreA }}){% endif %} {% if meet.PenaltyA %}(tab {{ meet.PenaltyA }}){% endif %}
-            {% elseif phase.param == 24  and meet.positionA is not null and meet.positionA.intParam is not null %}3ème de poule ({{ meet.positionA.intParam }}{% if meet.positionA.intParam is not null and meet.positionA.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
+        <td>{% if meet.teamA %} {{ meet.teamA.Name }}
+            {% elseif phase is defined and phase.param == 24  and meet.positionA is not null and meet.positionA.intParam is not null %}3ème de poule ({{ meet.positionA.intParam }}{% if meet.positionA.intParam is not null and meet.positionA.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
             {% elseif meet.positionA %}{{ meet.positionA.Rang }}{% if meet.positionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionA.pouleFrom }}
             {% elseif meet.Name %}{{ meet.Name }}{% endif %}
         </td>
 
 
+
         <td>{% if meet.teamB  and meet.teamA %}
 
                 {% if editMode %}
-           <input type="text" meet="{{ meet.id }}" class="match_input p-0"  name="scoreA" value="{{ meet.scoreA }}" />
+           <input type="text" meet="{{ meet.id }}" class="match_input p-0"  name="scoreA" value="{{ meet.scoreA }}" /> - <input type="text" meet="{{ meet.id }}" class="match_input p-0"  name="scoreB" value="{{ meet.scoreB }}" />
                     {% else %}
-                    {{ meet.scoreA }}
+                    {{ meet.scoreA }} - {{ meet.scoreB }}
+
                     {% endif %}
             {% endif %}</td>
 
-        {% if meet.phase.type.format == "demifinalesfinales" %}
-        <td>{% if meet.teamB  and meet.teamA %}
+        <td>{% if meet.teamB %}{{ meet.teamB.Name }} {% if meet.ScoreB %}({{ meet.ScoreB }}){% endif %}  {% if meet.PenaltyB %}(tab {{ meet.PenaltyB }}){% endif %}
+            {% elseif phase is defined and phase.param == 24  and meet.positionB is not null  and meet.positionB.intParam is not null %}3ème de poule ({{ meet.positionB.intParam }}{% if meet.positionB.intParam is not null and meet.positionB.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
+            {% elseif meet.positionB %}{{ meet.positionB.Rang }}{% if meet.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionB.pouleFrom }}
+            {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
+
+
+        <td>{% if meet.phase.type.format == "demifinalesfinales" %}{% if meet.teamB  and meet.teamA %}
             {% if editMode %}
-              <input type="text" meet="{{ meet.id }}" class="match_input  p-0" name="penaltyA" value="{{ meet.penaltyA }}" />
+              <input type="text" meet="{{ meet.id }}" class="match_input  p-0" name="penaltyA" value="{{ meet.penaltyA }}" /> -  <input type="text" meet="{{ meet.id }}" class="match_input  p-0" name="penaltyB" value="{{ meet.penaltyB }}" />
             {% else %}
-                {{ meet.penaltyA }}
+                {{ meet.penaltyA }} - {{ meet.penaltyB }}
             {% endif %}
-            {% endif %}</td>
-        {% endif %}
+            {% endif %}{% endif %}</td>
 
 
-        <td>{% if meet.teamB  and meet.teamA %}<input type="radio" {% if meet.TeamForfait == meet.teamA %} checked {% endif %} meet="{{ meet.id }}" name="forfait" meet="{{ meet.id }}" value="{{ meet.teamA.id }}">{% endif %}</td>
+
+        <td>{% if editMode and meet.phase.type.format != "normal" %}{% if meet.teamB  and meet.teamA %}<select {% if meet.TeamForfait == meet.teamA %} checked {% endif %} meet="{{ meet.id }}" name="forfait" meet="{{ meet.id }}"><option></option><option value="meet.TeamA.id">{{ meet.TeamA.Name }}</option><option value="meet.TeamB.id">{{ meet.TeamB.Name }}</option></select>{% endif %}{% endif %}
+        {% if not editMode and meet.TeamForfait %}{{ meet.TeamForfait.Name }}{% endif %}
+        </td>
 
 
-        <td rowspan="2">{% if is_granted("ROLE_ADMIN") %}
+        <td {% if editMode %}rowspan="2"{% endif %}>{% if is_granted("ROLE_ADMIN") %}
                 <input type="date" name="date" value="{{ meet.time|date("Y-m-d") }}" /><br />
             <input type="time" name="time" value="{{ meet.time|date("H:i") }}" />
             {% else %}
             {% if meet.time is not null and meet.time %}{{ meet.time|date("H:i:s") }}{% endif %}
             {% endif %}
         </td>
-        <td rowspan="2">
+
+        {% if removeField is not defined %}
+        <td {% if editMode %}rowspan="2"{% endif %}>
             {% if is_granted("ROLE_ADMIN") %}
                 <select name="field"><option></option>
                 {% for field in fields %}
@@ -56,41 +66,16 @@
                 {{ meet.field }}
             {% endif %}
             </td>
-</tr>
+{% endif %}
 
-<tr>
+    </tr>
 
-    <td>{% if meet.teamB %}{{ meet.teamB.Name }} {% if meet.ScoreB %}({{ meet.ScoreB }}){% endif %}  {% if meet.PenaltyB %}(tab {{ meet.PenaltyB }}){% endif %}
-        {% elseif phase.param == 24  and meet.positionB is not null  and meet.positionB.intParam is not null %}3ème de poule ({{ meet.positionB.intParam }}{% if meet.positionB.intParam is not null and meet.positionB.intParam == 1 %}er{% else %}ème{% endif %} meilleur troisième)
-        {% elseif meet.positionB %}{{ meet.positionB.Rang }}{% if meet.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ meet.positionB.pouleFrom }}
-        {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
+{% if removeArbitre is not defined %}
 
-    <td>{% if meet.teamB  and meet.teamA %}
-        {% if editMode %}
-            <input type="text" meet="{{ meet.id }}" class="match_input  p-0" name="scoreB" value="{{ meet.scoreB }}" />
-        {% else %}
-            {{ meet.scoreB }}
-        {% endif %}
-        {% endif %}</td>
-
-    {% if meet.phase.type.format == "demifinalesfinales" %}
-    <td>{% if meet.teamB  and meet.teamA %}
-        {% if editMode %}
-            <input type="text" meet="{{ meet.id }}" class="match_input p-0" name="penaltyB" value="{{ meet.penaltyB }}" />
-        {% else %}
-            {{ meet.penaltyB }}
-        {% endif %}
-        {% endif %}</td>
-    {% endif %}
-
-    <td>{% if meet.teamB  and meet.teamA %}<input meet="{{ meet.id }}"  {% if meet.TeamForfait == meet.teamB %} checked {% endif %} name="forfait" type="radio"  value="{{ meet.teamB.id }}">{% endif %}</td>
-
-
-</tr>
 
 <tr style="border-bottom:4px solid black;">
     <td>Arbitres : </td>
-    <td colspan="{% if meet.phase.type.format == "demifinalesfinales" %}3{% else %}2{% endif %}"><small>
+    <td colspan="{% if meet.phase.type.format == "demifinalesfinales" %}4{% else %}3{% endif %}"><small>
 
             {% if editMode %}
             <input type="text" class="w-100" name="arbitre" value="{{ meet.arbitre }}" />
@@ -98,11 +83,12 @@
                 {{ meet.arbitre }}
             {% endif %}
         </small></td>
-    <td>Pas de forfait : <input meet="{{ meet.id }}" name="forfait" type="radio"  value=""></td>
+    <td>{% if editMode and meet.phase.type.format != "normal" %}Pas de forfait : <input meet="{{ meet.id }}" name="forfait" type="radio"  value="">{% endif %}</td>
     <td>
         {% if editMode %}
         <input type="submit" name="submit" value="Enregistrer" class="btn w-100 btn-sm btn-primary" />
     {% endif %}</td>
 
 </tr>
+{% endif %}
 </form>

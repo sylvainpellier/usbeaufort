@@ -7,6 +7,7 @@ use App\Form\TeamType;
 use App\Repository\CategoryRepository;
 use App\Repository\MeetRepository;
 use App\Repository\TeamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use function json_encode;
 use Symfony\Component\HttpFoundation\Request;
@@ -113,8 +114,9 @@ class TeamController extends OverrideApiController
      */
     public function equipe_show(string $id, TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
+        $team = $teamRepository->find($id);
 
-        return $this->render("equipes/show.html.twig", ["equipe"=>$teamRepository->find($id)]);
+        return $this->render("equipes/show.html.twig", ["matchs"=> $team->getMeets(), "equipe"=>$team]);
 
     }
 

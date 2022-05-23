@@ -4,7 +4,10 @@
 
 
 {% block body %}
-{% if category.phases|length > 1 %}
+
+    {% set nbEgalite = 0 %}
+
+    {% if category.phases|length > 1 %}
     <div class="row mb-4">
         {% for phase in category.phases %}
             <div class="col-12 col-md-4"><a class="btn btn-primary w-100 text-center" href="{{ path("category_display_phase",{id:category.id,phase:phase.id}) }}">{{ phase.Name }}</a></div>
@@ -16,7 +19,15 @@
     <h3 class=""><a href="{{ path("category_display",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : {{ phase.Name }}</h3>
 
 
-    <div id="data">
+    {% if phase.type.format == "demifinalesfinales" %}
+        {% include "admin/block/block_category_phase_finale.html.twig" %}
+    {% else %}
+
+        {% include "admin/block/block_category_phase.html.twig" %}
+
+    {% endif %}
+
+    <div id="datax">
 
     </div>
 
@@ -125,13 +136,13 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                                             if(match.TeamA && match.TeamB)
                                             {
                                                 if(match.TeamA) divContenu.innerHTML += match.TeamA.Name;
-                                                if(match.ScoreA) divContenu.innerHTML += " ("+match.ScoreA+")";
-                                                if(match.PenaltyA) divContenu.innerHTML += " ("+match.PenaltyA+")";
+                                                if(match.ScoreA) divContenu.innerHTML += " "+match.ScoreA+" ";
+                                                if(match.PenaltyA) divContenu.innerHTML += " ("+match.PenaltyA+") ";
                                                  divContenu.innerHTML += " - ";
 
                                                   divContenu.innerHTML += match.TeamB.Name;
-                                                  if(match.ScoreB) divContenu.innerHTML += "("+match.ScoreB+")";
-                                                   if(match.PenaltyB) divContenu.innerHTML += " ("+match.PenaltyB+")";
+                                                  if(match.ScoreB) divContenu.innerHTML += " "+match.ScoreB+" ";
+                                                   if(match.PenaltyB) divContenu.innerHTML += " ("+match.PenaltyB+") ";
                                                    divContenu.innerHTML += "<br />";
                                             } else  if(match.PositionA && match.PositionB)
                                             {
@@ -225,7 +236,7 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     div.appendChild(p);
 
                     //on fait une requête par poule
-                    fetch("/api/poule/"+namePoule+"/positions").then(function(resultat){
+                    fetch("/api/poule/"+namePoule+"/positions").then(function(resultatResultas){
                         console.log(resultat);
 
                         resultat.json().then(function(resultatJson){
@@ -247,7 +258,7 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
 
                     td = document.createElement("td");
                     tr.appendChild(td);
-                    
+
                     td = document.createElement("td");
                     td.innerHTML = team.Name;
                     tr.appendChild(td);
@@ -265,7 +276,7 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     td.innerHTML= team.but_pour;
                     tr.appendChild(td);
 
-                
+
                     td = document.createElement("td");
                     td.innerHTML = team.victoire;
                     tr.appendChild(td);
@@ -277,7 +288,7 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     td = document.createElement("td");
                     td.innerHTML = team.defaite;
                     tr.appendChild(td);
-                    
+
                 }
 
 
@@ -311,9 +322,9 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                 from.forEach(function(afficheFrom){
                     let li = document.createElement("li");
                     if(afficheFrom.Rang === 1){
-                        li.innerText= afficheFrom.Rang+" Ere Groupe "+afficheFrom.PouleFrom.Name;
+                        li.innerText= afficheFrom.Rang+" Ere  "+afficheFrom.PouleFrom.Name;
                     }else{
-                        li.innerText= afficheFrom.Rang+" Eme Groupe "+afficheFrom.PouleFrom.Name;
+                        li.innerText= afficheFrom.Rang+" Eme "+afficheFrom.PouleFrom.Name;
                     }
                     document.getElementById(idUl).appendChild(li);
                 });

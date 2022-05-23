@@ -7,10 +7,7 @@
     {% set nbEgalite = 0 %}
     <div class="example-wrapper">
 
-        <h3 class=""><a href="{{ path("app_admin_category",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : <a href="{{ path("app_admin_category_phase",{idCategory:category.id,idPhase:phase.id}) }}">{{ phase.Name }}</a> > {{ poule.Name }}</h3>
-
-
-        <hr class="">
+        <h3 class=""><a href="{{ path("category_display",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : <a href="{{ path("category_display_phase",{id:category.id,phase:phase.id}) }}">{{ phase.Name }}</a> > {{ poule.Name }}</h3>
 
 
         <h4>Matchs</h4>
@@ -79,8 +76,4 @@
 
 
     </div>
-{% endblock %}
-
-{% block secondNav %}
-    {% include "admin/adminMenu.html.twig" %}
 {% endblock %}

@@ -495,6 +495,25 @@ function findTeamByRang($teams,$rang)
     }
 
     /**
+     * @Route("/category/{idCategory}/phase/{idPhase}/groupe/{groupe}", name="app_category_phase_groupe")
+     */
+    public function app_category_phase_groupe(string $idCategory, FieldRepository $fieldRepository, PouleRepository $pouleRepository, string $idPhase, string $groupe, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    {
+
+        $c = new ApiController($entityManager);
+        $phase = $phaseRepository->find($idPhase);
+        return $this->render('category_phase_groupe_matchs.html.twig', [
+            'category' => $categoryRepository->find($idCategory),
+            'phase' => $phase,
+            'groupe' => $groupe,
+            'fields' => $fieldRepository->findAll(),
+            'poule' => $pouleRepository->find($groupe),
+            'categories' => $categoryRepository->findAll(),
+            'classement' =>$c->data($idCategory,$phase, $conn = $entityManager->getConnection(), $groupe)
+        ]);
+    }
+
+    /**
      * @Route("/admin/category/{idCategory}/generate", name="app_admin_category_generate")
      */
     public function generateFictive(string $idCategory, PositionRepository $positionRepository, PouleRepository $pouleRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response

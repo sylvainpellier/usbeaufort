@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Repository\CategoryRepository;
 use App\Repository\PhaseRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use function json_encode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -24,10 +26,14 @@ class CategoryController extends OverrideApiController
     /**
      * @Route("/categorie/{id}/phase/{phase}", name="category_display_phase")
      */
-    public function display_phase(string $id, string $phase, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    public function display_phase(string $id, string $phase, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer,EntityManagerInterface  $entityManager): Response
     {
+
         $phase = $phaseRepository->find($phase);
-        return $this->render("category_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase]);
+        $c = new ApiController($entityManager);
+        $classement = $c->data($id,$phase, $conn = $entityManager->getConnection(),false);
+
+        return $this->render("category_phase.html.twig", ["classement"=>$classement, "category"=>$categoryRepository->find($id), "phase" => $phase]);
     }
 
 
@@ -35,7 +41,7 @@ class CategoryController extends OverrideApiController
     /**
      * @Route("/categorie/{id}", name="category_display")
      */
-    public function display(string $id, CategoryRepository $categoryRepository, PhaseRepository $phaseRepository, SerializerInterface $serializer): Response
+    public function display(string $id, CategoryRepository $categoryRepository, PhaseRepository $phaseRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager): Response
     {
         $categorie = $categoryRepository->find($id);
         $phaseEnCours = $categorie->getPhaseEnCours();
@@ -43,11 +49,11 @@ class CategoryController extends OverrideApiController
 
         if($phaseEnCours)
         {
-            return $this->display_phase($id, $phaseEnCours->getId(), $phaseRepository, $categoryRepository, $serializer);
+            return $this->display_phase($id, $phaseEnCours->getId(), $phaseRepository, $categoryRepository, $serializer,$entityManager);
         } else
         {
             $phaseEnCours = $phaseRepository->findOneBy(["category"=>$id]);
-            return $this->display_phase($id, $phaseEnCours->getId(), $phaseRepository, $categoryRepository, $serializer);
+            return $this->display_phase($id, $phaseEnCours->getId(), $phaseRepository, $categoryRepository, $serializer,$entityManager);
 
         }
 

@@ -11,86 +11,10 @@
 
 {% set nbEgalite = 0 %}
 
-{% for poule in phase.poules %}
-
-    <h5 class="mt-4"><form class="d-inline" method="post" action="{{ path("app_admin_phase_groupe_update", {idPoule:poule.id}) }}"><input type="hidden" name="id" value="{{ poule.id }}" /><input type="text" name="pouleName" value="{{ poule.Name }}" /><input type="submit" value="modifier" /></form> <a href="{{ path("app_admin_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de {{ poule.Name }}</a></h5>
-    <hr >
 
 
-    {% if classement[poule.Id] is defined %}
+        {% include "admin/block/block_category_phase.html.twig" %}
 
-    <table class="table table-striped table-bordered">
-        <tr>
-            <th>#</th>
-            <th>Équipe</th>
-            <th>Points</th>
-            <th>Diff</th>
-            <th>Pour</th>
-            <th>Contre</th>
-            <th>Victoire</th>
-            <th>Défaite</th>
-            <th>Nul</th>
-
-        </tr>
-        {% for key, team in classement[poule.Id] %}
-
-            <tr>
-
-                <td>
-                    {% if team.rangForce is defined %}
-                    {{ team.rangForce }}
-                    {% else %}
-                    {% if team.egalite is defined %}
-                        {% if classement[poule.Id][key-1] is defined and team.bonus1 == classement[poule.Id][key-1].bonus1 and ( (classement[poule.Id][key-1].but_pour - classement[poule.Id][key-1].but_contre ) == (team.but_pour - team.but_contre )) %}
-                            <span class="badge bg-danger rounded">égalité</span>
-                            <form class="d-inline" action="{{ path("app_admin_egalite") }}" method="post"><input type="hidden" name="idPhase" value="{{ phase.id }}"><input type="hidden" name="idCategory" value="{{ category.id }}"><input type="hidden" name="poule" value="{{ poule.Id }}"><input type="hidden" name="team" value="{{ team.id }}"><input type="text" style="width: 30px;" name="rang"><input type="submit" value="X" /></form>
-                            {% set nbEgalite = nbEgalite + 1 %}
-
-                        {% elseif classement[poule.Id][key+1] is defined and team.bonus1 == classement[poule.Id][key+1].bonus1 and ( (classement[poule.Id][key+1].but_pour - classement[poule.Id][key+1].but_contre ) == (team.but_pour - team.but_contre )) %}
-                            {% set nbEgalite = nbEgalite+ 1 %}
-                            <span class="badge bg-danger rounded">égalité</span>
-                            <form class="d-inline" action="{{ path("app_admin_egalite") }}" method="post"><input type="hidden" name="idPhase" value="{{ phase.id }}"><input type="hidden" name="idCategory" value="{{ category.id }}"><input type="hidden" name="poule" value="{{ poule.Id }}"><input type="hidden" name="team" value="{{ team.id }}"><input type="text" style="width: 30px;" name="rang"><input type="submit" value="X" /></form>
-
-                        {% else %}{{ team.rang }}
-
-                        {% endif %}
-                        {% else %} {{ team.rang }}
-                    {% endif %}
-                        {% endif %}
-
-
-
-
-
-                </td>
-                <td>{{ team.Name }}</td>
-                <td>{{ team.pts }}</td>
-                <td>{{ team.but_pour - team.but_contre }}</td>
-                <td>{{ team.but_pour }}</td>
-                <td>{{ team.but_contre }}</td>
-                <td>{{ team.victoire }}</td>
-                <td>{{ team.defaite }}</td>
-                <td>{{ team.nul }}</td>
-            </tr>
-
-
-        {% endfor %}
-
-
-    </table>
-
-    {% else %}
-
-        {% for team in poule.teams %}
-            {{ team }}
-        {% endfor %}
-
-    {% endif %}
-
-        {% include "admin/block/positions.html.twig" %}
-
-
-        {% endfor %}
 
 
 

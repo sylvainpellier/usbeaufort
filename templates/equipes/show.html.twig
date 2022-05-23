@@ -10,150 +10,18 @@
     <a href="{{ path("teams_index") }}" class="float-end btn btn-primary">retour à la liste des équipes</a>
 
     <h2>{{ equipe.Name }}</h2>
+
+
+    <hr class="">
+
+    {% set removeArbitre = true %}
+    {% include "admin/block/matchs2.html.twig" %}
+
+
+
+
+    <hr class="mt-5">
+
 </div>
-
-{% endblock %}
-
-{% block javascript %}
-{{ parent() }}
-
-var url = url_base+"/api/team/{{equipe.id}}/matchs"
-
-var load = document.createElement("h3");
-load.setAttribute("id", "load");
-load.innerText= "Chargement en cours";
-document.getElementById("container").appendChild(load);
-
-fetch(url).then(function(resultas){
-    //console.log(resultas);
-
-   document.getElementById("load").style.display= "none";
-
-    resultas.json().then(function(resultasJson){
-        //console.log(resultasJson);
-
-        let match = resultasJson.data;
-
-        //console.log(match)
-        var div = document.getElementById("container");
-        var table = document.createElement("table");
-        table.classList.add("table", "table-bordered", "table-responsive", "table-striped");
-        div.appendChild(table);
-
-        var thead = document.createElement("thead");
-        table.appendChild(thead);
-
-        let tr = document.createElement("tr");
-        thead.appendChild(tr);
-
-        let th = document.createElement("th");
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Phase";
-        thead.appendChild(th);
-        
-        th = document.createElement("th");
-        th.innerText= "Resultas";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Tir au But A";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Tir au But B";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Equipe forfaite";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Horaire";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Arbitre";
-        thead.appendChild(th);
-
-        th = document.createElement("th");
-        th.innerText= "Terrain";
-        thead.appendChild(th);
-
-        var tbody = document.createElement("tbody");
-        table.appendChild(tbody);
-
-        match.forEach(function(liste){
-            console.log(liste);
-            let tr = document.createElement("tr");
-            tbody.appendChild(tr);
-
-            let th = document.createElement("th");
-            tr.appendChild(th);
-
-            let td = document.createElement("td");
-            td.innerText= liste.Phase.Name;
-            tr.appendChild(td);
-            
-            if(liste.ScoreA && liste.ScoreB){
-                td = document.createElement("td");
-                td.innerText= liste.TeamA.Name + " ("+ liste.ScoreA + ") - (" + liste.ScoreB + ") " + liste.TeamB.Name;
-                tr.appendChild(td);
-            }else{
-                td = document.createElement("td");
-                td.innerText= liste.TeamA.Name + " - " + liste.TeamB.Name;
-                tr.appendChild(td);
-            }
-
-
-            if(!liste.PenaltyA){
-                td = document.createElement("td");
-                td.innerText="0";
-                tr.appendChild(td);
-            }else{
-                td = document.createElement("td");
-                td.innerText=liste.PenaltyA;
-                tr.appendChild(td);
-            }
-
-            if(!liste.PenaltyB){
-                td = document.createElement("td");
-                td.innerText="0";
-                tr.appendChild(td);
-            }else{
-                td = document.createElement("td");
-                td.innerText=liste.PenaltyB;
-                tr.appendChild(td);
-            }
-
-            if(!liste.TeamForfait){
-                td = document.createElement("td");
-                td.innerText="Aucune";
-                tr.appendChild(td);
-            }else{
-                td = document.createElement("td");
-                td.innerText=liste.TeamForfait;
-                tr.appendChild(td);
-            }
-
-            td = document.createElement("td");
-
-             var date = new Date(((liste.time-7200)*1000))
-            td.innerText = liste.time ? (date.getHours() < 10 ? "0" : "") + date.getHours()+"h"+ (date.getMinutes() < 10 ? "0" : "") + date.getMinutes() : "à définir";
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            td.innerText=liste.arbitre;
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            td.innerText=liste.Field.Name;
-            tr.appendChild(td);
-
-        });
-    });
-});
-
 
 {% endblock %}

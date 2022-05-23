@@ -70,11 +70,14 @@ class MeetController extends OverrideApiController
     /**
      * @Route("/matchs/{id}/phase/{phase}/groupe/{groupe}", name="display_matchs")
      */
-    public function display_phase(string $id, string $phase, string $groupe, PouleRepository $pouleRepository, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
+    public function display_phase(string $id, string $phase, EntityManagerInterface $entityManager, string $groupe, PouleRepository $pouleRepository, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {
         $phase = $phaseRepository->find($phase);
         $poule = $pouleRepository->find($groupe);
-        return $this->render("match_phase.html.twig", ["category"=>$categoryRepository->find($id), "phase" => $phase, "poule" => $poule, "groupe" => $groupe]);
+        $c = new ApiController($entityManager);
+        $classement = $c->data($id,$phase->getId(), $conn = $entityManager->getConnection(),false);
+
+        return $this->render("match_phase.html.twig", ["classement" => $classement, "category"=>$categoryRepository->find($id), "phase" => $phase, "poule" => $poule, "groupe" => $groupe]);
     }
 
     /**

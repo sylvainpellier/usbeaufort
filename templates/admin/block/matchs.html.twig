@@ -1,8 +1,9 @@
 {% if phase.meets|length > 0 %}
+
 {% for key, group in phase.meets|filter(v => v.poule.id == groupe)|group_by(==> _.tour) %}
     <h5 class="mt-4">Tour {{ key }}</h5>
     <table class="table table-striped table-bordered">
-        <tr><th>Équipe</th><th>Score</th>{% if phase.type.format == "demifinalesfinales" %}<th>TAB</th>{% endif %}<th>Forfait</th><th>Horaire</th><th colspan="3">Terrain</th></tr>
+        <tr><th>Équipe</th><th>Score</th><th>Équipe</th><th>TAB</th><th>Forfait</th><th>Horaire</th><th colspan="3">Terrain</th></tr>
         {% for meet in group %}
            {% include "admin/block/displayMatch.html.twig" %}
 

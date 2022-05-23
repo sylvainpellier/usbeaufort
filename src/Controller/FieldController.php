@@ -40,7 +40,9 @@ class FieldController extends OverrideApiController
      */
     public function terrain_show( string $id, FieldRepository $fieldRepository): Response
     {
-        return $this->render("terrains/show.html.twig",["terrain"=>$fieldRepository->find($id)]);
+
+        $field = $fieldRepository->find($id);
+        return $this->render("terrains/show.html.twig",["matchs"=>$field->getMeets(),"terrain"=>$field]);
 
     }
 
