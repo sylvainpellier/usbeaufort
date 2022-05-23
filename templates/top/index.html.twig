@@ -24,24 +24,29 @@
 {% block javascript %}
     var url =  "http://localhost:8000/api/matchs"
 
-    //faire function comme la boucle des additions buts  qui permet de faire touts les top en changent juste les variables
-
     fetch(url).then(function(resultat){
-        console.log(resultat);
+        //console.log(resultat);
         resultat.json().then(function(resultatJson){
             //console.log(resultatJson);
 
             var data = resultatJson.data;
-            console.log(data);
+            //console.log(data);
             var equipe = data[0].TeamA.Name
+            var victoire = 0;
             if(!data[0].ScoreA){
                 var totalBut = 0;
             }else{
                 var totalBut = data[0].ScoreA;
-            }
+                if(data[0].ScoreA > data[0].ScoreB){
+                    //console.log("victoire +1 debut");
+                    victoire = victoire + 1;
+                };
+            };
+
             var but = [];
+            var TotalVictoire = [];
             var equipeName = [];
-            console.log("init but "+ but);
+            //console.log("init but "+ but);
 
             //boucle qui additione les but dans un tableau.
             for(a=1; a<=data.length-1; a++){
@@ -51,25 +56,37 @@
                     if(equipe === data[a].TeamA.Name){
                         if(!data[a].ScoreA){
                             totalBut = totalBut+0;
-                            
+                            victoire = victoire;
+                            //console.log("pas  de changement de victoire si name = a");
                             //console.log("total but = "+totalBut);
 
                         }else{
                             totalBut = totalBut + data[a].ScoreA;
                             //console.log("total but = "+totalBut);
+                            if(data[a].ScoreA > data[a].ScoreB){
+                                victoire = victoire+1;
+                                //console.log("changement de victoire en +1 si A>B "+victoire);
+                            }
                         };
 
                     }else if(equipe === data[a].TeamB.Name){
 
                         if(!data[a].ScoreB){
                             totalBut = totalBut + 0;
-                           
                             //console.log("total but = "+totalBut);
 
+                            victoire = victoire;
+                            console.log("pas de changement de victoire si name = b");
+
                         }else{
-                            totalBut = totalBut + data[a].ScoreB;
-                            
+                            totalBut = totalBut + data[a].ScoreB;                            
                             //console.log("total but = "+totalBut);
+
+                            if(data[a].ScoreB > data[a].ScoreA){
+                                victoire = victoire+1;
+                                //console.log(victoire);
+                                //console.log("changement de victoire en +1 si B>A "+victoire);
+                            };
                         };
 
                     }else{
@@ -78,6 +95,11 @@
                         equipeName.push(equipe);
                         //console.log(equipeName);
 
+                        TotalVictoire.push(victoire);
+                        console.log(TotalVictoire);
+
+                        victoire = 0;
+                        //console.log(victoire)
                         totalBut = 0;
 
                         equipe = data[a].TeamA.Name;
@@ -86,41 +108,41 @@
                         }else{
                             totalBut = 0;
                         }
+
+                        //console.log(equipe);
                         
                     };
                 };                
             };
 
-            console.log(but);
-            console.log(equipeName);
+            //console.log(but);
+            //console.log(equipeName);
 
-            var max = but[0];
-            //console.log(max);
+            function TrouveMax(tableauResultat, tableauEquipe){
+                let max = tableauResultat[0];
+                let Equipe = tableauEquipe[0];
 
-            var EquipePlusDeBut = equipeName[0];
-            //console.log(EquipePlusDeBut);
+                for(a=0; a<=tableauResultat.length-1; a++){
+                    if(max < tableauResultat[a]){
+                        max = tableauResultat[a];
+                        Equipe = tableauEquipe[a];
+                    }else{
+                        max = max;
+                    };
+                };
 
-            for(a=0; a<=but.length-1; a++){
-                
-                if(max < but[a]){
-                    max = but[a];
-                    console.log("changement de max "+max);
+                let h2 = document.createElement("h2");
+                document.getElementById("container").appendChild(h2);
 
-                    EquipePlusDeBut = equipeName[a];
-                    console.log(EquipePlusDeBut);
-                }else{
-                    max = max;
-                    console.log("pas de changement de max "+max)
-                }   
-            }
+                let h3 = document.createElement("h3");
+                h3.innerText= Equipe + " " + max;
+                h2.appendChild(h3);
 
-            let h2 = document.createElement("h2");
-            h2.innerText= "Equipe qui a marqué le plus de but :";
-            document.getElementById("container").appendChild(h2);
+            };
 
-            let h3 = document.createElement("h3");
-            h3.innerText= EquipePlusDeBut + " " + max + " buts";
-            h2.appendChild(h3);
+            TrouveMax(but, equipeName);
+            TrouveMax(TotalVictoire, equipeName);
+
         });
 
     });

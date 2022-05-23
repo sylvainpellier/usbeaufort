@@ -73,8 +73,6 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                             divGauche.classList.add("divDemiFinale1");
 
 
-
-
                             var divMilieu = document.createElement("div");
                             divMilieu.classList.add("col","text-center")
                             div.appendChild(divMilieu);
@@ -215,7 +213,6 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     thead.appendChild(th);
 
                     let p = document.createElement("p");
-                    p.innerText= "Composition de la poule";
                     p.setAttribute("id", "Compo"+IdListe);
                     div.appendChild(p);
 
@@ -224,7 +221,6 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     document.getElementById("Compo"+IdListe).appendChild(ul);
 
                     p = document.createElement("p");
-                    p.innerText="Phase suivante";
                     p.setAttribute("id", "PhaseSuiv"+IdListe);
                     div.appendChild(p);
 
@@ -281,10 +277,6 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     td = document.createElement("td");
                     td.innerHTML = team.defaite;
                     tr.appendChild(td);
-
-                    let li = document.createElement("li");
-                    li.innerText = team.Name;
-                    document.getElementById("listeCompo"+IdListe).appendChild(li);
                     
                 }
 
@@ -298,34 +290,54 @@ fetch("/api/data/phase?phase={{ phase.id }}&category={{ category.id }}").then((d
                     btn.setAttribute("href","/matchs/1/phase/{{ phase.id }}/groupe/"+namePoule);
                     btn.classList.add("btn","btn-secondary","float-end","btn-sm");
         };
-        }
-    });
-});
 
-fetch("/api/data/phase?phase={{ phase.id+1 }}&category={{ category.id }}").then(function(resultat){
-    //console.log(resultat);
-    resultat.json().then(function(resultatJson){
-        //console.log(resultatJson);
+        var idUl = 0;
 
-        data = resultatJson.data;
-        //console.log(data);
-        var d = 1;
+        fetch("/api/poule/"+namePoule+"/positions").then(function(resultat){
+            //console.log(resultat);
+            //console.log(namePoule);
+            resultat.json().then(function(resultatJson){
+                //console.log(resultatJson);
+                data = resultatJson.data;
+                //console.log(data);
+                from = data.from;
+                to = data.to;
+                console.log(from)
 
-        for(const namePoule in data){
-            let liste = data[namePoule];
-            //console.log(liste);
+                let ul = document.createElement("ul");
+                ul.setAttribute("id",idUl);
+                document.getElementById("poule_"+namePoule).appendChild(ul);
 
-            data[namePoule].forEach(function(e){
-                //console.log(e);
+                from.forEach(function(afficheFrom){
+                    let li = document.createElement("li");
+                    if(afficheFrom.Rang === 1){
+                        li.innerText= afficheFrom.Rang+" Ere Groupe "+afficheFrom.PouleFrom.Name;
+                    }else{
+                        li.innerText= afficheFrom.Rang+" Eme Groupe "+afficheFrom.PouleFrom.Name;
+                    }
+                    document.getElementById(idUl).appendChild(li);
+                });
 
-                let li = document.createElement("li");
-                li.innerText= e.Name;
-                document.getElementById("PhaseSuiv"+d).appendChild(li);
+                idUl++;
 
+                ul = document.createElement("ul");
+                ul.setAttribute("id",idUl);
+                document.getElementById("poule_"+namePoule).appendChild(ul);
+
+                to.forEach(function(afficheTo){
+                    let li = document.createElement("li");
+                    if(afficheTo.Rang === 1){
+                        li.innerText= afficheTo.Rang+" Ere Groupe "+afficheTo.PouleFrom.Name;
+                    }else{
+                        li.innerText= afficheTo.Rang+" Eme Groupe "+afficheTo.PouleFrom.Name;
+                    }
+                    document.getElementById(idUl).appendChild(li);
+                });
+
+                idUl++;
             });
-            d++;
-        };
-
+        });
+        }
     });
 });
 
