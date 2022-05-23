@@ -830,13 +830,7 @@ function findTeamByRang($teams,$rang)
                     $poule->setPrincipal($principal);
                     if($phase->getParam() == 32 || $phase->getParam() == 24)
                     {
-                        switch(($i+2))
-                        {
-                            case 2 : $name = "Demis et finales"; break;
-                            default : $name = "Demis et finales ".((($i)*4)+1)."e - ".((($i+1)*4))."e"; break;
-
-                        }
-
+                        $name = "Matchs de classement ".((($i)*4)+1)."e - ".((($i+1)*4))."e";
                         $poule->setName($name);
 
 
@@ -924,8 +918,8 @@ function findTeamByRang($teams,$rang)
 
                         switch($i)
                         {
-                            case 1 : $name = "Finale 3e - 4e "; break;
-                            default : $name = "Classement ".((($i-1)*4)+3)."e - ".((($i-1)*4)+4)."e"; break;
+                            case 1 : $name = "Match 3e - 4e "; break;
+                            default : $name = "Match ".((($i-1)*4)+3)."e - ".((($i-1)*4)+4)."e"; break;
 
                         }
 
@@ -941,8 +935,8 @@ function findTeamByRang($teams,$rang)
                         $match->setPoule($poule);
                         switch($i)
                         {
-                            case 1 : $name = "Finale 1e - 2e "; break;
-                            default : $name = "Classement ".((($i-1)*4)+1)."e - ".((($i-1)*4)+2)."e"; break;
+                            case 1 : $name = "Finale "; break;
+                            default : $name = "Match ".((($i-1)*4)+1)."e - ".((($i-1)*4)+2)."e"; break;
 
                         }
 
