@@ -2,7 +2,7 @@
     <div class="col">
         {% if poule.positionsTo %}
 
-            {% if false %}
+            {% if is_granted("ROLE_ADMIN") %}
             <h5>Composition de la poule : </h5>
             <ul>
                 {% if poule.positionsTo|length == 0 %}

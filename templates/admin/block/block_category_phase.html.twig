@@ -4,8 +4,7 @@
         {% if positions is defined %}
         <form class="d-inline" method="post" action="{{ path("app_admin_phase_groupe_update", {idPoule:poule.id}) }}"><input type="hidden" name="id" value="{{ poule.id }}" /><input type="text" name="pouleName" value="{{ poule.Name }}" /><input type="submit" value="modifier" /></form> <a href="{{ path("app_admin_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de {{ poule.Name }}</a></h5>
     {% else %}
-        <a href="{{ path("app_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary float-end py-0">voir les matchs de {{ poule.Name }}</a>
-        <h3>{{ poule.Name }} </h3>
+        <h3 class="">{{ poule.Name }} <a href="{{ path("app_category_phase_groupe", {groupe:poule.id,idCategory:category.id, idPhase:phase.id}) }}" class="btn btn-primary d-inline-block  float-end ">voir les matchs de {{ poule.Name }}</a></h3>
 
         {% endif %}
      <hr >
