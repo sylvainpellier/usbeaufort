@@ -87,11 +87,17 @@ class Phase
      */
     private $category;
 
+    /**
+     * @ORM\OneToMany(targetEntity=RangTroisieme::class, mappedBy="Phase", orphanRemoval=true)
+     */
+    private $rangTroisiemes;
+
     public function __construct()
     {
         $this->meets = new ArrayCollection();
         $this->poules = new ArrayCollection();
         $this->positions = new ArrayCollection();
+        $this->rangTroisiemes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -353,5 +359,35 @@ class Phase
     public function __toString(): string
     {
         return $this->getName();
+    }
+
+    /**
+     * @return Collection<int, RangTroisieme>
+     */
+    public function getRangTroisiemes(): Collection
+    {
+        return $this->rangTroisiemes;
+    }
+
+    public function addRangTroisieme(RangTroisieme $rangTroisieme): self
+    {
+        if (!$this->rangTroisiemes->contains($rangTroisieme)) {
+            $this->rangTroisiemes[] = $rangTroisieme;
+            $rangTroisieme->setPhase($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRangTroisieme(RangTroisieme $rangTroisieme): self
+    {
+        if ($this->rangTroisiemes->removeElement($rangTroisieme)) {
+            // set the owning side to null (unless already changed)
+            if ($rangTroisieme->getPhase() === $this) {
+                $rangTroisieme->setPhase(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -7,7 +7,7 @@
 
     <div class="row mt-5 text-center">
         {% for partenaire in partenaires %}
-            <div class="col-12 col-md-3 mt-4 text-uppercase"><img src="/img/{{ partenaire.logo }}" class="img-fluid"  alt="{{ partenaire.Name }}"/></div>
+            <div class="col-12 col-md-3 mt-4 text-uppercase"><a href="{{ partenaire.url }}" target="_blank"> <img src="/img/{{ partenaire.logo }}" class="img-fluid"  alt="{{ partenaire.Name }}"/></a></div>
         {% endfor %}
     </div>
 

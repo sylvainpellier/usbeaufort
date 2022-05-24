@@ -273,6 +273,17 @@ class ApiController extends OverrideApiController
         }
 
 
+        foreach ($poules as $key => $poule)
+        {
+            $i=1;
+            foreach($poule as $keyT => $team)
+            {
+                $poules[$key][$keyT]["rang"] = $i;
+                $i++;
+            }
+
+        }
+
 
 
         return $poules;

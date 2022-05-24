@@ -41,7 +41,24 @@ class MeetController extends OverrideApiController
         $meet->setPenaltyB($request->get("penaltyB") > 0 ? (int)$request->get("penaltyB") : null);
         $meet->setArbitre($request->get("arbitre") );
         if( $request->get("field")) {
-            $meet->setField( $fieldRepository->find($request->get("field")) ) ;
+
+            $oldField = $meet->getField();
+            $newField = $fieldRepository->find($request->get("field"));
+
+            $findAnotherMeet = $meetRepository->findOneBy(["time"=>$meet->getTime(), "Field"=> $newField ]);
+            if($findAnotherMeet)
+            {
+                $meet->setField( $newField ) ;
+                $findAnotherMeet->setField( $oldField );
+                $entityManager->persist( $findAnotherMeet );
+                $this->addFlash("success","Échange de terrain effectué");
+
+            }
+
+
+
+
+
         }
 
         $meet->setTime(strtotime($request->get("date"). " ".$request->get("time").":00"));

@@ -44,6 +44,9 @@ class Team
      * @Groups({"team"})
      * @ORM\OrderBy({"time" = "ASC"})
      */
+
+
+
     private $meetsA;
 
     /**
@@ -245,6 +248,28 @@ class Team
         }
 
         return $this;
+    }
+
+    public function getPauseRepas()
+    {
+        $max = false;
+        $last = false;
+        $pause = "";
+        foreach ($this->getMeets() as $match)
+        {
+            if($last)
+            {
+                $diff = $last - $match->getTime();
+                if((!$max || $diff > $max) && (int)date('H', $last) >= 12)
+                {
+                    $max = $diff;
+                    $pause = "de ".date('H', $last)."h".date('i', $last)." à ".date('H',$match->getTime())."h".date('i',$match->getTime());
+                }
+            }
+            $last = $match->getTime();
+        }
+
+        return $pause;
     }
 
 

@@ -36,6 +36,9 @@ class TimeController extends AbstractController
 
         }
         $entityManager->flush();
+        $countMatch = count($meetRepository->findAllCriterias(1,null)) + count($meetRepository->findAllCriterias(2,null));
+        $countMaxBetween = $countMatch / 2.5;
+
         $timeZone = new DateTimeZone('Europe/Paris');
 
         $debut_tournoi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." ".$paramRepository->findOneBy(["Name"=>"time_debut"])->getValue().":00");
@@ -54,6 +57,7 @@ class TimeController extends AbstractController
             $tourEchiquier[$pe->getId()] = 1;
         }
         $lastTour = false;
+        $lastPhase = false;
         $matchEntreEchiqiuer = 0;
 
             $ordres = [1, 2, 3];
@@ -62,15 +66,14 @@ class TimeController extends AbstractController
 
                 while (count($matchs) > 0) {
 
-                    if(!$lastTour || ($matchEntreEchiqiuer > 30 && $matchs[0]->getPhase()->getType()->getFormat() === "demifinalesfinales" ) || (isset($matchs[0]) && $matchs[0]->getPhase()->getType()->getFormat() !== "echiquier" &&  $lastTour !== $matchs[0]->getTour()))
+                    if($matchEntreEchiqiuer === 0 || $matchEntreEchiqiuer > $countMaxBetween )
                     {
-
                             foreach ($phasesEchiquier as $pe) {
 
                                 $matchs_echiquier = $meetRepository->findBy(["Phase" => $pe->getId(), "Tour" => $tourEchiquier[$pe->getId()]]);
                                 $tourEchiquier[$pe->getId()]++;
                                 $matchs = array_merge($matchs_echiquier, $matchs);
-                                $matchEntreEchiqiuer = 0;
+                                $matchEntreEchiqiuer = 1;
                             }
 
 
@@ -78,14 +81,23 @@ class TimeController extends AbstractController
                     shuffle($fields);
                     foreach ($fields as $field) {
 
-                        if (isset($matchs[0])) {
-                            $lastTour = $matchs[0]->getTour();
-                            $matchs[0]->setTime($time->getTimestamp());
-                            $matchs[0]->setField($field);
-                            $entityManager->persist($matchs[0]);
-                            array_splice($matchs, 0, 1);
-                            $matchEntreEchiqiuer++;
-                        }
+                        $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
+                        $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
+
+
+
+                        if(
+                            ( $field->getId() != 5 && $field->getId() != 6 ) ||
+                            ( ($field->getId() == 5 || $field->getId() == 6 ) && (  $time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()  )  ))
+                                if (isset($matchs[0])) {
+                                    $lastTour = $matchs[0]->getTour();
+                                    $lastPhase = $matchs[0]->getPhase();
+                                    $matchs[0]->setTime($time->getTimestamp());
+                                    $matchs[0]->setField($field);
+                                    $entityManager->persist($matchs[0]);
+                                    array_splice($matchs, 0, 1);
+                                    $matchEntreEchiqiuer++;
+                                }
 
                     }
 

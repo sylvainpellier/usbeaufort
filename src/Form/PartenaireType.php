@@ -17,6 +17,7 @@ class PartenaireType extends AbstractType
         $builder
 
             ->add('Name')
+            ->add('Url')
             ->add('logoFile', FileType::class, [
                 'label' => 'Logo',
 

@@ -22,6 +22,22 @@ class OverrideApiController extends AbstractController
         $this->em = $em;
     }
 
+    public static function triClassementSpecialTroisime(&$a,&$b)
+    {
+
+
+            if ($a['pts'] === $b['pts']) {
+                $diff = (((int)$a["but_pour"]-(int)$a["but_contre"])) < (((int)$b["but_pour"]-(int)$b["but_contre"]));
+                return $diff;
+
+            } else {
+                return $a['pts'] < $b['pts'];
+            }
+
+
+
+    }
+
     public static function triClassement(&$a,&$b)
     {
 
@@ -60,7 +76,6 @@ class OverrideApiController extends AbstractController
         if($a['pts'] === $b['pts'])
         {
 
-
             if($a['bonus1'] == $b['bonus1'])
             {
                 if ((((int)$a["but_pour"]-(int)$a["but_contre"]))  == (((int)$b["but_pour"]-(int)$b["but_contre"])))
@@ -68,7 +83,9 @@ class OverrideApiController extends AbstractController
 
                 } else
                 {
-                    return (((int)$a["but_pour"]-(int)$a["but_contre"])) < (((int)$b["but_pour"]-(int)$b["but_contre"]));
+                   $diff = (((int)$a["but_pour"]-(int)$a["but_contre"])) < (((int)$b["but_pour"]-(int)$b["but_contre"]));
+
+                    return $diff;
                 }
             } else
             {

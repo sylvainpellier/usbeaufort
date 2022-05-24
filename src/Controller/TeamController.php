@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Team;
 use App\Form\TeamType;
 use App\Repository\CategoryRepository;
+use App\Repository\FieldRepository;
 use App\Repository\MeetRepository;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -112,11 +113,11 @@ class TeamController extends OverrideApiController
     /**
      * @Route("/equipe/{id}", name="teams_show")
      */
-    public function equipe_show(string $id, TeamRepository $teamRepository, SerializerInterface $serializer): Response
+    public function equipe_show(string $id, FieldRepository $fieldRepository, TeamRepository $teamRepository, SerializerInterface $serializer): Response
     {
         $team = $teamRepository->find($id);
 
-        return $this->render("equipes/show.html.twig", ["matchs"=> $team->getMeets(), "equipe"=>$team]);
+        return $this->render("equipes/show.html.twig", ["fields"=>$fieldRepository->findAll(),"matchs"=> $team->getMeets(), "equipe"=>$team]);
 
     }
 

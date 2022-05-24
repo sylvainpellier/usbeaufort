@@ -4,6 +4,7 @@
 
 {% block body %}
 
+
     <div class="example-wrapper">
 
         <h3 class=""><a href="{{ path("app_admin_category",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : {{ phase.Name }}</h3>
@@ -34,6 +35,57 @@
             {#<hr  class="mt-5" />#}
             {#{% endfor %}#}
 
+{% set manqueTroisieme = false %}
+        {% if is_granted("ROLE_ADMIN") and phase.finished()  and phase.param == 24 and phase.type.format == "normal" %}
+
+
+            <h3 class="mt-5">Gestion des troisièmes</h3>
+
+
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>#</th>
+                <th>Équipe</th>
+                <th>Points</th>
+                <th>Diff</th>
+                <th>Pour</th>
+                <th>Contre</th>
+                <th>Victoire</th>
+                <th>Défaite</th>
+                <th>Nul</th>
+
+            </tr>
+
+            {% for team in troisiemes %}
+
+
+                <tr>
+                    <th>
+
+{% if not team["rangTroisieme"]   %}
+                        {% set manqueTroisieme = true %}
+{% endif %}
+                            <form class="d-inline" action="{{ path("app_admin_egalite_troisieme") }}" method="post"><input type="hidden" name="idPhase" value="{{ phase.id }}"><input type="hidden" name="idCategory" value="{{ category.id }}"><input type="hidden" name="team" value="{{ team.id }}"><input type="text" style="width: 30px;" value="{% if team["rangTroisieme"] %}{{ team["rangTroisieme"].rang }}{% endif %}" name="rang"><input type="submit" value="X" /></form>
+
+                        </th>
+                    <th>{{ team["Name"] }}</th>
+                    <th>{{ team["pts"] }}</th>
+                    <th>{{ team["but_pour"] - team["but_contre"] }}</th>
+                    <th>{{ team["but_pour"] }}</th>
+                    <th>{{ team["but_contre"] }}</th>
+                    <th>{{ team["victoire"] }}</th>
+                    <th>{{ team["defaite"] }}</th>
+                    <th>{{ team["nul"] }}</th>
+
+                </tr>
+
+{% endfor %}
+        </table>
+
+
+
+            <hr />
+        {% endif %}
 
 
 
@@ -43,6 +95,8 @@
                 <div class="col-4">
                     {% if not phase.finished() %}
                        <p class="alert alert-danger">impossible de générer les matchs de la poule, tous les matchs ne sont pas terminés</p>
+                    {% elseif manqueTroisieme %}
+                        <p class="alert alert-danger">impossible de générer les matchs de la poule, vous devez valider le classement des troisièmes</p>
                     {% elseif nbEgalite > 0 %}
                         <p class="alert alert-danger">impossible de générer les matchs de la poule des égalités existent</p>
 

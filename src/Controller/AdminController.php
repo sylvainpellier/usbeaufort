@@ -7,6 +7,7 @@ use App\Entity\Phase;
 use App\Entity\Position;
 use App\Entity\Poule;
 use App\Entity\PouleTeam;
+use App\Entity\RangTroisieme;
 use App\Entity\Team;
 use App\Form\PhaseType;
 use App\Repository\CategoryRepository;
@@ -16,6 +17,7 @@ use App\Repository\PhaseRepository;
 use App\Repository\PositionRepository;
 use App\Repository\PouleRepository;
 use App\Repository\PouleTeamRepository;
+use App\Repository\RangTroisiemeRepository;
 use App\Repository\TeamRepository;
 use function array_key_exists;
 use function array_push;
@@ -53,6 +55,26 @@ class AdminController extends OverrideController
         $tm->setRang($request->get("rang"));
 
         $entityManager->persist($tm);
+        $entityManager->flush();
+
+        return $this->redirectToRoute("app_admin_category_phase",["idCategory"=>$request->get("idCategory"),"idPhase"=>$request->get("idPhase") ]);
+    }
+
+    /**
+     * @Route("/admin/egalite/troisieme", name="app_admin_egalite_troisieme")
+     */
+    public function app_admin_egalite_troisieme(Request $request, PhaseRepository $phaseRepository, RangTroisiemeRepository $rangTroisiemeRepository, PouleTeamRepository $pouleTeamRepository, EntityManagerInterface $entityManager, TeamRepository $teamRepository, PouleRepository $pouleRepository)
+    {
+        $team = $teamRepository->find($request->get("team"));
+        $phase = $phaseRepository->find($request->get("idPhase"));
+
+        $rt = $rangTroisiemeRepository->findOneBy(["Team"=>$team, "Phase"=>$phase]) ?? new RangTroisieme();
+
+        $rt->setTeam($team);
+        $rt->setPhase($phase);
+        $rt->setRang($request->get("rang"));
+
+        $entityManager->persist($rt);
         $entityManager->flush();
 
         return $this->redirectToRoute("app_admin_category_phase",["idCategory"=>$request->get("idCategory"),"idPhase"=>$request->get("idPhase") ]);
@@ -176,7 +198,7 @@ class AdminController extends OverrideController
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}", name="app_admin_category_phase")
      */
-    public function categoryphase(string $idCategory, FieldRepository $fieldRepository, string $idPhase, PositionRepository $positionRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function categoryphase(string $idCategory, RangTroisiemeRepository $rangTroisiemeRepository, FieldRepository $fieldRepository, string $idPhase, PositionRepository $positionRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $c = new ApiController($entityManager);
@@ -190,14 +212,41 @@ class AdminController extends OverrideController
 
         }
 
+        $data = $c->data($idCategory,$phase, $conn = $entityManager->getConnection(),false);
+
+        $troisiemes = [];
+        if($phase->getParam() == 24) {
+
+            foreach ($data as $kP => $poule) {
+                foreach ($poule as $kT => $team) {
+                    if ($team["rang"] == 3) {
+
+                        $team["rangTroisieme"] = $rangTroisiemeRepository->findOneBy(["Phase"=>$phase,"Team"=>$team["id"]]);
+                        $troisiemes[] = $team;
+                    }
+                }
+            }
+        }
+
+        usort($troisiemes, array($this,'triClassementSpecialTroisime'));
+        //usort($troisiemes, array($this,'triClassementBonus'));
+
+        $i = 1;
+        foreach($troisiemes as $k => $team)
+        {
+            $troisiemes[$k]["rang"] = $i;
+            $i++;
+        }
+
         return $this->render('admin/category_phase.html.twig', [
             'category' => $categoryRepository->find($idCategory),
             'positions' => $positions,
+            'troisiemes'=>$troisiemes,
             'phase' => $phase,
             'fields' => $fieldRepository->findAll(),
             'groupes' => $meetRepository->findGroupes($idCategory,$idPhase),
             'categories' => $categoryRepository->findAll(),
-            'classement' =>$c->data($idCategory,$phase, $conn = $entityManager->getConnection(),false)
+            'classement' =>$data
         ]);
     }
 
@@ -205,16 +254,23 @@ class AdminController extends OverrideController
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}/delete", name="app_admin_category_phase_delete")
      */
-    public function category_phase_delete(string $idCategory, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function category_phase_delete(string $idCategory, RangTroisiemeRepository $rangTroisiemeRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
         $phase = $phaseRepository->find($idPhase);
         $matchs = $meetRepository->findBy(["Phase"=>$phase]);
-
+        $rangs = $rangTroisiemeRepository->findBy(["Phase"=>$phase]);
 
         //On supprime tous les matchs de la phase
         foreach ($matchs as $match)
         {
             $entityManager->remove($match);
+            $entityManager->flush();
+        }
+
+        //On supprime tous les matchs de la phase
+        foreach ($rangs as $rang)
+        {
+            $entityManager->remove($rang);
             $entityManager->flush();
         }
 
@@ -286,7 +342,7 @@ function findTeamByRang($teams,$rang)
     /**
      * @Route("/admin/category/{idCategory}/phase/{idPhase}/generate", name="app_admin_category_phase_generate")
      */
-    public function generatePhase(string $idCategory, PouleRepository $pouleRepository, PositionRepository $positionRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
+    public function generatePhase(string $idCategory, RangTroisiemeRepository $rangTroisiemeRepository, PouleRepository $pouleRepository, PositionRepository $positionRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, string $idPhase, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
 
         $phase = $phaseRepository->find($idPhase);
@@ -300,38 +356,8 @@ function findTeamByRang($teams,$rang)
         $c = new ApiController($entityManager);
         $data = $c->data($idCategory,$phase->getPhasePrecedente(), $conn = $entityManager->getConnection());
 
-        if($phase->getParam() == 24) {
-            foreach ($data as $keyGroupe => $teamsGroupe) {
-                foreach ($teamsGroupe as $key => $team) {
+            $wait = [];
 
-                    $wait = [];
-                    if ($team["rang"] == 3 && $phase->getParam() == 24) {
-                        $wait[$key] = $team;
-                    }
-                }
-
-            }
-
-            //on tri les troisièmes
-            usort($wait, array($this,"triClassement"));
-
-            $rang = 1;
-            foreach($wait as $key => $twait)
-            {
-                if($rang <= 4)
-                { $r= 3; } else { $r = 4; }
-                    foreach ($data as $keyGroupe => $teamsGroupe) {
-                        foreach ($teamsGroupe as $keyG => $team) {
-                            if($team["id"] === $twait["id"])
-                            {
-                                $data[$keyGroupe][$keyG]["rang"] = $r;
-                            }
-                        }
-                    }
-
-                $rang++;
-            }
-        }
 
 
 
@@ -341,16 +367,26 @@ function findTeamByRang($teams,$rang)
             {
                 $t = $teamRepository->find($team["id"]);
 
-                $position = $positionRepository->findOneBy(["PouleFrom"=> $team["poule"], "Rang"=> $team["rang"]]);
+                $checkTroisieme = $rangTroisiemeRepository->findOneBy(["Phase"=>$idPhase,"Team"=>$team["id"]]);
 
+                if($checkTroisieme)
+                {
+                    $position = $positionRepository->findOneBy(["Rang"=> "3", "int_param"=> $checkTroisieme->getRang()]);
+
+                } else
+                {
+                    $position = $positionRepository->findOneBy(["PouleFrom"=> $team["poule"], "Rang"=> $team["rang"]]);
+                }
                 if($position)
                 {
+
                     $t->addPoule( $pouleRepository->find( $position->getPouleTo()) );
                     $entityManager->persist($position);
                     $entityManager->persist($t);
                     $entityManager->flush();
 
                     $meets = $meetRepository->findBy(["PositionA"=>$position]);
+
                     foreach ($meets as $meet)
                     {
                         $meet->setTeamA($t);
@@ -373,7 +409,6 @@ function findTeamByRang($teams,$rang)
 
 
             $entityManager->flush();
-
 
 
 
@@ -660,7 +695,7 @@ function findTeamByRang($teams,$rang)
 
             }
             else if($phase->getType()->getFormat() === "principal-consolante") {
-
+                $consolanteCount = 1;
                 for($i = 0; $i <= (count($teams) / $nbTeamByPoule) -1 ; $i++)
                 {
 
@@ -676,7 +711,8 @@ function findTeamByRang($teams,$rang)
                     } else
                     {
                         $poule->setPrincipal(false);
-                        $poule->setName("Consolante ".($i+1));
+                        $poule->setName("Consolante ".$consolanteCount);
+                        $consolanteCount++;
                     }
 
 

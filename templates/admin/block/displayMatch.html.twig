@@ -1,6 +1,6 @@
 <tr id="meet_{{ meet.id }}" class="text-black">
 
-    {% if is_granted("ROLE_ADMIN") or (meet.field is not null and is_granted("ROLE_"~meet.field.id|trans) ) %}
+    {% if (is_granted("ROLE_ADMIN") or (meet.field is not null and is_granted("ROLE_"~meet.field.id|trans) )) and noEditMode is not defined %}
         {% set editMode = true %}
     {% else %}
         {% set editMode = false %}
@@ -47,7 +47,7 @@
         </td>
 
 
-        <td {% if editMode %}rowspan="2"{% endif %}>{% if is_granted("ROLE_ADMIN") %}
+        <td {% if editMode %}rowspan="1"{% endif %}>{% if is_granted("ROLE_ADMIN") and editMode %}
                 <input type="date" name="date" value="{{ meet.time|date("Y-m-d") }}" /><br />
             <input type="time" name="time" value="{{ meet.time|date("H:i") }}" />
             {% else %}
@@ -56,8 +56,8 @@
         </td>
 
         {% if removeField is not defined %}
-        <td {% if editMode %}rowspan="2"{% endif %}>
-            {% if is_granted("ROLE_ADMIN") %}
+        <td {% if editMode %}rowspan="1"{% endif %}>
+            {% if is_granted("ROLE_ADMIN") and fields is defined and editMode %}
                 <select name="field"><option></option>
                 {% for field in fields %}
                    <option {% if meet.field and meet.field.id == field.id %} selected {% endif %}  value="{{ field.id }}">{{ field.Name }}</option>

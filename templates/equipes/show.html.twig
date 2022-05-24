@@ -5,6 +5,8 @@
 
 {% block body %}
 
+
+
 <div class="col-12 text-center" id="container">
 
     <a href="{{ path("teams_index") }}" class="float-end btn btn-primary">retour à la liste des équipes</a>
@@ -12,12 +14,14 @@
     <h2>{{ equipe.Name }}</h2>
 
 
-    <hr class="">
 
+    <hr class="">
+    {% set noEditMode = true %}
     {% set removeArbitre = true %}
     {% include "admin/block/matchs2.html.twig" %}
 
 
+    {% if equipe.getPauseRepas() %}<h3>Pause repas : {{ equipe.getPauseRepas() }}</h3>{% endif %}
 
 
     <hr class="mt-5">

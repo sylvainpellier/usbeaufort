@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class OverrideController extends AbstractController
+class OverrideController extends OverrideApiController
 {
 
     public function __construct(EntityManagerInterface $em)
