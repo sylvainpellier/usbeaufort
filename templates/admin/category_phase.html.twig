@@ -93,7 +93,7 @@
 
             {% if is_granted("ROLE_ADMIN") %}
                 <div class="col-4">
-                    {% if not phase.finished() %}
+                    {% if not phase.finished() and phase.type.format != "echiquier" %}
                        <p class="alert alert-danger">impossible de générer les matchs de la poule, tous les matchs ne sont pas terminés</p>
                     {% elseif manqueTroisieme %}
                         <p class="alert alert-danger">impossible de générer les matchs de la poule, vous devez valider le classement des troisièmes</p>
