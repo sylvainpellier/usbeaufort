@@ -27,7 +27,7 @@
 
 
 {% block javascript %}
-    var url =  "http://localhost:8000/api/matchs"
+    var url =  "/api/matchs"
 
     fetch(url).then(function(resultat){
         //console.log(resultat);
@@ -35,7 +35,7 @@
             //console.log(resultatJson);
 
             var data = resultatJson.data;
-            //console.log(data);
+            console.log(data);
             var equipe = data[0].TeamA.Name
             var victoire = 0;
             var ButContre = 0;

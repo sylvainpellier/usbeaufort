@@ -496,14 +496,23 @@ function findTeamByRang($teams,$rang)
             {
                 return $key;
             } else {
+
+                $finded = false;
                 foreach ($tour as $matchDansTour) {
 
-                    if ($matchDansTour["a"] !== $teamA && $matchDansTour["b"] !== $teamB && $matchDansTour["a"] !== $teamB && $matchDansTour["b"] !== $teamA) {
-                        return $key;
+
+                    if ($matchDansTour["a"]->getId() != $teamA->getId() && $matchDansTour["b"]->getId() != $teamB->getId() && $matchDansTour["a"]->getId() != $teamB->getId() && $matchDansTour["b"]->getId() != $teamA->getId()) {
+
+
                     } else
                     {
-
+                        $finded = true;
                     }
+                }
+
+                if(!$finded)
+                {
+                    return $key;
                 }
             }
         }
@@ -553,6 +562,7 @@ function findTeamByRang($teams,$rang)
      */
     public function generateFictive(string $idCategory, PositionRepository $positionRepository, PouleRepository $pouleRepository, TeamRepository $teamRepository, MeetRepository $meetRepository, EntityManagerInterface $entityManager, PhaseRepository $phaseRepository, CategoryRepository $categoryRepository): Response
     {
+
         $category = $categoryRepository->find($idCategory);
         $phases = $category->getPhases();
         $category->setPhaseEnCours(null);
@@ -996,6 +1006,7 @@ function findTeamByRang($teams,$rang)
 
                 }
             else if($phase->getType()->getFormat() === "echiquier")
+
             {
                 $tour = 1;
                 $poule = new Poule();
@@ -1077,6 +1088,8 @@ function findTeamByRang($teams,$rang)
                     }
 
 
+
+
                     foreach ($poule->getTeams() as $teamA)
                     {
                         foreach ($poule->getTeams() as $teamB)
@@ -1097,12 +1110,15 @@ function findTeamByRang($teams,$rang)
                                 $match->setPoule($poule);
 
                                 $tour = $this->findCorrectTour($tours, $teamA, $teamB);
+
+
                                 $match->setTour($tour);
 
                                 $entityManager->persist($match);
                                 $entityManager->flush();
                                 $meets[] = $match;
                                 $tours[$tour][] = ["a"=>$teamA,"b"=>$teamB];
+
                             }
 
                         }
