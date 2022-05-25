@@ -7,13 +7,18 @@
 
     <div id="container">
 
-        <p>//affichage de l'équipe (ou des équipes si égalité) qui a marqué le plus de buts</p>
+        <p>//affichage de l'équipe (ou des équipes si égalité) qui a marqué le plus de buts !fait calcul</p>
 
-        <p>//affichage de l'équipe qui a encaissé le moins de but</p>
+        <p>//affichage de l'équipe qui a encaissé le moins de but !fait calcul</p>
 
-        <p>//affichage de l'équipe qui a le plus de victoire</p>
+        <p>//affichage de l'équipe qui a le plus de victoire !fait calcul</p>
 
         <p>//affichage de l'équipe qui a fait le plus grand nombre de match sans prendre de but</p>
+
+        <div id="plusBut"></div>
+        <div id="moinBut"></div>
+        <div id="PlusVictoire"></div>
+        <div id="PlusSeriesSansBut"></div>
 
 
     </div>
@@ -33,19 +38,24 @@
             //console.log(data);
             var equipe = data[0].TeamA.Name
             var victoire = 0;
-            if(!data[0].ScoreA){
+            var ButContre = 0;
+            if(!data[0].ScoreA && !data[0].ScoreB){
                 var totalBut = 0;
+                ButContre = 0;
             }else{
                 var totalBut = data[0].ScoreA;
                 if(data[0].ScoreA > data[0].ScoreB){
                     //console.log("victoire +1 debut");
                     victoire = victoire + 1;
                 };
+                ButContre = data[0].ScoreB;
             };
 
+            // tableaux qui recupere les different totaux et les equipes.
             var but = [];
             var TotalVictoire = [];
             var equipeName = [];
+            var ButPris = [];
             //console.log("init but "+ but);
 
             //boucle qui additione les but dans un tableau.
@@ -54,14 +64,18 @@
 
                 if(data[a].TeamA || data[a].TeamB){
                     if(equipe === data[a].TeamA.Name){
-                        if(!data[a].ScoreA){
+                        if(!data[a].ScoreA && !data[0].ScoreB){
                             totalBut = totalBut+0;
+                            ButContre = ButContre+0;
+                            //console.log(ButContre);
                             victoire = victoire;
                             //console.log("pas  de changement de victoire si name = a");
                             //console.log("total but = "+totalBut);
-
+                            
                         }else{
                             totalBut = totalBut + data[a].ScoreA;
+                            ButContre = ButContre + data[a].ScoreB;
+                            //console.log(ButContre);
                             //console.log("total but = "+totalBut);
                             if(data[a].ScoreA > data[a].ScoreB){
                                 victoire = victoire+1;
@@ -71,15 +85,18 @@
 
                     }else if(equipe === data[a].TeamB.Name){
 
-                        if(!data[a].ScoreB){
+                        if(!data[a].ScoreB && !data[a].ScoreA){
                             totalBut = totalBut + 0;
+                            ButContre = ButContre+0;
+                            //console.log(ButContre);
                             //console.log("total but = "+totalBut);
-
                             victoire = victoire;
-                            console.log("pas de changement de victoire si name = b");
+                            //console.log("pas de changement de victoire si name = b");
 
                         }else{
-                            totalBut = totalBut + data[a].ScoreB;                            
+                            totalBut = totalBut + data[a].ScoreB;
+                            ButContre = ButContre + data[a].ScoreA  
+                            //console.log(ButContre);                          
                             //console.log("total but = "+totalBut);
 
                             if(data[a].ScoreB > data[a].ScoreA){
@@ -92,11 +109,16 @@
                     }else{
                         but.push(totalBut);
                         //console.log(but);
+
+                        ButPris.push(ButContre);
+                        //console.log(ButPris);
+                        ButContre = 0;
+
                         equipeName.push(equipe);
                         //console.log(equipeName);
 
                         TotalVictoire.push(victoire);
-                        console.log(TotalVictoire);
+                        //console.log(TotalVictoire);
 
                         victoire = 0;
                         //console.log(victoire)
@@ -118,30 +140,76 @@
             //console.log(but);
             //console.log(equipeName);
 
-            function TrouveMax(tableauResultat, tableauEquipe){
-                let max = tableauResultat[0];
-                let Equipe = tableauEquipe[0];
+            var min = ButPris[0];
+            var EquipeMinBut = equipeName[0];
+
+            //trouve le min de  ButPris
+            for(a=0; a<=ButPris.length-1; a++){
+                if(ButPris[a] < min){
+                    min = ButPris[a];
+                    EquipeMinBut = equipeName[a];
+                }
+            };
+
+            let h2 = document.createElement("h2");
+            document.getElementById("container").appendChild(h2);
+
+            let h3 = document.createElement("h3");
+            h3.innerText= EquipeMinBut + " " + min;
+            h2.appendChild(h3);
+
+            var equipeMax= [];
+
+            function TrouveMax(equipeMax, tableauResultat, tableauEquipe){
+                equipeMax = [[tableauResultat[0],tableauEquipe[0]]];
+                //console.log(equipeMax[0][0]);
 
                 for(a=0; a<=tableauResultat.length-1; a++){
-                    if(max < tableauResultat[a]){
-                        max = tableauResultat[a];
-                        Equipe = tableauEquipe[a];
-                    }else{
-                        max = max;
+                    if(equipeMax[0][0] < tableauResultat[a]){
+                        equipeMax.shift();
+                        equipeMax.push([tableauResultat[a], tableauEquipe[a]]);
+                        console.log(equipeMax);
                     };
                 };
 
-                let h2 = document.createElement("h2");
-                document.getElementById("container").appendChild(h2);
+                
 
-                let h3 = document.createElement("h3");
-                h3.innerText= Equipe + " " + max;
-                h2.appendChild(h3);
+                return equipeMax;
 
             };
 
-            TrouveMax(but, equipeName);
-            TrouveMax(TotalVictoire, equipeName);
+            function egalite(equipeMax, tableauResultat, tableauEquipe){
+                for(a=0; a<=tableauResultat.length-1; a++){
+                    if(equipeMax[0][0] === tableauResultat[a] && equipeMax[0][1] != tableauEquipe[a]){
+                        equipeMax.push([tableauResultat[a], tableauEquipe[a]]);
+                    }else{
+                        console.log("pas d'egalite");
+                    }
+                };
+            };
+
+            function affichage(equipeMax, id){
+                let h2 = document.createElement("h2");
+                document.getElementById(id).appendChild(h2);
+
+                for(a=0; a<= equipeMax.length-1; a++){
+                    let h3 = document.createElement("h3");
+                    h3.innerText = equipeMax[a][a];
+                    h2.appendChild(h3);
+                };
+            };
+
+            equipeMax = TrouveMax(equipeMax, but, equipeName);
+            equipeMax = egalite(equipeMax, but, equipeName);
+
+            equipeMax.push([1,"test"]);
+            console.log(equipeMax);
+
+            affichage(equipeMax, "plusBut");
+
+            equipeMax = TrouveMax(equipeMax, TotalVictoire, equipeName);
+            equipeMax = egalite(equipeMax, TotalVictoire, equipeName);
+            affichage(equipeMax, "PlusVictoire");
 
         });
 
