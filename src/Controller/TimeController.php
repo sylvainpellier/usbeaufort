@@ -16,6 +16,7 @@ use DateTime;
 use DateTimeZone;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use function floatval;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,15 +38,15 @@ class TimeController extends AbstractController
         }
         $entityManager->flush();
         $countMatch = count($meetRepository->findAllCriterias(1,null)) + count($meetRepository->findAllCriterias(2,null));
-        $countMaxBetween = $countMatch / (int)($paramRepository->findOneBy(["Name"=>"ratio_echiquier"])->getValue() ?? 2.5);
-        $countMaxBetweenSpecial = $countMatch / (int)($paramRepository->findOneBy(["Name"=>"ratio_special"])->getValue() ?? 3.5);
+        $countMaxBetween = $countMatch / (float)($paramRepository->findOneBy(["Name"=>"ratio_echiquier"])->getValue() ?? 2.5);
+        $countMaxBetweenSpecial = $countMatch / (float)($paramRepository->findOneBy(["Name"=>"ratio_special"])->getValue() ?? 3.5);
 
         $timeZone = new DateTimeZone('Europe/Paris');
 
         $debut_tournoi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." ".$paramRepository->findOneBy(["Name"=>"time_debut"])->getValue().":00");
         $time = $debut_tournoi;
-        $tpsMatch = (int)($paramRepository->findOneBy(["Name"=>"tps_match"])->getValue() ?? 12);
-        $tpsPause = (int)($paramRepository->findOneBy(["Name"=>"tps_pause"])->getValue() ?? 12);
+        $tpsMatch = (float)($paramRepository->findOneBy(["Name"=>"tps_match"])->getValue() ?? 12);
+        $tpsPause = (float)($paramRepository->findOneBy(["Name"=>"tps_pause"])->getValue() ?? 12);
         $entreMatch = $tpsMatch + $tpsPause;
         $fields = $fieldRepository->findAll();
 
@@ -112,18 +113,26 @@ class TimeController extends AbstractController
 
                         $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
                         $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
+                        $pauseMidiDebut = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:30:00");
+                        $pauseMidiFin = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 13:00:00");
 
 
 
                         if(
+                        (
                             ( $field->getId() != 5 && $field->getId() != 6  && $field->getId() != 7 )
                             ||
                             ( ($field->getId() == 5 || $field->getId() == 6 ) && (  $time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()  )  )
                             ||
                             ( ($field->getId() == 7 ) && (  !$matchClassement  )  )
-
                         )
-                                if (isset($matchs[0])) {
+                        &&
+                        (
+                            $time->getTimestamp() <= $pauseMidiDebut->getTimestamp() || $time->getTimestamp() >= $pauseMidiFin->getTimestamp()
+                        )
+                        && isset($matchs[0]) )
+
+                        {
                                     $lastTour = $matchs[0]->getTour();
                                     $lastPhase = $matchs[0]->getPhase();
                                     $matchs[0]->setTime($time->getTimestamp());
