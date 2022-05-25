@@ -260,7 +260,7 @@ class Team
             if($last)
             {
                 $diff = $last - $match->getTime();
-                if((!$max || $diff > $max) && (int)date('H', $last) >= 12)
+                if((!$max || $diff > $max) && (int)date('H', $last) >= 11)
                 {
                     $max = $diff;
                     $pause = "de ".date('H', $last)."h".date('i', $last)." à ".date('H',$match->getTime())."h".date('i',$match->getTime());
