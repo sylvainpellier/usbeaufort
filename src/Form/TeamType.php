@@ -17,6 +17,7 @@ class TeamType extends AbstractType
             ->add('Rang')
             ->add('Category')
             ->add('GroupeInitial')
+            ->add('Pause')
             ->add('poules')
             ->add("btn",SubmitType::class, ["label"=>"Modifier","attr"=>["class"=>"btn btn-primary d-block w-100"]])
 

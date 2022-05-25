@@ -2,12 +2,12 @@
     <div class="col">
         {% if poule.positionsTo %}
 
-            {% if is_granted("ROLE_ADMIN") %}
+            {% if is_granted("ROLE_ADMIN") or phase.type.format == "normal" %}
             <h5>Composition de la poule : </h5>
             <ul>
                 {% if poule.positionsTo|length == 0 %}
                     {% for team in poule.teams %}
-                        <li>{{ team.Name }}</li>
+                        <li>{{ team.Name }} {% if team.pause %} - <b>Pause : {{ team.pause }}{% endif %}</b></li>
                         {% endfor %}
                 {% endif %}
             {% for key, position in poule.positionsTo %}

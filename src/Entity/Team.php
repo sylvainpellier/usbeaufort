@@ -76,6 +76,11 @@ class Team
      */
     private $pouleTeams;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $Pause;
+
 
 
     public function __construct()
@@ -270,6 +275,18 @@ class Team
         }
 
         return $pause;
+    }
+
+    public function getPause(): ?string
+    {
+        return $this->Pause;
+    }
+
+    public function setPause(?string $Pause): self
+    {
+        $this->Pause = $Pause;
+
+        return $this;
     }
 
 
