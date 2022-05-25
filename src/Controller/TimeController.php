@@ -38,6 +38,7 @@ class TimeController extends AbstractController
         $entityManager->flush();
         $countMatch = count($meetRepository->findAllCriterias(1,null)) + count($meetRepository->findAllCriterias(2,null));
         $countMaxBetween = $countMatch / 2.5;
+        $countMaxBetweenSpecial = $countMatch / 3.5;
 
         $timeZone = new DateTimeZone('Europe/Paris');
 
@@ -49,9 +50,16 @@ class TimeController extends AbstractController
         $fields = $fieldRepository->findAll();
 
         $phasesEchiquier = $phaseRepository->findEchiquier();
+        $phasesSpecial = $phaseRepository->findBy(["param"=>"exception"]);
+
+        $tourSpeciaux = [];
+
+        foreach ($phasesSpecial as $key => $ts)
+        {
+            $tourSpeciaux[$ts->getId()] = 1;
+        }
 
         $tourEchiquier = [];
-
         foreach ($phasesEchiquier as $key => $pe)
         {
             $tourEchiquier[$pe->getId()] = 1;
@@ -59,12 +67,26 @@ class TimeController extends AbstractController
         $lastTour = false;
         $lastPhase = false;
         $matchEntreEchiqiuer = 0;
+        $matchEntreSpecial = 0;
 
             $ordres = [1, 2, 3];
             foreach ($ordres as $ordre) {
                 $matchs = $meetRepository->findBySpecial($ordre);
 
                 while (count($matchs) > 0) {
+
+                    if($matchEntreSpecial === 0 || $matchEntreSpecial > $countMaxBetweenSpecial )
+                    {
+                        foreach ($phasesSpecial as $pe) {
+
+                            $matchs_special = $meetRepository->findBy(["Phase" => $pe->getId(), "Tour" => $tourSpeciaux[$pe->getId()]]);
+                            $tourSpeciaux[$pe->getId()]++;
+                            $matchs = array_merge($matchs_special, $matchs);
+                            $matchEntreSpecial = 1;
+                        }
+
+
+                    }
 
                     if($matchEntreEchiqiuer === 0 || $matchEntreEchiqiuer > $countMaxBetween )
                     {
@@ -97,6 +119,7 @@ class TimeController extends AbstractController
                                     $entityManager->persist($matchs[0]);
                                     array_splice($matchs, 0, 1);
                                     $matchEntreEchiqiuer++;
+                                    $matchEntreSpecial++;
                                 }
 
                     }

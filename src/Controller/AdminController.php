@@ -876,7 +876,7 @@ function findTeamByRang($teams,$rang)
                     $poule->setPrincipal($principal);
                     if($phase->getParam() == 32 || $phase->getParam() == 24)
                     {
-                        $name = "Matchs de classement ".((($i)*4)+1)."e - ".((($i+1)*4))."e";
+                        $name = "Matchs de classement ".$phase->getName()." ".((($i)*4)+1)."e - ".((($i+1)*4))."e";
                         $poule->setName($name);
 
 
