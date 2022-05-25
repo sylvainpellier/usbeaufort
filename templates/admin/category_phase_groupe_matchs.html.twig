@@ -7,6 +7,11 @@
     {% set nbEgalite = 0 %}
     <div class="example-wrapper">
 
+        {% if phase.type.format != 'demifinalesfinales'  %}
+            {% set removeForfait = true %}
+            {% set removeTab = true %}
+        {% endif %}
+
         <h3 class=""><a href="{{ path("app_admin_category",{id:category.id}) }}">Catégorie {{ category.Name }}</a> > Phase : <a href="{{ path("app_admin_category_phase",{idCategory:category.id,idPhase:phase.id}) }}">{{ phase.Name }}</a> > {{ poule.Name }}</h3>
 
 

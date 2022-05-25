@@ -37,8 +37,8 @@ class TimeController extends AbstractController
         }
         $entityManager->flush();
         $countMatch = count($meetRepository->findAllCriterias(1,null)) + count($meetRepository->findAllCriterias(2,null));
-        $countMaxBetween = $countMatch / 2.5;
-        $countMaxBetweenSpecial = $countMatch / 3.5;
+        $countMaxBetween = $countMatch / (int)($paramRepository->findOneBy(["Name"=>"ratio_echiquier"])->getValue() ?? 2.5);
+        $countMaxBetweenSpecial = $countMatch / (int)($paramRepository->findOneBy(["Name"=>"ratio_special"])->getValue() ?? 3.5);
 
         $timeZone = new DateTimeZone('Europe/Paris');
 

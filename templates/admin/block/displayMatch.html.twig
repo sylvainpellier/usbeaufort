@@ -32,19 +32,19 @@
             {% elseif meet.Name %}{{ meet.Name }}{% endif %}</td>
 
 
-        <td>{% if meet.phase.type.format == "demifinalesfinales" %}{% if meet.teamB  and meet.teamA %}
+        {% if meet.phase.type.format == "demifinalesfinales" %}  <td>{% if meet.teamB  and meet.teamA %}
             {% if editMode %}
               <input type="text" meet="{{ meet.id }}" class="match_input  p-0" name="penaltyA" value="{{ meet.penaltyA }}" /> -  <input type="text" meet="{{ meet.id }}" class="match_input  p-0" name="penaltyB" value="{{ meet.penaltyB }}" />
             {% else %}
                 {{ meet.penaltyA }} - {{ meet.penaltyB }}
             {% endif %}
-            {% endif %}{% endif %}</td>
+            {% endif %}</td>{% endif %}
 
 
 
-        <td>{% if editMode and meet.phase.type.format != "normal" %}{% if meet.teamB  and meet.teamA %}<select {% if meet.TeamForfait == meet.teamA %} checked {% endif %} meet="{{ meet.id }}" name="forfait" meet="{{ meet.id }}"><option></option><option value="meet.TeamA.id">{{ meet.TeamA.Name }}</option><option value="meet.TeamB.id">{{ meet.TeamB.Name }}</option></select>{% endif %}{% endif %}
+        {% if meet.phase.type.format == "demifinalesfinales" %}<td>{% if meet.teamB  and meet.teamA %}<select {% if meet.TeamForfait == meet.teamA %} checked {% endif %} meet="{{ meet.id }}" name="forfait" meet="{{ meet.id }}"><option></option><option value="meet.TeamA.id">{{ meet.TeamA.Name }}</option><option value="meet.TeamB.id">{{ meet.TeamB.Name }}</option></select>{% endif %}
         {% if not editMode and meet.TeamForfait %}{{ meet.TeamForfait.Name }}{% endif %}
-        </td>
+        </td>{% endif %}
 
 
         <td {% if editMode %}rowspan="1"{% endif %}>{% if is_granted("ROLE_ADMIN") and editMode %}
@@ -83,7 +83,8 @@
                 {{ meet.arbitre }}
             {% endif %}
         </small></td>
-    <td>{% if editMode and meet.phase.type.format != "normal" %}Pas de forfait : <input meet="{{ meet.id }}" name="forfait" type="radio"  value="">{% endif %}</td>
+    {% if removeTab is not defined %}<td>{% if editMode and meet.phase.type.format != "normal" %}Pas de forfait : <input meet="{{ meet.id }}" name="forfait" type="radio"  value="">{% endif %}</td>
+    {% endif %}
     <td>
         {% if editMode %}
         <input type="submit" name="submit" value="Enregistrer" class="btn w-100 btn-sm btn-primary" />
