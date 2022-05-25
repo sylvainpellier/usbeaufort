@@ -7,20 +7,17 @@
 
     <div id="container">
 
-        <p>//affichage de l'équipe (ou des équipes si égalité) qui a marqué le plus de buts !fait calcul</p>
+        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="plusBut"><tr><th>Equipe qui a marqué le plus de but :</th></tr></table></div>
 
-        <p>//affichage de l'équipe qui a encaissé le moins de but !fait calcul</p>
+        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="moinBut"><tr><th>Equipe qui a encaissé le moin de but :</th></tr></table></div>
 
-        <p>//affichage de l'équipe qui a le plus de victoire !fait calcul</p>
+        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="PlusVictoire"><tr><th>Equipe qui a le plus de victoire :</th></tr></table></div>
 
-        <p>//affichage de l'équipe qui a fait le plus grand nombre de match sans prendre de but</p>
+        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="PlusSeriesSansBut"><tr><th>Equipe qui a le plus grand nombre de match sans prendre de but :</th></tr></table></div>
 
-        <div id="plusBut"></div>
-        <div id="moinBut"></div>
-        <div id="PlusVictoire"></div>
-        <div id="PlusSeriesSansBut"></div>
-
-
+    <style>
+        .table > :not(:first-child) { border:0px!important; }
+    </style>
     </div>
 
 {% endblock %}
@@ -35,19 +32,26 @@
             //console.log(resultatJson);
 
             var data = resultatJson.data;
-            //console.log(data);
+            console.log(data);
             var equipe = data[0].TeamA.Name
             var victoire = 0;
             var ButContre = 0;
+            var SeriesSansBut = 0;
+        
             if(!data[0].ScoreA && !data[0].ScoreB){
                 var totalBut = 0;
                 ButContre = 0;
+                SeriesSansBut =0;
             }else{
                 var totalBut = data[0].ScoreA;
                 if(data[0].ScoreA > data[0].ScoreB){
                     //console.log("victoire +1 debut");
                     victoire = victoire + 1;
                 };
+
+                if(data[0].ScoreB === 0){
+                    SeriesSansBut = 1;
+                }
                 ButContre = data[0].ScoreB;
             };
 
@@ -56,11 +60,12 @@
             var TotalVictoire = [];
             var equipeName = [];
             var ButPris = [];
+            var Serie = [];
+            var equipeSerie = [];
             //console.log("init but "+ but);
 
             //boucle qui additione les but dans un tableau.
-            for(a=1; a<=data.length-1; a++){
-                //console.log(equipe + a);
+            for(a=0; a<=data.length-1; a++){
 
                 if(data[a].TeamA || data[a].TeamB){
                     if(equipe === data[a].TeamA.Name){
@@ -71,15 +76,29 @@
                             victoire = victoire;
                             //console.log("pas  de changement de victoire si name = a");
                             //console.log("total but = "+totalBut);
+
+                            SeriesSansBut = SeriesSansBut+0;
+                            console.log("pas de score ");
                             
                         }else{
                             totalBut = totalBut + data[a].ScoreA;
                             ButContre = ButContre + data[a].ScoreB;
                             //console.log(ButContre);
                             //console.log("total but = "+totalBut);
+
                             if(data[a].ScoreA > data[a].ScoreB){
                                 victoire = victoire+1;
                                 //console.log("changement de victoire en +1 si A>B "+victoire);
+                            }
+
+                            if(data[a].ScoreB === 0){
+                                SeriesSansBut = SeriesSansBut+1;
+                                console.log(SeriesSansBut);
+                            }else{
+                                Serie.push(SeriesSansBut);
+                                equipeSerie.push(equipe);
+                                console.log(Serie);
+                                console.log(equipeSerie);
                             }
                         };
 
@@ -93,6 +112,9 @@
                             victoire = victoire;
                             //console.log("pas de changement de victoire si name = b");
 
+                            SeriesSansBut = SeriesSansBut +0;
+                            console.log("pas de score ");
+
                         }else{
                             totalBut = totalBut + data[a].ScoreB;
                             ButContre = ButContre + data[a].ScoreA  
@@ -104,6 +126,15 @@
                                 //console.log(victoire);
                                 //console.log("changement de victoire en +1 si B>A "+victoire);
                             };
+
+                            if(data[a].ScoreA === 0){
+                                SeriesSansBut = SeriesSansBut +1;
+                            }else{
+                                Serie.push(SeriesSansBut);
+                                equipeSerie.push(equipe);
+                                console.log(Serie);
+                                console.log(equipeSerie);
+                            }
                         };
 
                     }else{
@@ -113,6 +144,15 @@
                         ButPris.push(ButContre);
                         //console.log(ButPris);
                         ButContre = 0;
+
+                        Serie.push(SeriesSansBut);
+                        if(data[a].ScoreB === 0){
+                            SeriesSansBut = 1;
+                        }else{
+                            SeriesSansBut =0;
+                        }
+
+                        equipeSerie.push(equipe);
 
                         equipeName.push(equipe);
                         //console.log(equipeName);
@@ -140,25 +180,8 @@
             //console.log(but);
             //console.log(equipeName);
 
-            var min = ButPris[0];
-            var EquipeMinBut = equipeName[0];
-
-            //trouve le min de  ButPris
-            for(a=0; a<=ButPris.length-1; a++){
-                if(ButPris[a] < min){
-                    min = ButPris[a];
-                    EquipeMinBut = equipeName[a];
-                }
-            };
-
-            let h2 = document.createElement("h2");
-            document.getElementById("container").appendChild(h2);
-
-            let h3 = document.createElement("h3");
-            h3.innerText= EquipeMinBut + " " + min;
-            h2.appendChild(h3);
-
             var equipeMax= [];
+            var equipeMin= [];
 
             function TrouveMax(equipeMax, tableauResultat, tableauEquipe){
                 equipeMax = [[tableauResultat[0],tableauEquipe[0]]];
@@ -168,7 +191,7 @@
                     if(equipeMax[0][0] < tableauResultat[a]){
                         equipeMax.shift();
                         equipeMax.push([tableauResultat[a], tableauEquipe[a]]);
-                        console.log(equipeMax);
+                        //console.log(equipeMax);
                     };
                 };
 
@@ -178,38 +201,68 @@
 
             };
 
+            function TrouveMin(equipeMin, tableauResultat, tableauEquipe){
+                equipeMin = [[tableauResultat[0],tableauEquipe[0]]];
+                //console.log(equipeMin[0][0]);
+
+                for(a=0; a<=tableauResultat.length-1; a++){
+                    if(equipeMin[0][0] > tableauResultat[a]){
+                        equipeMin.shift();
+                        equipeMin.push([tableauResultat[a], tableauEquipe[a]]);
+                        //console.log(equipeMin);
+                    };
+                };
+
+                return equipeMin;
+
+            };
+
             function egalite(equipeMax, tableauResultat, tableauEquipe){
                 for(a=0; a<=tableauResultat.length-1; a++){
                     if(equipeMax[0][0] === tableauResultat[a] && equipeMax[0][1] != tableauEquipe[a]){
                         equipeMax.push([tableauResultat[a], tableauEquipe[a]]);
                     }else{
-                        console.log("pas d'egalite");
+                        //console.log("pas d'egalite");
                     }
                 };
+                return equipeMax;
             };
 
             function affichage(equipeMax, id){
-                let h2 = document.createElement("h2");
-                document.getElementById(id).appendChild(h2);
-
+                let x= 0;
                 for(a=0; a<= equipeMax.length-1; a++){
-                    let h3 = document.createElement("h3");
-                    h3.innerText = equipeMax[a][a];
-                    h2.appendChild(h3);
+                   let tr = document.createElement("tr");
+                   if(id === "plusBut" || id === "moinBut"){
+                       tr.innerText = equipeMax[a][x+1] + " " + equipeMax[a][x] + " but";
+                   }else if(id === "PlusVictoire"){
+                       tr.innerText = equipeMax[a][x+1] + " " + equipeMax[a][x] + " victoires";
+                   }else if(id === "PlusSeriesSansBut"){
+                       tr.innerText = equipeMax[a][x+1] + " " + equipeMax[a][x] + " matchs sans prendre de but";
+                   }
+                   document.getElementById(id).appendChild(tr);
                 };
             };
 
+            //trouve et affiche l'equipe avec le plus de but
             equipeMax = TrouveMax(equipeMax, but, equipeName);
             equipeMax = egalite(equipeMax, but, equipeName);
-
-            equipeMax.push([1,"test"]);
-            console.log(equipeMax);
-
             affichage(equipeMax, "plusBut");
 
+
+            //trouve et affiche l'equipe avec le plus de victoire;
             equipeMax = TrouveMax(equipeMax, TotalVictoire, equipeName);
             equipeMax = egalite(equipeMax, TotalVictoire, equipeName);
             affichage(equipeMax, "PlusVictoire");
+
+            //trouve et affiche l'equipe qui a encaisse le moin de but
+            equipeMin = TrouveMin(equipeMin, ButPris, equipeName);
+            equipemin = egalite(equipeMin, ButPris, equipeName);
+            affichage(equipeMin, "moinBut");
+
+            //trouve et affiche l'equipe qui a la plus longue series de match sans but.
+            equipeMax = TrouveMax(equipeMax ,Serie, equipeSerie);
+            equipeMax = egalite(equipeMax ,Serie, equipeSerie);
+            affichage(equipeMax, "PlusSeriesSansBut");
 
         });
 
