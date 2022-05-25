@@ -117,6 +117,11 @@ class TimeController extends AbstractController
                         $pauseMidiDebut = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:30:00");
                         $pauseMidiFin = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 13:00:00");
 
+                        $pauseMidiDebutU13 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:30:00");
+                        $pauseMidiFinU13 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 13:40:00");
+
+
+
 
 
                         if(
@@ -131,7 +136,17 @@ class TimeController extends AbstractController
                         (
                             $time->getTimestamp() <= $pauseMidiDebut->getTimestamp() || $time->getTimestamp() >= $pauseMidiFin->getTimestamp()
                         )
-                        && isset($matchs[0]) )
+
+                        && isset($matchs[0])
+                        &&
+                        (
+                        $matchs[0]->getPhase()->getCategory()->getId() != 2
+                            || (
+                            $matchs[0]->getPhase()->getCategory()->getId() == 2 &&  ( $time->getTimestamp() <= $pauseMidiDebutU13->getTimestamp() || $time->getTimestamp() >= $pauseMidiFinU13->getTimestamp() )
+
+                        )
+                        )
+                        )
 
                         {
                                     $lastTour = $matchs[0]->getTour();
