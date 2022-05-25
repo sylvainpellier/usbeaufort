@@ -92,6 +92,11 @@ class Phase
      */
     private $rangTroisiemes;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $ordrePrincipal;
+
     public function __construct()
     {
         $this->meets = new ArrayCollection();
@@ -387,6 +392,18 @@ class Phase
                 $rangTroisieme->setPhase(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOrdrePrincipal(): ?int
+    {
+        return $this->ordrePrincipal;
+    }
+
+    public function setOrdrePrincipal(?int $ordrePrincipal): self
+    {
+        $this->ordrePrincipal = $ordrePrincipal;
 
         return $this;
     }

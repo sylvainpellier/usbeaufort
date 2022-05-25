@@ -56,6 +56,7 @@ class MeetRepository extends ServiceEntityRepository
             ->andWhere('phase.param != :param ')
             ->setParameter("ordre",$ordre)
             ->setParameter("param","exception")
+            ->addOrderBy('phase.ordrePrincipal','DESC')
             ->orderBy('t.Tour', 'ASC')
             ->addOrderBy('t.TeamA','DESC')
             ->getQuery()

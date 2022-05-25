@@ -69,6 +69,7 @@ class TimeController extends AbstractController
         $matchEntreEchiqiuer = 0;
         $matchEntreSpecial = 0;
         $matchClassement = false;
+        $coef = 1;
 
             $ordres = [1, 2, 3];
             foreach ($ordres as $ordre) {
@@ -82,7 +83,7 @@ class TimeController extends AbstractController
 
                     }
 
-                    if($matchEntreSpecial === 0 || $matchEntreSpecial > $countMaxBetweenSpecial )
+                    if($matchEntreSpecial === 0 || $matchEntreSpecial > ($countMaxBetweenSpecial * $coef) )
                     {
                         foreach ($phasesSpecial as $pe) {
 
@@ -90,6 +91,7 @@ class TimeController extends AbstractController
                             $tourSpeciaux[$pe->getId()]++;
                             $matchs = array_merge($matchs_special, $matchs);
                             $matchEntreSpecial = 1;
+                            $coef = ($coef === 1) ? 2 : 1;
                         }
 
 
