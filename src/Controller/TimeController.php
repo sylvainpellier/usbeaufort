@@ -68,12 +68,19 @@ class TimeController extends AbstractController
         $lastPhase = false;
         $matchEntreEchiqiuer = 0;
         $matchEntreSpecial = 0;
+        $matchClassement = false;
 
             $ordres = [1, 2, 3];
             foreach ($ordres as $ordre) {
                 $matchs = $meetRepository->findBySpecial($ordre);
 
                 while (count($matchs) > 0) {
+
+                    if(isset($matchs[0]) && $matchs[0]->getName())
+                    {
+                        $matchClassement = true;
+
+                    }
 
                     if($matchEntreSpecial === 0 || $matchEntreSpecial > $countMaxBetweenSpecial )
                     {
@@ -109,8 +116,13 @@ class TimeController extends AbstractController
 
 
                         if(
-                            ( $field->getId() != 5 && $field->getId() != 6 ) ||
-                            ( ($field->getId() == 5 || $field->getId() == 6 ) && (  $time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()  )  ))
+                            ( $field->getId() != 5 && $field->getId() != 6  && $field->getId() != 7 )
+                            ||
+                            ( ($field->getId() == 5 || $field->getId() == 6 ) && (  $time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()  )  )
+                            ||
+                            ( ($field->getId() == 7 ) && (  !$matchClassement  )  )
+
+                        )
                                 if (isset($matchs[0])) {
                                     $lastTour = $matchs[0]->getTour();
                                     $lastPhase = $matchs[0]->getPhase();
