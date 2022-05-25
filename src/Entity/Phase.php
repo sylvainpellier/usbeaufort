@@ -26,7 +26,7 @@ class Phase
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=20)
+     * @ORM\Column(type="string", length=40)
      * @Groups({"matchs"})
      */
     private $Name;
