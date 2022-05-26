@@ -40,7 +40,7 @@ class Team
     private $Category;
 
     /**
-     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamA",cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamA",cascade={"persist","remove"})
      * @Groups({"team"})
      * @ORM\OrderBy({"time" = "ASC"})
      */
@@ -50,7 +50,7 @@ class Team
     private $meetsA;
 
     /**
-     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamB",cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Meet::class, mappedBy="TeamB",cascade={"persist","remove"})
      * @Groups({"team"})
      * @ORM\OrderBy({"time" = "ASC"})
      */
