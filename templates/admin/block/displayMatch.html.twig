@@ -19,7 +19,7 @@
         <td>{% if meet.teamB  and meet.teamA %}
 
                 {% if editMode %}
-           <input type="text" meet="{{ meet.id }}" class="match_input p-0"  name="scoreA" value="{{ meet.scoreA }}" /> - <input type="text" meet="{{ meet.id }}" class="match_input p-0"  name="scoreB" value="{{ meet.scoreB }}" />
+           <input type="text"  meet="{{ meet.id }}" class="match_input p-0"  name="scoreA" value="{{ meet.scoreA }}" /> - <input type="text" meet="{{ meet.id }}" class="match_input p-0"  name="scoreB" value="{{ meet.scoreB }}" />
                     {% else %}
                     {{ meet.scoreA }} - {{ meet.scoreB }}
 

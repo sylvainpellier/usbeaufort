@@ -39,6 +39,49 @@ class MeetController extends OverrideApiController
         $meet->setScoreB($request->get("scoreB") > 0 ? (int)$request->get("scoreB") : null);
         $meet->setPenaltyA($request->get("penaltyA") > 0 ? (int)$request->get("penaltyA") : null);
         $meet->setPenaltyB($request->get("penaltyB") > 0 ? (int)$request->get("penaltyB") : null);
+
+        if($meet->getFormat() === "demi")
+        {
+            $final_perdant = $meetRepository->findOneBy(["format"=>"final_perdant","Poule"=>$meet->getPoule()]);
+            $final_gagnant = $meetRepository->findOneBy(["format"=>"final_gagnant","Poule"=>$meet->getPoule()]);
+
+            $type = ($meet->getName() === "Demi finale A ") ? "a" : "b";
+
+            if( (int)$request->get("scoreA") > (int)$request->get("scoreB") )
+            {
+                $winner = $meet->getTeamA();
+                $looser = $meet->getTeamB();
+            } else if( (int)$request->get("scoreA") < (int)$request->get("scoreB") )
+            {
+                $winner = $meet->getTeamB();
+                $looser = $meet->getTeamA();
+            } else if( (int)$request->get("penaltyA") > (int)$request->get("penaltyB") )
+            {
+                $winner = $meet->getTeamA();
+                $looser = $meet->getTeamB();
+            } else if( (int)$request->get("penaltyA") < (int)$request->get("penaltyB") )
+            {
+                $winner = $meet->getTeamB();
+                $looser = $meet->getTeamA();
+            }
+
+            if($type === "a")
+            {
+                $final_gagnant->setTeamA($winner);
+                $final_perdant->setTeamA($looser);
+            } else {
+                $final_gagnant->setTeamB($winner);
+                $final_perdant->setTeamB($looser);
+            }
+
+            $entityManager->persist($final_perdant);
+            $entityManager->persist($final_gagnant);
+
+
+
+        }
+
+
         $meet->setArbitre($request->get("arbitre") );
         if( $request->get("field")) {
 
