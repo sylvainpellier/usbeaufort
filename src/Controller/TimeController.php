@@ -27,7 +27,7 @@ class TimeController extends AbstractController
     /**
      * @Route("/generate/time", name="app_generate_time")
      */
-    public function index(MeetRepository $meetRepository, ParamRepository $paramRepository, PhaseRepository $phaseRepository, FieldRepository $fieldRepository, EntityManagerInterface $entityManager): Response
+    public function index(MeetRepository $meetRepository, CategoryRepository $categoryRepository, ParamRepository $paramRepository, PhaseRepository $phaseRepository, FieldRepository $fieldRepository, EntityManagerInterface $entityManager): Response
     {
         //supprime les anciens horaires
         foreach($meetRepository->findAll() as $match)
@@ -73,6 +73,7 @@ class TimeController extends AbstractController
 
             $ordres = [1, 2, 3];
             foreach ($ordres as $ordre) {
+
                 $matchs = $meetRepository->findBySpecial($ordre);
 
                 while (count($matchs) > 0) {
@@ -114,14 +115,6 @@ class TimeController extends AbstractController
 
                         $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
                         $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
-                        $pauseMidiDebut = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:30:00");
-                        $pauseMidiFin = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 13:00:00");
-
-                        $pauseMidiDebutU13 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:30:00");
-                        $pauseMidiFinU13 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 13:40:00");
-
-
-
 
 
                         if(
@@ -132,32 +125,30 @@ class TimeController extends AbstractController
                             ||
                             ( ($field->getId() == 7 ) && (  !$matchClassement  )  )
                         )
-                        &&
-                        (
-                            $time->getTimestamp() <= $pauseMidiDebut->getTimestamp() || $time->getTimestamp() >= $pauseMidiFin->getTimestamp()
-                        )
+                        //&&
+                        //(
+                           // $time->getTimestamp() <= $pauseMidiDebut->getTimestamp() || $time->getTimestamp() >= $pauseMidiFin->getTimestamp()
+                        //)
 
-                        && isset($matchs[0])
-                        &&
-                        (
-                        $matchs[0]->getPhase()->getCategory()->getId() != 2
-                            || (
-                            $matchs[0]->getPhase()->getCategory()->getId() == 2 &&  ( $time->getTimestamp() <= $pauseMidiDebutU13->getTimestamp() || $time->getTimestamp() >= $pauseMidiFinU13->getTimestamp() )
+                        && isset($matchs[0])) {
+                            $pauseDebut = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseDebut() . ":00");
+                            $pauseFin = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseFin() . ":00");
 
-                        )
-                        )
-                        )
-
-                        {
-                                    $lastTour = $matchs[0]->getTour();
-                                    $lastPhase = $matchs[0]->getPhase();
-                                    $matchs[0]->setTime($time->getTimestamp());
-                                    $matchs[0]->setField($field);
-                                    $entityManager->persist($matchs[0]);
-                                    array_splice($matchs, 0, 1);
-                                    $matchEntreEchiqiuer++;
-                                    $matchEntreSpecial++;
-                                }
+                            if ($time->getTimestamp() <= $pauseDebut->getTimestamp() || $time->getTimestamp() >= $pauseFin->getTimestamp()) {
+                                $lastTour = $matchs[0]->getTour();
+                                $lastPhase = $matchs[0]->getPhase();
+                                $matchs[0]->setTime($time->getTimestamp());
+                                $matchs[0]->setField($field);
+                                $entityManager->persist($matchs[0]);
+                                array_splice($matchs, 0, 1);
+                                $matchEntreEchiqiuer++;
+                                $matchEntreSpecial++;
+                            } else {
+                                $matchTmp = $matchs[0];
+                                array_splice($matchs, 0, 1);
+                                $matchs[] = $matchTmp;
+                            }
+                        }
 
                     }
 

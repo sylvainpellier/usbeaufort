@@ -183,6 +183,24 @@ class AdminController extends OverrideController
         ]);
     }
 
+
+    /**
+     * @Route("/admin/categorie/{id}/pause}", name="category_admin_pause")
+     */
+    public function category_admin_pause(string $id,  Request $request,  CategoryRepository $categoryRepository, EntityManagerInterface  $entityManager): Response
+    {
+        $debut = $request->get("debut");
+        $fin = $request->get("fin");
+
+        $categorie = $categoryRepository->find($id);
+        $categorie->setPauseDebut($debut);
+        $categorie->setPauseFin($fin);
+        $entityManager->persist($categorie);
+        $entityManager->flush();
+
+        return $this->redirectToRoute("app_admin_category", ["id"=>$id]);
+    }
+
     /**
      * @Route("/admin/category/{id}", name="app_admin_category")
      */

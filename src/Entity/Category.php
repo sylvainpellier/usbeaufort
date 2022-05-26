@@ -46,6 +46,16 @@ class Category
      */
     private $Phases;
 
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $pauseDebut;
+
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $pauseFin;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
@@ -167,6 +177,30 @@ class Category
                 $phase->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPauseDebut(): ?string
+    {
+        return $this->pauseDebut;
+    }
+
+    public function setPauseDebut(?string $pauseDebut): self
+    {
+        $this->pauseDebut = $pauseDebut;
+
+        return $this;
+    }
+
+    public function getPauseFin(): ?string
+    {
+        return $this->pauseFin;
+    }
+
+    public function setPauseFin(?string $pauseFin): self
+    {
+        $this->pauseFin = $pauseFin;
 
         return $this;
     }

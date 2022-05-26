@@ -7,6 +7,7 @@ use App\Repository\PhaseRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use function json_encode;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -35,6 +36,8 @@ class CategoryController extends OverrideApiController
 
         return $this->render("category_phase.html.twig", ["classement"=>$classement, "category"=>$categoryRepository->find($id), "phase" => $phase]);
     }
+
+
 
 
 

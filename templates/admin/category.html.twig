@@ -50,6 +50,14 @@
         {% endif %}
     </div>
 
+    <hr class="mt-5" />
+    <form action="{{ path('category_admin_pause',{id:category.id}) }}" class="row">
+        <div class="col-3"><h3 class="">Pause du midi</h3></div>
+    <div class="col-3"><input class="input-group-text"  name="debut" placeholder="12:00" value="{{ category.pauseDebut }}" ></div>
+    <div class="col-3"><input class="input-group-text" name="fin" placeholder="13:00" value="{{ category.pauseFin }}" ></div>
+    <div class="col-3"><input type="submit" class="btn btn-primary d-block w-100" value="modifier" ></div>
+    </form>
+
 
 </div>
 {% endblock %}
