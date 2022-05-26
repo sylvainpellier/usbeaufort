@@ -131,10 +131,16 @@ class TimeController extends AbstractController
                         //)
 
                         && isset($matchs[0])) {
-                            $pauseDebut = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseDebut() . ":00");
-                            $pauseFin = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseFin() . ":00");
 
-                            if (!$matchs[0]->getPhase()->getCategory()->getPauseDebut() || ( $matchs[0]->getPhase()->getCategory()->getPauseDebut() && ($time->getTimestamp() <= $pauseDebut->getTimestamp() || $time->getTimestamp() >= $pauseFin->getTimestamp()))) {
+                            $pauseDebut = $pauseFin = false;
+                            if($matchs[0]->getPhase()->getCategory()->getPauseDebut() && $matchs[0]->getPhase()->getCategory()->getPauseFin() )
+                            {
+                                $pauseDebut = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseDebut() . ":00");
+                                $pauseFin = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseFin() . ":00");
+
+                            }
+
+                            if (!$pauseDebut || ( $pauseDebut && ($time->getTimestamp() <= $pauseDebut->getTimestamp() || $time->getTimestamp() >= $pauseFin->getTimestamp()))) {
 
                                 $lastTour = $matchs[0]->getTour();
                                 $lastPhase = $matchs[0]->getPhase();
