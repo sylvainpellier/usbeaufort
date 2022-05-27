@@ -104,9 +104,9 @@ class TeamController extends OverrideApiController
     /**
      * @Route("/teams", name="teams_index")
      */
-    public function public_index(TeamRepository $teamRepository, SerializerInterface $serializer): Response
+    public function public_index(TeamRepository $teamRepository, CategoryRepository $categoryRepository, SerializerInterface $serializer): Response
     {
-        return $this->render("equipes/index.html.twig");
+        return $this->render("equipes/index.html.twig",["categories"=>$categoryRepository->findAll()]);
 
     }
 

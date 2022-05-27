@@ -8,7 +8,13 @@
 <div id="container"></div>
 
     {% for category in categories %}
-        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="{{ category.Name }}"><tr><th>{{ category.Name }}</th></tr></table></div>
+        <div class="col-12 col-md-4"><table class="table table-bordered table-striped  text-center"  id="{{ category.Name }}"><tr><th>{{ category.Name }}</th></tr>
+
+                {% for team in category.teams %}
+            <tr class="border-0"><td class="border-0"><a class="btn btn-primary w-100" href="{{ path("teams_show",{id:team.id}) }}">{{ team }}</a></td></tr>
+                    {% endfor %}
+
+            </table></div>
     {% endfor %}
 
 
@@ -16,89 +22,6 @@
     <style>
         .table > :not(:first-child) { border:0px!important; }
     </style>
-
-{% endblock %}
-
-{% block javascript %}
-
-{{ parent() }}
-
-    var url = url_base+"/api/teams";
-
-    var DivU11 = document.getElementById("U11");
-    var DivU13 = document.getElementById("U13");
-    var DivU13F = document.getElementById("U13F")
-
-    var load = document.createElement("h3");
-    load.setAttribute("id", "load");
-    load.innerText= "Chargement en cours";
-    document.getElementById("U13").appendChild(load);
-    
-
-    fetch(url).then(function(resultas){
-        document.getElementById("load").style.display= "none";
-        console.log(resultas);
-        resultas.json().then(function(resultasJson){
-            console.log(resultasJson);
-
-            equipe = resultasJson.data;
-            console.log(equipe);
-
-            equipe.forEach(function(liste){
-                if(liste.Category.Name === "U11"){
-                    let idTeam = liste.id;
-
-                    let tr = document.createElement("tr");
-                    DivU11.appendChild(tr);
-
-                    let a = document.createElement("a");
-                    a.innerText=liste.Name;
-                    a.setAttribute("href", "/equipe/"+idTeam);
-                    a.classList.add("btn","btn-sm","btn-primary","w-100","mt-2");
-                    tr.appendChild(a);
-                }
-
-                if(liste.Category.Name === "U13"){
-                    let idTeam = liste.id;
-
-                    let tr = document.createElement("tr");
-                    DivU13.appendChild(tr);
-
-                    let a = document.createElement("a");
-                    a.classList.add("btn");
-                    a.classList.add("btn-sm");
-                    a.classList.add("btn-primary");
-                    a.classList.add("w-100");
-                    a.classList.add("mt-2");
-                    a.innerText=liste.Name;
-                    a.setAttribute("href", "/equipe/"+idTeam);
-                    tr.appendChild(a);
-                }
-
-                if(liste.Category.Name === "U13F"){
-                    let idTeam = liste.id;
-
-                    let tr = document.createElement("tr");
-                    DivU13F.appendChild(tr);
-
-                    let a = document.createElement("a");
-                    a.innerText=liste.Name;
-                    a.classList.add("btn");
-                    a.classList.add("btn-sm");
-                    a.classList.add("btn-primary");
-                    a.classList.add("w-100");
-                    a.classList.add("mt-2");
-                    a.setAttribute("href", "/equipe/"+idTeam);
-                    tr.appendChild(a);
-                }
-
-            });
-        });
-    });
-
-setInterval(function(){
-    location.reload();
-},30000);
 
 {% endblock %}
 
