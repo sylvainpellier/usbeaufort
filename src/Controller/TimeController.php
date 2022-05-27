@@ -156,7 +156,6 @@ class TimeController extends AbstractController
                         $match->setField($field);
                         $entityManager->persist($match);
                         $entityManager->flush();
-                        array_splice($matchs, 0, 1);
                         $fieldToPlace++;
 
                         if ($fieldToPlace >= $countField) {
