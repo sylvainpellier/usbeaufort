@@ -76,6 +76,9 @@ class TimeController extends AbstractController
         $minTerrain56 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
         $maxTerrain56 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 14:15:00");
 
+        $minMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 11:30:00");
+        $maxMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:30:00");
+
         $times = [];
 
         //phase 1 : Phase 1 - U13
@@ -123,10 +126,6 @@ class TimeController extends AbstractController
         $times[] = ["tour"=>3,"phase"=>"7"];
         $times[] = ["tour"=>3,"phase"=>"3"];
 
-        $pausePrise = false;
-
-        $minPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 11:30:00");
-        $maxPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 13:30:00");
 
 
         foreach($times as $timeToFind) {
@@ -149,7 +148,7 @@ class TimeController extends AbstractController
                     ||
                     (($field->getId() == 5 || $field->getId() == 6) && ($time->getTimestamp() <= $minTerrain56->getTimestamp() || $time->getTimestamp() >= $maxTerrain56->getTimestamp()))
                     ||
-                    (($field->getId() == 7 || $field->getId() == 3 ) && (!$matchClassement)  )
+                    (($field->getId() == 7 || $field->getId() == 3 ) && (!$matchClassement)  && ( $time->getTimestamp() <= $minMidi->getTimestamp() || $time->getTimestamp() >= $maxMidi->getTimestamp())  )
 
                     //10 enlever à la fin
                     //temps de pause +1 minutes
@@ -187,6 +186,7 @@ class TimeController extends AbstractController
             }
             if(isset($timeToFind["pauseAfert"]))
             {
+
                 $time->add((DateInterval::createFromDateString("22 minutes")));
             }
 
