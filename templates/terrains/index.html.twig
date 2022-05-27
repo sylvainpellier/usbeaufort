@@ -4,7 +4,23 @@
 
 {% block body %}
 
+    <div class="row">
+
+        <h3 class="pb-2 text-center">Liste des terrains</h3>
+        <hr class="mt-2" >
+
+        <div class="col-12 col-md-4 mr-2"><a  href="{{ path("terrain_show12") }}" class="btn btn-primary w-100 ">Terrain 1+2</a>
+        </div>
+        {% for field in fields %}
+            <div class="col-12 col-md-4 mb-3"><a  href="{{ path("terrain_show",{id:field.id}) }}" class="btn btn-primary w-100 ">{{ field }}</a>
+            </div>
+        {% endfor %}
+    </div>
+
     <div id="container" class="col-12 text-center">
+
+
+        <hr class="mt-2">
 
 
         <figure id="terrain">
@@ -14,63 +30,8 @@
 
             </svg>
         </figure>
-        <hr class="mt-2">
-        <h3 class="pb-2 text-center">Liste des terrains</h3>
-        <hr class="mt-2" >
+
          
     </div>
 
-{% endblock %}
-
-{% block javascript %}
-{{ parent() }}
-
-var url =url_base+"/api/fields";
-
-var load = document.createElement("h3");
-load.setAttribute("id", "load");
-load.innerText= "Chargement en cours";
-document.getElementById("container").appendChild(load);
-
-fetch(url).then(function(resultas){
-    console.log(resultas);
-    document.getElementById("load").style.display= "none";
-
-    resultas.json().then(function(object){
-        //console.log(object);
-        data = object.data
-        console.log(data)
-        var FinLien= 1;
-        let div = document.createElement("div");
-        div.classList.add("row");
-
-        div.innerHTML = '<div class="ccol-12 col-md-4 mb-2"><a class="btn btn-primary d-block w-100" href="/terrain/1_2">Terrain 1 + 2</a></div>';
-
-        document.getElementById("container").appendChild(div);
-
-        data.forEach(function(affiche){
-
-           let divInside = document.createElement("div");
-           div.appendChild(divInside);
-           divInside.classList.add("col-4","mb-2");
-
-            let a = document.createElement("a");
-            a.innerText= affiche.Name;
-
-            a.classList.add("btn");
-            a.classList.add("btn-primary","d-block","w-100");
-
-
-            a.setAttribute("href", "/terrain/"+FinLien);
-            divInside.appendChild(a);
-            FinLien++;
-
-        });
-
-    });
-});
-
-setInterval(() => {
-    location.reload();
-}, 30000);
 {% endblock %}

@@ -112,9 +112,10 @@ class FieldController extends OverrideController
     /**
      * @Route("/terrains", name="terrains_index")
      */
-    public function terrains_index(): Response
+    public function terrains_index(FieldRepository $fieldRepository): Response
     {
-        return $this->render("terrains/index.html.twig");
+
+        return $this->render("terrains/index.html.twig",["fields"=>$fieldRepository->findAll()]);
 
     }
 
