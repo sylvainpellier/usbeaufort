@@ -70,129 +70,104 @@ class TimeController extends AbstractController
         $matchEntreSpecial = 0;
         $matchClassement = false;
         $coef = 1;
+        $countField = count($fields);
+        $fieldToPlace = 1;
 
-            $ordres = [1, 2, 3];
-            foreach ($ordres as $ordre) {
+        $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
+        $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
 
-                $matchs = $meetRepository->findBySpecial($ordre);
+        $times = [];
+        $times[] = ["tour"=>1,"category"=>3,"phase"=>"8"];
 
-                while (count($matchs) > 0) {
+        $times[] = ["tour"=>1,"category"=>1,"phase"=>"1"];
+        $times[] = ["tour"=>1,"category"=>2,"phase"=>"5"];
 
-                    if(isset($matchs[0]) && $matchs[0]->getName())
-                    {
-                        $matchClassement = true;
+        $times[] = ["tour"=>2,"category"=>3,"phase"=>"8"];
 
-                    }
+        $times[] = ["tour"=>2,"category"=>1,"phase"=>"1"];
+        $times[] = ["tour"=>2,"category"=>2,"phase"=>"5"];
 
-                    if($matchEntreSpecial === 0 || $matchEntreSpecial > ($countMaxBetweenSpecial * $coef) )
-                    {
-                        foreach ($phasesSpecial as $pe) {
+        $times[] = ["tour"=>3,"category"=>3,"phase"=>"8"];
 
-                            $matchs_special = $meetRepository->findBy(["Phase" => $pe->getId(), "Tour" => $tourSpeciaux[$pe->getId()]]);
-                            $tourSpeciaux[$pe->getId()]++;
-                            $matchs = array_merge($matchs_special, $matchs);
-                            $matchEntreSpecial = 1;
-                            $coef = ($coef === 1) ? 2 : 1;
-                        }
+        $times[] = ["tour"=>3,"category"=>1,"phase"=>"1"];
+        $times[] = ["tour"=>3,"category"=>2,"phase"=>"5"];
 
+        $times[] = ["tour"=>4,"category"=>3,"phase"=>"8"];
 
-                    }
+        $times[] = ["tour"=>1,"category"=>1,"phase"=>"2"];
+        $times[] = ["tour"=>1,"category"=>2,"phase"=>"6"];
 
-                    if($matchEntreEchiqiuer === 0 || $matchEntreEchiqiuer > $countMaxBetween )
-                    {
-                            foreach ($phasesEchiquier as $pe) {
+        $times[] = ["tour"=>5,"category"=>3,"phase"=>"8"];
 
-                                $matchs_echiquier = $meetRepository->findBy(["Phase" => $pe->getId(), "Tour" => $tourEchiquier[$pe->getId()]]);
-                                $tourEchiquier[$pe->getId()]++;
-                                $matchs = array_merge($matchs_echiquier, $matchs);
-                                $matchEntreEchiqiuer = 1;
-                            }
+        $times[] = ["tour"=>2,"category"=>1,"phase"=>"2"];
+        $times[] = ["tour"=>2,"category"=>2,"phase"=>"6"];
 
+        $times[] = ["tour"=>6,"category"=>3,"phase"=>"8"];
 
-                    }
-                    shuffle($fields);
-                    foreach ($fields as $field) {
+        $times[] = ["tour"=>3,"category"=>1,"phase"=>"2"];
+        $times[] = ["tour"=>3,"category"=>2,"phase"=>"6"];
 
-                        $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
-                        $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
+        $times[] = ["tour"=>1,"category"=>1,"phase"=>"3"];
+        $times[] = ["tour"=>1,"category"=>2,"phase"=>"7"];
 
-                        $lastMatchA = $lastMatchB = false;
+        $times[] = ["tour"=>2,"category"=>1,"phase"=>"3"];
+        $times[] = ["tour"=>2,"category"=>2,"phase"=>"7"];
 
-                        if(
-                        (
-                            ( $field->getId() != 5 && $field->getId() != 6  && $field->getId() != 7 )
-                            ||
-                            ( ($field->getId() == 5 || $field->getId() == 6 ) && (  $time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()  )  )
-                            ||
-                            ( ($field->getId() == 7 ) && (  !$matchClassement  )  )
-                        )
-                        //&&
-                        //(
-                           // $time->getTimestamp() <= $pauseMidiDebut->getTimestamp() || $time->getTimestamp() >= $pauseMidiFin->getTimestamp()
-                        //)
+        $times[] = ["tour"=>3,"category"=>1,"phase"=>"3"];
+        $times[] = ["tour"=>3,"category"=>2,"phase"=>"7"];
 
-                        && isset($matchs[0])) {
+        foreach($times as $timeToFind) {
 
-                            $pauseDebut = $pauseFin = false;
-                            if($matchs[0]->getPhase()->getCategory()->getPauseDebut() && $matchs[0]->getPhase()->getCategory()->getPauseFin() )
-                            {
-                                $pauseDebut = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseDebut() . ":00");
-                                $pauseFin = new DateTime($paramRepository->findOneBy(["Name" => "date_debut"])->getValue() . " " . $matchs[0]->getPhase()->getCategory()->getPauseFin() . ":00");
+            $matchs = $meetRepository->findBy(["Phase"=>$timeToFind["phase"],"Tour"=>$timeToFind["tour"]]);
 
-                            }
-
-                            if($matchs[0]->getTeamA())
-                            {
-                                $lastMatchA = $meetRepository->findLastMeetByTeam($matchs[0]->getTeamA());
-                            }
-
-                            if($matchs[0]->getTeamB())
-                            {
-                                $lastMatchB = $meetRepository->findLastMeetByTeam($matchs[0]->getTeamB());
-                            }
-
-
-                            if (
-                                ( !$pauseDebut || ( $pauseDebut && ($time->getTimestamp() <= $pauseDebut->getTimestamp() || $time->getTimestamp() >= $pauseFin->getTimestamp()))
-                                )
-                                &&
-                                (
-                                    !$lastMatchA || ($lastMatchA && $lastMatchA->getTime() < $time->getTimestamp() - (30 * 60 ) )
-                                )
-                                &&
-                                (
-                                    !$lastMatchB || ($lastMatchB && $lastMatchB->getTime() < $time->getTimestamp() - (30 * 60 ) )
-                                )
-
-                                ) {
-
-                                $lastTour = $matchs[0]->getTour();
-                                $lastPhase = $matchs[0]->getPhase();
-                                $matchs[0]->setTime($time->getTimestamp());
-                                $matchs[0]->setField($field);
-                                $entityManager->persist($matchs[0]);
-                                array_splice($matchs, 0, 1);
-                                $matchEntreEchiqiuer++;
-                                $matchEntreSpecial++;
-                            } else {
-                                $matchTmp0 = $matchs[0];
-                                $matchTmp1 = $matchs[1];
-
-                                $matchs[0] = $matchTmp1;
-                                $matchs[1] = $matchTmp0;
-                            }
-                        }
-
-                    }
-
-                    $time->add((DateInterval::createFromDateString($entreMatch . " minutes")));
-
+            foreach ($matchs as $match) {
+                if ($match->getName()) {
+                    $matchClassement = true;
 
                 }
-                $entityManager->flush();
+
+                $field = $fields[$fieldToPlace];
+
+                $lastMatchA = $lastMatchB = false;
+
+                while (!
+                (
+                    ($field->getId() != 5 && $field->getId() != 6 && $field->getId() != 7)
+                    ||
+                    (($field->getId() == 5 || $field->getId() == 6) && ($time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()))
+                    ||
+                    (($field->getId() == 7) && (!$matchClassement))
+                )
+
+
+                ) {
+                    $fieldToPlace++;
+                    if ($fieldToPlace >= $countField) { $fieldToPlace = 1; }
+                    $field = $fields[$fieldToPlace];
+
+                }
+
+
+
+                        $match->setTime($time->getTimestamp());
+                        $match->setField($field);
+                        $entityManager->persist($match);
+                        $entityManager->flush();
+                        array_splice($matchs, 0, 1);
+                        $fieldToPlace++;
+
+                        if ($fieldToPlace >= $countField) {
+                            $fieldToPlace = 1;
+                            $time->add((DateInterval::createFromDateString($entreMatch . " minutes")));
+
+                        }
+
+
+
             }
 
 
+        }
 
         return $this->redirectToRoute("teams_index_admin");
     }

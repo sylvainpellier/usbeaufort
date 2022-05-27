@@ -197,6 +197,25 @@ public function findLastMeetByTeam($idTeam)
 
 }
 
+
+    public function findAllFormTime()
+    {
+        $query = $this->createQueryBuilder('m')
+        ->join('m.Phase', 'phase');
+
+        $query->where("m.time IS NULL");
+        $query->orderBy("phase.ordrePrincipal", "ASC");
+
+        $query->addOrderBy("m.Tour", "ASC");
+
+
+        $data =  $query->getQuery()
+            ->getResult();
+
+        return $data;
+
+    }
+
     public function findLastMeetByPosition($idPosition)
     {
         $query = $this->createQueryBuilder('m')
