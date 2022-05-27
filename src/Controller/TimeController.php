@@ -78,10 +78,10 @@ class TimeController extends AbstractController
 
         $times = [];
 
-        $times[] = ["tour"=>1,"category"=>1,"phase"=>"1"];
+        $times[] = ["tour"=>1,"category"=>1,"phase"=>"5"];
         $times[] = ["tour"=>1,"category"=>3,"phase"=>"8"];
 
-        $times[] = ["tour"=>1,"category"=>2,"phase"=>"5"];
+        $times[] = ["tour"=>1,"category"=>2,"phase"=>"1"];
 
         $times[] = ["tour"=>2,"category"=>3,"phase"=>"8"];
 
