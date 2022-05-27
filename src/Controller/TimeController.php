@@ -176,7 +176,7 @@ class TimeController extends AbstractController
 
 
             }
-            if($timeToFind["tour"] == 3 && $timeToFind["phase"] == 2)
+            if($timeToFind["tour"] == 3 && $timeToFind["phase"] == 6)
             {
                 $time->add((DateInterval::createFromDateString("22 minutes")));
             }
