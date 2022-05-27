@@ -74,7 +74,7 @@ class TimeController extends AbstractController
         $fieldToPlace = 1;
 
         $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
-        $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
+        $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 14:15:00");
 
         $times = [];
 
