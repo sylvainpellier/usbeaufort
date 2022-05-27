@@ -73,8 +73,8 @@ class TimeController extends AbstractController
         $countField = count($fields);
         $fieldToPlace = 0;
 
-        $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
-        $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 14:15:00");
+        $minTerrain56 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
+        $maxTerrain56 = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 14:15:00");
 
         $times = [];
 
@@ -114,8 +114,10 @@ class TimeController extends AbstractController
         $times[] = ["tour"=>3,"category"=>2,"phase"=>"7"];
         $times[] = ["tour"=>3,"category"=>1,"phase"=>"3"];
 
-        $minPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:00:00");
-        $maxPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
+        $pausePrise = false;
+
+        $minPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 11:30:00");
+        $maxPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 13:30:00");
 
 
         foreach($times as $timeToFind) {
@@ -134,11 +136,11 @@ class TimeController extends AbstractController
 
                 while (!
                 (
-                    ($field->getId() != 5 && $field->getId() != 6 && $field->getId() != 7 && $field->getId() != 3 && $field->getId() != 10)
+                    ($field->getId() != 5 && $field->getId() != 6 && $field->getId() != 7 && $field->getId() != 3)
                     ||
-                    (($field->getId() == 5 || $field->getId() == 6) && ($time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()))
+                    (($field->getId() == 5 || $field->getId() == 6) && ($time->getTimestamp() <= $minTerrain56->getTimestamp() || $time->getTimestamp() >= $maxTerrain56->getTimestamp()))
                     ||
-                    (($field->getId() == 7 || $field->getId() == 3 || $field->getId() == 10) && (!$matchClassement))
+                    (($field->getId() == 7 || $field->getId() == 3 ) && (!$matchClassement)  )
 
                     //10 enlever à la fin
                     //temps de pause +1 minutes
@@ -168,16 +170,16 @@ class TimeController extends AbstractController
                             $fieldToPlace = 0;
                             $time->add((DateInterval::createFromDateString($entreMatch . " minutes")));
 
-                            if (  $time->getTimestamp() >= $minPauseMidi->getTimestamp() && $time->getTimestamp() <= $maxPauseMidi->getTimestamp()  )
-                            {
-                                $time->add((DateInterval::createFromDateString(  "5 minutes")));
-                            }
+
                         }
 
 
 
             }
-
+            if($timeToFind["tour"] == 3 && $timeToFind["phase"] == 8)
+            {
+                $time->add((DateInterval::createFromDateString("22 minutes")));
+            }
 
         }
 
