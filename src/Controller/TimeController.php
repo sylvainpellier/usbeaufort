@@ -78,41 +78,50 @@ class TimeController extends AbstractController
 
         $times = [];
 
-        $times[] = ["tour"=>1,"category"=>1,"phase"=>"5"]; //12 matchs
-        $times[] = ["tour"=>1,"category"=>2,"phase"=>"1"]; //16 matchs
-        $times[] = ["tour"=>1,"category"=>3,"phase"=>"8"]; //3 matchs
+        //phase 1 : Phase 1 - U13
+        //phase 2 : Phase 2 - U13
+        //phase 3 : Matchs de classement U13
+        //phase 5 : Phase 1 - U11
+        //phase 6 : Phase 2 - U11
+        //phase 7 : Matchs de classement U11
+        //phase 8 : Tournoi - U13F
+
+        $times[] = ["tour"=>1,"phase"=>"5"]; //12 matchs U11
+        $times[] = ["tour"=>1,"phase"=>"1"]; //16 matchs  U13
+        $times[] = ["tour"=>1,"phase"=>"8"]; //3 matchs U13F
 
 
-        $times[] = ["tour"=>2,"category"=>2,"phase"=>"5"];
-        $times[] = ["tour"=>2,"category"=>1,"phase"=>"1"];
-        $times[] = ["tour"=>2,"category"=>3,"phase"=>"8"];
+        $times[] = ["tour"=>2,"phase"=>"5"]; //U11
+        $times[] = ["tour"=>2,"phase"=>"1"]; //U13
+        $times[] = ["tour"=>2,"phase"=>"8"]; //U13F
 
 
-        $times[] = ["tour"=>3,"category"=>2,"phase"=>"5"];
-        $times[] = ["tour"=>3,"category"=>1,"phase"=>"1"];
-        $times[] = ["tour"=>3,"category"=>3,"phase"=>"8"];
+        $times[] = ["tour"=>3,"phase"=>"5"]; //U11
+        $times[] = ["tour"=>3,"phase"=>"1"]; //U13
+        $times[] = ["tour"=>3,"phase"=>"8","pauseAfert"=>true]; //U13F
 
-        $times[] = ["tour"=>1,"category"=>2,"phase"=>"6"];
-        $times[] = ["tour"=>1,"category"=>1,"phase"=>"2"];
+        $times[] = ["tour"=>1,"phase"=>"6"]; //U11
+        $times[] = ["tour"=>1,"phase"=>"2"]; //U13
 
-        $times[] = ["tour"=>2,"category"=>2,"phase"=>"6"];
-        $times[] = ["tour"=>2,"category"=>1,"phase"=>"2"];
-        $times[] = ["tour"=>4,"category"=>3,"phase"=>"8"];
+        $times[] = ["tour"=>2,"phase"=>"6"];
+        $times[] = ["tour"=>2,"phase"=>"2"];
+        $times[] = ["tour"=>4,"phase"=>"8"];
 
 
-        $times[] = ["tour"=>3,"category"=>2,"phase"=>"6"];
-        $times[] = ["tour"=>3,"category"=>1,"phase"=>"2"];
-        $times[] = ["tour"=>5,"category"=>3,"phase"=>"8"];
+        $times[] = ["tour"=>3,"phase"=>"6"];
+        $times[] = ["tour"=>3,"phase"=>"2"];
+        $times[] = ["tour"=>5,"phase"=>"8"];
 
-        $times[] = ["tour"=>1,"category"=>2,"phase"=>"7"];
-        $times[] = ["tour"=>1,"category"=>1,"phase"=>"3"];
-        $times[] = ["tour"=>6,"category"=>3,"phase"=>"8"];
+        //pauseAfert
+        $times[] = ["tour"=>1,"phase"=>"7"];
+        $times[] = ["tour"=>1,"phase"=>"3"];
+        $times[] = ["tour"=>6,"phase"=>"8"];
 
-        $times[] = ["tour"=>2,"category"=>2,"phase"=>"7"];
-        $times[] = ["tour"=>2,"category"=>1,"phase"=>"3"];
+        $times[] = ["tour"=>2,"phase"=>"7"];
+        $times[] = ["tour"=>2,"phase"=>"3"];
 
-        $times[] = ["tour"=>3,"category"=>2,"phase"=>"7"];
-        $times[] = ["tour"=>3,"category"=>1,"phase"=>"3"];
+        $times[] = ["tour"=>3,"phase"=>"7"];
+        $times[] = ["tour"=>3,"phase"=>"3"];
 
         $pausePrise = false;
 
@@ -176,7 +185,7 @@ class TimeController extends AbstractController
 
 
             }
-            if($timeToFind["tour"] == 3 && $timeToFind["phase"] == 6)
+            if(isset($timeToFind["pauseAfert"]))
             {
                 $time->add((DateInterval::createFromDateString("22 minutes")));
             }
