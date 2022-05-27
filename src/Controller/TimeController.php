@@ -78,9 +78,9 @@ class TimeController extends AbstractController
 
         $times = [];
 
-        $times[] = ["tour"=>1,"category"=>1,"phase"=>"5"];
-        $times[] = ["tour"=>1,"category"=>2,"phase"=>"1"];
-        $times[] = ["tour"=>1,"category"=>3,"phase"=>"8"];
+        $times[] = ["tour"=>1,"category"=>1,"phase"=>"5"]; //12 matchs
+        $times[] = ["tour"=>1,"category"=>2,"phase"=>"1"]; //16 matchs
+        $times[] = ["tour"=>1,"category"=>3,"phase"=>"8"]; //3 matchs
 
 
         $times[] = ["tour"=>2,"category"=>2,"phase"=>"5"];
@@ -142,7 +142,10 @@ class TimeController extends AbstractController
 
                 ) {
                     $fieldToPlace++;
-                    if ($fieldToPlace >= $countField) { $fieldToPlace = 1; }
+                    if ($fieldToPlace >= $countField) {
+                        $fieldToPlace = 1;
+                        $time->add((DateInterval::createFromDateString($entreMatch . " minutes")));
+                    }
                     $field = $fields[$fieldToPlace];
 
                 }
