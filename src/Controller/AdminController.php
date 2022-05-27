@@ -510,12 +510,13 @@ function findTeamByRang($teams,$rang)
 
         foreach($tours as $key => &$tour)
         {
+            $finded = false;
             if(count($tour) === 0)
             {
                 return $key;
             } else {
 
-                $finded = false;
+
                 foreach ($tour as $matchDansTour) {
 
 
@@ -1101,16 +1102,24 @@ function findTeamByRang($teams,$rang)
                     $tours = [];
                     $meets = [];
 
-                    for ($i = 1; $i <= count($poule->getTeams()) - 1; $i++) {
+                    for ($i = 1; $i <= count($poule->getTeams()) ; $i++) {
                         $tours[$i] = [];
                     }
 
 
 
+                    $teamsA = $poule->getTeams()->toArray();
+                    $teamsB = $poule->getTeams()->toArray();
 
-                    foreach ($poule->getTeams() as $teamA)
+                    shuffle($teamsA);
+                    shuffle($teamsB);
+
+                    $teamsA = new ArrayCollection($teamsA);
+                    $teamsB = new ArrayCollection($teamsB);
+
+                    foreach ($teamsA as $teamA)
                     {
-                        foreach ($poule->getTeams() as $teamB)
+                        foreach ($teamsB as $teamB)
                         {
                             $find = false;
 
@@ -1130,7 +1139,7 @@ function findTeamByRang($teams,$rang)
                                 $tour = $this->findCorrectTour($tours, $teamA, $teamB);
 
 
-                                $match->setTour($tour);
+                                if($tour) $match->setTour($tour);
 
                                 $entityManager->persist($match);
                                 $entityManager->flush();
