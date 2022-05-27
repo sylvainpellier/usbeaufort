@@ -176,4 +176,45 @@ class MeetRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+
+public function findLastMeetByTeam($idTeam)
+{
+    $query = $this->createQueryBuilder('m')
+        ->join('m.TeamA', 'team_a')
+        ->join('m.TeamB', 'team_b');
+
+    $parameters = [];
+
+    $query->andWhere('team_a.id = :id');
+    $query->orWhere('team_b.id = :id');
+    $parameters["id"] = $idTeam;
+
+    $query->orderBy("m.Time", "ASC");
+
+    $query->setParameters($parameters);
+
+    return $query->getFirstResult();
+
+}
+
+    public function findLastMeetByPosition($idPosition)
+    {
+        $query = $this->createQueryBuilder('m')
+            ->join('m.PositionA', 'position_a')
+            ->join('m.PositionB', 'position_b');
+
+        $parameters = [];
+
+        $query->andWhere('position_a.id = :id');
+        $query->orWhere('position_b.id = :id');
+        $parameters["id"] = $idPosition;
+
+        $query->orderBy("m.Time", "ASC");
+
+        $query->setParameters($parameters);
+
+        return $query->getFirstResult();
+
+    }
+
 }

@@ -116,6 +116,7 @@ class TimeController extends AbstractController
                         $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
                         $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
 
+                        $lastMatchA = $lastMatchB = false;
 
                         if(
                         (
@@ -140,7 +141,30 @@ class TimeController extends AbstractController
 
                             }
 
-                            if (!$pauseDebut || ( $pauseDebut && ($time->getTimestamp() <= $pauseDebut->getTimestamp() || $time->getTimestamp() >= $pauseFin->getTimestamp()))) {
+                            if($matchs[0]->getTeamA())
+                            {
+                                $lastMatchA = $meetRepository->findLastMeetByTeam($matchs[0]->getTeamA());
+                            }
+
+                            if($matchs[0]->getTeamB())
+                            {
+                                $lastMatchB = $meetRepository->findLastMeetByTeam($matchs[0]->getTeamB());
+                            }
+
+
+                            if (
+                                ( !$pauseDebut || ( $pauseDebut && ($time->getTimestamp() <= $pauseDebut->getTimestamp() || $time->getTimestamp() >= $pauseFin->getTimestamp()))
+                                )
+                                &&
+                                (
+                                    !$lastMatchA || ($lastMatchA && $lastMatchA->getTime() < $time->getTimestamp() - (30 * 60 ) )
+                                )
+                                &&
+                                (
+                                    !$lastMatchB || ($lastMatchB && $lastMatchB->getTime() < $time->getTimestamp() - (30 * 60 ) )
+                                )
+
+                                ) {
 
                                 $lastTour = $matchs[0]->getTour();
                                 $lastPhase = $matchs[0]->getPhase();
@@ -151,9 +175,11 @@ class TimeController extends AbstractController
                                 $matchEntreEchiqiuer++;
                                 $matchEntreSpecial++;
                             } else {
-                                $matchTmp = $matchs[0];
-                                array_splice($matchs, 0, 1);
-                                $matchs[] = $matchTmp;
+                                $matchTmp0 = $matchs[0];
+                                $matchTmp1 = $matchs[1];
+
+                                $matchs[0] = $matchTmp1;
+                                $matchs[1] = $matchTmp0;
                             }
                         }
 
