@@ -38,10 +38,10 @@
 
                   {% if phase.meets|length > 0 %}  <th class="text-center" colspan="4"><h4>{{ phase.Name }}</h4></th> {% endif %}
 
-                {% for match in phase.getMeetsForTableau %}
+                {% for match in phase.getMeets %}
 
 
-            <tr>
+            <tr class="{% if match.TeamA and match.TeamB and (match.ScoreA is not null  or match.ScoreB is not null or match.PenaltyA  is not null or match.PenaltyB  is not null) %}bg-primary  bg-opacity-10{% endif %}">
 
 
                 {% if match.TeamA and match.TeamB %}<td class="text-right">{{ match.TeamA }} {% if match.ScoreA %}<b>{{ match.ScoreA }}</b>{% endif %} - {% if match.ScoreB %}<b>{{ match.ScoreB }}</b>{% endif %} {{ match.TeamB }}</td>
