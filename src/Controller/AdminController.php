@@ -376,9 +376,6 @@ function findTeamByRang($teams,$rang)
 
             $wait = [];
 
-
-
-
         foreach($data as $keyGroupe => $teamsGroupe)
         {
             foreach ($teamsGroupe as $team)
@@ -404,6 +401,7 @@ function findTeamByRang($teams,$rang)
                     $entityManager->flush();
 
                     $meets = $meetRepository->findBy(["PositionA"=>$position]);
+
 
                     foreach ($meets as $meet)
                     {

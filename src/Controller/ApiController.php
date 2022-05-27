@@ -44,6 +44,7 @@ class ApiController extends OverrideApiController
         // returns an array of arrays (i.e. a raw data set)
         $teams = $resultSet->fetchAll();
 
+
         foreach($teams as $key => $team)
         {
             $teams[$key]["pts"] = 0;
@@ -80,8 +81,7 @@ class ApiController extends OverrideApiController
 
 
 
-
-            if(count($resultats) === 0 && $phase->getPhasePrecedente()){
+            if(count($teams) === 0 && $phase->getPhasePrecedente()){
             $teams = [];
                 $poules = $phase->getPhasePrecedente()->getPoules();
                 foreach($poules as $poule) {
