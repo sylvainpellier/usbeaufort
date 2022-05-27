@@ -71,7 +71,7 @@ class TimeController extends AbstractController
         $matchClassement = false;
         $coef = 1;
         $countField = count($fields);
-        $fieldToPlace = 1;
+        $fieldToPlace = 0;
 
         $min = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 10:15:00");
         $max = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 14:15:00");
@@ -114,6 +114,10 @@ class TimeController extends AbstractController
         $times[] = ["tour"=>3,"category"=>2,"phase"=>"7"];
         $times[] = ["tour"=>3,"category"=>1,"phase"=>"3"];
 
+        $minPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:00:00");
+        $maxPauseMidi = new DateTime($paramRepository->findOneBy(["Name"=>"date_debut"])->getValue()." 12:15:00");
+
+
         foreach($times as $timeToFind) {
 
             $matchs = $meetRepository->findBy(["Phase"=>$timeToFind["phase"],"Tour"=>$timeToFind["tour"]]);
@@ -130,18 +134,22 @@ class TimeController extends AbstractController
 
                 while (!
                 (
-                    ($field->getId() != 5 && $field->getId() != 6 && $field->getId() != 7)
+                    ($field->getId() != 5 && $field->getId() != 6 && $field->getId() != 7 && $field->getId() != 3 && $field->getId() != 10)
                     ||
                     (($field->getId() == 5 || $field->getId() == 6) && ($time->getTimestamp() <= $min->getTimestamp() || $time->getTimestamp() >= $max->getTimestamp()))
                     ||
-                    (($field->getId() == 7) && (!$matchClassement))
+                    (($field->getId() == 7 || $field->getId() == 3 || $field->getId() == 10) && (!$matchClassement))
+
+                    //10 enlever à la fin
+                    //temps de pause +1 minutes
+                    //17h20
                 )
 
 
                 ) {
                     $fieldToPlace++;
                     if ($fieldToPlace >= $countField) {
-                        $fieldToPlace = 1;
+                        $fieldToPlace = 0;
                         $time->add((DateInterval::createFromDateString($entreMatch . " minutes")));
                     }
                     $field = $fields[$fieldToPlace];
@@ -157,9 +165,13 @@ class TimeController extends AbstractController
                         $fieldToPlace++;
 
                         if ($fieldToPlace >= $countField) {
-                            $fieldToPlace = 1;
+                            $fieldToPlace = 0;
                             $time->add((DateInterval::createFromDateString($entreMatch . " minutes")));
 
+                            if (  $time->getTimestamp() >= $minPauseMidi->getTimestamp() && $time->getTimestamp() <= $maxPauseMidi->getTimestamp()  )
+                            {
+                                $time->add((DateInterval::createFromDateString(  "5 minutes")));
+                            }
                         }
 
 
