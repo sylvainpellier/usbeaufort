@@ -109,10 +109,9 @@ class TimeController extends AbstractController
         $times[] = ["tour"=>6,"category"=>3,"phase"=>"8"];
 
         $times[] = ["tour"=>2,"category"=>2,"phase"=>"7"];
-
         $times[] = ["tour"=>2,"category"=>1,"phase"=>"3"];
-        $times[] = ["tour"=>3,"category"=>2,"phase"=>"7"];
 
+        $times[] = ["tour"=>3,"category"=>2,"phase"=>"7"];
         $times[] = ["tour"=>3,"category"=>1,"phase"=>"3"];
 
         foreach($times as $timeToFind) {
