@@ -35,10 +35,10 @@ class MeetController extends OverrideApiController
     public function admin_update_match(string $id, FieldRepository $fieldRepository, Request $request, TeamRepository $teamRepository, MeetRepository $meetRepository, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $meet = $meetRepository->find($id);
-        $meet->setScoreA($request->get("scoreA") >= 0 ? (int)$request->get("scoreA") : null );
-        $meet->setScoreB($request->get("scoreB") >= 0 ? (int)$request->get("scoreB") : null);
-        $meet->setPenaltyA($request->get("penaltyA") >= 0 ? (int)$request->get("penaltyA") : null);
-        $meet->setPenaltyB($request->get("penaltyB") >= 0 ? (int)$request->get("penaltyB") : null);
+        $meet->setScoreA($request->get("scoreA")  ? (int)$request->get("scoreA") : null );
+        $meet->setScoreB($request->get("scoreB")  ? (int)$request->get("scoreB") : null);
+        $meet->setPenaltyA($request->get("penaltyA")  ? (int)$request->get("penaltyA") : null);
+        $meet->setPenaltyB($request->get("penaltyB") ? (int)$request->get("penaltyB") : null);
 
         if($meet->getFormat() === "demi")
         {
