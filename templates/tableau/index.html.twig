@@ -44,7 +44,7 @@
             <tr class="{% if match.TeamA and match.TeamB and (match.ScoreA is not null  or match.ScoreB is not null or match.PenaltyA  is not null or match.PenaltyB  is not null) %}bg-primary  bg-opacity-10{% endif %}">
 
 
-                {% if match.TeamA and match.TeamB %}<td class="text-right">{{ match.TeamA }} {% if match.ScoreA %}<b>{{ match.ScoreA }}</b>{% endif %} - {% if match.ScoreB %}<b>{{ match.ScoreB }}</b>{% endif %} {{ match.TeamB }}</td>
+                {% if match.TeamA and match.TeamB %}<td class="text-right">{{ match.TeamA }} {% if match.ScoreA or match.ScoreA == 0 %}<b>{{ match.ScoreA }}</b>{% endif %} - {% if match.ScoreB or match.ScoreB == 0 %}<b>{{ match.ScoreB }}</b>{% endif %} {{ match.TeamB }}</td>
                 {% elseif match.Name %}<td class="text-right">{{ match.Name }}</td>
                 {% elseif match.positionA and match.positionB %}<td class="text-right">{{ match.positionA.Rang }}{% if match.positionA.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.positionA.pouleFrom }} - {{ match.positionB.Rang }}{% if match.positionB.Rang == 1 %}er{% else %}ème{% endif %} de la poule {{ match.positionB.pouleFrom }}</td>
 
