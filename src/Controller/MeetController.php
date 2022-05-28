@@ -87,11 +87,11 @@ class MeetController extends OverrideApiController
 
             $oldField = $meet->getField();
             $newField = $fieldRepository->find($request->get("field"));
+            $meet->setField( $newField ) ;
 
             $findAnotherMeet = $meetRepository->findOneBy(["time"=>$meet->getTime(), "Field"=> $newField ]);
             if($findAnotherMeet)
             {
-                $meet->setField( $newField ) ;
                 $findAnotherMeet->setField( $oldField );
                 $entityManager->persist( $findAnotherMeet );
                 $this->addFlash("success","Échange de terrain effectué");
