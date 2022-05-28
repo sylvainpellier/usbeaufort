@@ -109,8 +109,6 @@ class ApiController extends OverrideApiController
                 foreach ($resultats as $match) {
 
 
-
-
                     $teams[$key]["poule"] = $match["poule_id"];
                     $teams[$key]["pouleNameString"] = $match["name"];
 
@@ -119,11 +117,18 @@ class ApiController extends OverrideApiController
                         $against = "score_b";
                         $mePenalty = "penalty_a";
                         $againstPenalty = "penalty_b";
+
+                        $teams[$key]["but_pour"] += $match["score_a"];
+                        $teams[$key]["but_contre"] += $match["score_b"];
+
                     } else if ($team["id"] === $match["team_b_id"]) {
                         $me = "score_b";
                         $against = "score_a";
                         $mePenalty = "penalty_b";
                         $againstPenalty = "penalty_a";
+
+                        $teams[$key]["but_pour"] += $match["score_b"];
+                        $teams[$key]["but_contre"] += $match["score_a"];
                     }
 
                         if($match["team_forfait_id"]) {
@@ -134,8 +139,8 @@ class ApiController extends OverrideApiController
                                 $teams[$key]["defaite"]++;
                             }
                         }else if ($me && $against && !is_null($match[$me]) && !is_null($match[$against])) {
-                        $teams[$key]["but_pour"] += $match["score_a"];
-                        $teams[$key]["but_contre"] += $match["score_b"];
+
+
 
 
 
